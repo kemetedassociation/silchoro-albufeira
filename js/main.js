@@ -48,53 +48,53 @@ document.addEventListener('DOMContentLoaded', () => {
       const inView = rect.top < viewH && rect.bottom > 0;
       const progress = clamp01(-rect.top / (sceneH - viewH));
 
-      // === VIDEO CONTROL (desktop only — mobile autoplay handled separately) ===
-      if (!isMobile) {
-        const isMulti = scene.hasAttribute('data-multi');
-        if (isMulti) {
-          const videos = scene.querySelectorAll('.st-multi-video video');
-          const segCount = videos.length;
-          if (segCount > 0 && inView) {
-            const activeIdx = Math.min(Math.floor(progress * segCount), segCount - 1);
-            const segSize = 1 / segCount;
-            const segProgress = clamp01((progress - activeIdx * segSize) / segSize);
-            videos.forEach((v, vi) => {
-              if (vi === activeIdx) {
-                v.classList.add('vid-active');
-                if (v.paused && v.readyState >= 2) v.play().catch(() => {});
-                if (v.duration && isFinite(v.duration)) {
-                  const target = segProgress * v.duration;
-                  if (!videoTargets.has(v)) videoTargets.set(v, v.currentTime);
-                  v.currentTime = lerp(videoTargets.get(v), target, 0.2);
-                  videoTargets.set(v, v.currentTime);
-                }
-              } else {
-                v.classList.remove('vid-active');
-                if (!v.paused) v.pause();
-                videoTargets.delete(v);
+      // === VIDEO CONTROL ===
+      const isMulti = scene.hasAttribute('data-multi');
+      if (isMulti) {
+        const videos = scene.querySelectorAll('.st-multi-video video');
+        const segCount = videos.length;
+        if (segCount > 0 && inView) {
+          const activeIdx = Math.min(Math.floor(progress * segCount), segCount - 1);
+          const segSize = 1 / segCount;
+          const segProgress = clamp01((progress - activeIdx * segSize) / segSize);
+          videos.forEach((v, vi) => {
+            if (vi === activeIdx) {
+              v.classList.add('vid-active');
+              if (v.paused && v.readyState >= 2) v.play().catch(() => {});
+              // Scrub video on desktop; on mobile just let it play
+              if (!isMobile && v.duration && isFinite(v.duration)) {
+                const target = segProgress * v.duration;
+                if (!videoTargets.has(v)) videoTargets.set(v, v.currentTime);
+                v.currentTime = lerp(videoTargets.get(v), target, 0.2);
+                videoTargets.set(v, v.currentTime);
               }
-            });
-          } else if (!inView) {
-            scene.querySelectorAll('.st-multi-video video').forEach(v => {
+            } else {
               v.classList.remove('vid-active');
               if (!v.paused) v.pause();
               videoTargets.delete(v);
-            });
-          }
-        } else {
-          const video = scene.querySelector(':scope > .st-video-wrap > video');
-          if (video && inView) {
-            if (video.paused && video.readyState >= 2) video.play().catch(() => {});
-            if (video.duration && isFinite(video.duration)) {
-              const target = progress * video.duration;
-              if (!videoTargets.has(video)) videoTargets.set(video, video.currentTime);
-              video.currentTime = lerp(videoTargets.get(video), target, 0.25);
-              videoTargets.set(video, video.currentTime);
             }
-          } else if (video && !inView) {
-            if (!video.paused) video.pause();
-            videoTargets.delete(video);
+          });
+        } else if (!inView) {
+          scene.querySelectorAll('.st-multi-video video').forEach(v => {
+            v.classList.remove('vid-active');
+            if (!v.paused) v.pause();
+            videoTargets.delete(v);
+          });
+        }
+      } else if (!isMobile) {
+        // Single video scrub (desktop only)
+        const video = scene.querySelector(':scope > .st-video-wrap > video');
+        if (video && inView) {
+          if (video.paused && video.readyState >= 2) video.play().catch(() => {});
+          if (video.duration && isFinite(video.duration)) {
+            const target = progress * video.duration;
+            if (!videoTargets.has(video)) videoTargets.set(video, video.currentTime);
+            video.currentTime = lerp(videoTargets.get(video), target, 0.25);
+            videoTargets.set(video, video.currentTime);
           }
+        } else if (video && !inView) {
+          if (!video.paused) video.pause();
+          videoTargets.delete(video);
         }
       }
 
