@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Silchoro · Appartement de vacances à Albufeira, Portugal</title>
+  <meta name="description" content="Réservez votre appartement de vacances à Albufeira, Portugal. Résidence hôtelière Silchoro — jusqu'à 20% moins cher que Booking.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="cursor-dot"></div>
+<div class="cursor-ring"></div>
+<div class="st-progress"></div>
+
+<!-- Lightbox -->
+<div class="lb">
+  <button class="lb-x">✕</button>
+  <img id="lb-img" alt="">
+</div>
+
+<!-- ============ STICKY PRICE BAR ============ -->
+<div class="sticky-bar">
+  <div class="sticky-bar__inner">
+    <div style="color:#fff;line-height:1.15">
+      <div style="font-size:12px;color:rgba(255,255,255,.62);font-weight:600;letter-spacing:.04em">À partir de</div>
+      <div style="font-size:21px;font-weight:800;letter-spacing:-.02em"><span class="price-from">43</span>&nbsp;€<span style="font-size:13px;font-weight:500;color:rgba(255,255,255,.7)"> / nuit</span> <span style="font-size:11px;font-weight:700;color:var(--ink);background:var(--gold);padding:3px 8px;border-radius:20px;margin-left:4px">−20% VS BOOKING</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <a href="#calendrier" class="magnetic" data-magnetic style="background:#fff;color:var(--ink);padding:12px 22px;border-radius:40px;font-weight:700;font-size:15px;white-space:nowrap">Réserver</a>
+      <a href="#" class="magnetic wa-link" data-magnetic target="_blank" aria-label="WhatsApp" style="width:46px;height:46px;border-radius:50%;background:#25d366;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.4 2.1L8 9.6a16 16 0 0 0 6 6l1.2-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg></a>
+    </div>
+  </div>
+</div>
+
+<!-- ============ NAV ============ -->
+<nav class="site-nav">
+  <a href="#" style="display:flex;align-items:center;gap:11px;font-weight:800;font-size:20px;letter-spacing:-.02em">
+    <span style="width:36px;height:36px;border-radius:11px;background:linear-gradient(140deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Newsreader',serif;font-style:italic;font-weight:500;font-size:20px">S</span>
+    <span>Silchoro<span style="color:var(--accent)">.</span></span>
+  </a>
+  <div class="nav-links" style="display:flex;align-items:center;gap:28px;font-size:15px;font-weight:500">
+    <a class="navlink" href="#activites">Albufeira</a>
+    <a class="navlink" href="#appartement">Appartement</a>
+    <a class="navlink" href="#tarifs">Tarifs</a>
+    <a class="navlink" href="#calendrier">Calendrier</a>
+    <a class="navlink" href="#galerie">Galerie</a>
+    <a class="navlink" href="#faq">FAQ</a>
+  </div>
+  <a href="#reservation" class="magnetic" data-magnetic style="background:var(--accent);color:#fff;padding:12px 24px;border-radius:40px;font-weight:600;font-size:15px;box-shadow:0 10px 30px rgba(10,92,134,.28)">Réserver</a>
+</nav>
+
+<!-- ╔══════════════════════════════════════════════════════╗ -->
+<!-- ║   SCROLLYTELLING HERO — 5 SCENES (multi-video S4)  ║ -->
+<!-- ╚══════════════════════════════════════════════════════╝ -->
+<div class="st-container">
+
+  <!-- SCENE 1 — La Résidence (VV-a00 → VV-A001) -->
+  <section class="st-scene" data-scene="1">
+    <div class="st-video-wrap">
+      <video muted playsinline preload="auto" loop>
+        <source src="assets/videos/vv-a00.mp4" type="video/mp4">
+      </video>
+      <div class="st-dim"></div>
+      <div class="st-vignette"></div>
+      <div class="st-overlay">
+        <div class="st-text">
+          <div class="st-tag"><span class="dot"></span> Résidence hôtelière Silchoro</div>
+          <h1 class="st-h">Votre appartement<br>de vacances à <i>Albufeira</i></h1>
+          <p class="st-sub">Au cœur de l'Algarve, une résidence blanche posée entre ciel et océan.</p>
+          <div class="st-line"></div>
+        </div>
+      </div>
+      <div class="st-overlay">
+        <div class="st-text">
+          <h2 class="st-h" style="font-size:clamp(36px,5.5vw,72px)">La résidence <i>Silchoro</i></h2>
+          <p class="st-sub">Piscine, terrasses, jardins tropicaux — un écrin de sérénité à quelques pas de la mer.</p>
+          <div class="st-line"></div>
+        </div>
+      </div>
+      <div class="st-overlay">
+        <div class="st-text">
+          <p class="st-sub" style="font-size:clamp(20px,2.8vw,32px);font-weight:500;font-family:'Newsreader',serif;font-style:italic;max-width:700px">« Le soleil se lève sur l'Atlantique. Le silence n'est troublé que par le chant des oiseaux. »</p>
+          <div class="st-line"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 2 — L'Appartement (VV-A1 → VV-A4) -->
+  <section class="st-scene" data-scene="2">
+    <div class="st-video-wrap">
+      <video muted playsinline preload="auto" loop>
+        <source src="assets/videos/vv-a01.mp4" type="video/mp4">
+      </video>
+      <div class="st-dim"></div>
+      <div class="st-vignette"></div>
+      <div class="st-overlay">
+        <div class="st-text">
+          <h2 class="st-h" style="font-size:clamp(36px,6vw,80px)"><i>L'appartement</i></h2>
+          <p class="st-sub">Entièrement repensé. Chaque détail, pensé pour le confort absolu.</p>
+          <div class="st-line"></div>
+        </div>
+      </div>
+      <div class="st-overlay">
+        <div class="st-text">
+          <h2 class="st-h" style="font-size:clamp(28px,4vw,56px)">Lumière naturelle.<br><i>Design épuré.</i></h2>
+          <p class="st-sub">Salon, cuisine équipée, chambre cocooning — tout est là pour que vous n'ayez plus qu'à vivre.</p>
+          <div class="st-line"></div>
+        </div>
+      </div>
+      <div class="st-overlay">
+        <div class="st-text">
+          <p class="st-sub" style="font-size:clamp(20px,2.8vw,32px);font-weight:500;font-family:'Newsreader',serif;font-style:italic;max-width:700px">« Ouvrez la terrasse. Le Portugal entre chez vous. »</p>
+          <div class="st-line"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 3 — Les Activités (VV-A5 → VV-A9) -->
+  <section class="st-scene" data-scene="3">
+    <div class="st-video-wrap">
+      <video muted playsinline preload="auto" loop>
+        <source src="assets/videos/vv-a05.mp4" type="video/mp4">
+      </video>
+      <div class="st-dim"></div>
+      <div class="st-vignette"></div>
+      <div class="st-overlay">
+        <div class="st-text">
+          <h2 class="st-h" style="font-size:clamp(36px,6vw,80px)"><i>Albufeira</i></h2>
+          <p class="st-sub">Plages dorées, grottes secrètes, nuits d'été — la vie comme on l'imagine.</p>
+          <div class="st-line"></div>
+        </div>
+      </div>
+      <div class="st-overlay">
+        <div class="st-text">
+          <h2 class="st-h" style="font-size:clamp(28px,4vw,56px)">Des falaises ocre<br>à la <i>mer turquoise.</i></h2>
+          <p class="st-sub">Explorez les grottes de Benagil. Surfez. Nagez. Ou simplement contemplez.</p>
+          <div class="st-line"></div>
+        </div>
+      </div>
+      <div class="st-overlay">
+        <div class="st-text">
+          <p class="st-sub" style="font-size:clamp(20px,2.8vw,32px);font-weight:500;font-family:'Newsreader',serif;font-style:italic;max-width:700px">« 300 jours de soleil par an. L'Algarve ne connaît pas la grisaille. »</p>
+          <div class="st-line"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 4 — Respirez (multi-video: vv-a03, vv-a08, vv-a10, vv-a11) -->
+  <section class="st-scene" data-scene="4" data-multi style="height:500vh">
+    <div class="st-video-wrap">
+      <div class="st-multi-video">
+        <video muted playsinline preload="auto" loop data-seg="0"><source src="assets/videos/vv-a03.mp4" type="video/mp4"></video>
+        <video muted playsinline preload="auto" loop data-seg="1"><source src="assets/videos/vv-a08.mp4" type="video/mp4"></video>
+        <video muted playsinline preload="auto" loop data-seg="2"><source src="assets/videos/vv-a10.mp4" type="video/mp4"></video>
+        <video muted playsinline preload="auto" loop data-seg="3"><source src="assets/videos/vv-a11.mp4" type="video/mp4"></video>
+      </div>
+      <div class="st-dim" style="background:linear-gradient(180deg,rgba(8,30,48,.3) 0%,rgba(8,30,48,.06) 40%,rgba(8,30,48,.5) 100%)"></div>
+      <div class="st-vignette"></div>
+      <div class="st-overlay">
+        <div class="st-text">
+          <h2 class="st-h" style="font-family:'Newsreader',serif;font-style:italic;font-weight:500;font-size:clamp(48px,9vw,120px);line-height:.95">Respirez.</h2>
+          <p class="st-sub" style="margin-top:28px;font-size:clamp(18px,2.4vw,26px)">Bienvenue à Albufeira.</p>
+          <div class="st-line"></div>
+        </div>
+      </div>
+      <div class="st-overlay">
+        <div class="st-text">
+          <p class="st-sub" style="font-size:clamp(20px,2.8vw,32px);font-weight:500;font-family:'Newsreader',serif;font-style:italic;max-width:700px">« Là où l'océan sculpte la pierre depuis des millénaires. »</p>
+          <div class="st-line"></div>
+        </div>
+      </div>
+      <div class="st-overlay">
+        <div class="st-text">
+          <h2 class="st-h" style="font-size:clamp(28px,4.5vw,64px)">L'Algarve,<br><i>grandeur nature.</i></h2>
+          <p class="st-sub">Des falaises dorées aux plages infinies — chaque jour est une carte postale.</p>
+          <div class="st-line"></div>
+        </div>
+      </div>
+      <div class="st-overlay">
+        <div class="st-text">
+          <p class="st-sub" style="font-size:clamp(20px,2.8vw,32px);font-weight:500;font-family:'Newsreader',serif;font-style:italic;max-width:700px">« Le soleil se couche. La nuit d'Albufeira commence à peine. »</p>
+          <div class="st-line"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 5 — Benagil Zoom (ph67 scroll-zoom) -->
+  <section class="st-scene" data-scene="5" style="height:250vh">
+    <div class="st-video-wrap">
+      <div class="st-zoom-wrap">
+        <img data-scroll-zoom src="assets/images/ph67.jpeg" alt="Grotte de Benagil">
+      </div>
+      <div class="st-dim" style="background:linear-gradient(180deg,rgba(8,30,48,.2) 0%,rgba(8,30,48,.05) 30%,rgba(8,30,48,.55) 100%)"></div>
+      <div class="st-overlay">
+        <div class="st-text">
+          <h2 class="st-h" style="font-size:clamp(32px,5vw,68px)">Grotte de <i>Benagil</i></h2>
+          <p class="st-sub">L'une des merveilles naturelles les plus photographiées au monde — à vingt minutes de votre porte.</p>
+          <div class="st-line"></div>
+        </div>
+      </div>
+      <div class="st-overlay">
+        <div class="st-text" style="pointer-events:auto">
+          <div style="display:inline-flex;align-items:center;gap:18px;background:rgba(255,255,255,.12);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.26);border-radius:22px;padding:16px 26px">
+            <div style="text-align:left;line-height:1">
+              <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.72);font-weight:600">À partir de</div>
+              <div style="margin-top:6px;font-size:clamp(30px,4vw,42px);font-weight:800;letter-spacing:-.03em"><span class="price-from">43</span>&nbsp;€<span style="font-size:16px;font-weight:500;color:rgba(255,255,255,.8)"> / nuit</span></div>
+            </div>
+            <div style="width:1px;height:46px;background:rgba(255,255,255,.28)"></div>
+            <div style="text-align:left;line-height:1.25">
+              <div style="display:inline-block;background:var(--gold);color:#5a4500;font-size:13px;font-weight:800;padding:5px 12px;border-radius:30px">Jusqu'à −20&nbsp;%</div>
+              <div style="margin-top:7px;font-size:13px;color:rgba(255,255,255,.82);font-weight:500">vs. Booking</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:28px">
+            <a href="#calendrier" class="magnetic" data-magnetic style="background:#fff;color:var(--ink);padding:17px 32px;border-radius:46px;font-weight:700;font-size:16px;display:flex;align-items:center;gap:10px;box-shadow:0 16px 44px rgba(0,0,0,.28)">Voir les disponibilités →</a>
+            <a href="#" class="magnetic wa-link" data-magnetic target="_blank" style="background:#25d366;color:#fff;padding:17px 32px;border-radius:46px;font-weight:700;font-size:16px;display:flex;align-items:center;gap:10px;box-shadow:0 16px 44px rgba(37,211,102,.4)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.4 2.1L8 9.6a16 16 0 0 0 6 6l1.2-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg>
+              Réserver sur WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /st-container -->
+
+<!-- ============ ACTIVITES ============ -->
+<section id="activites" style="padding:130px 32px 120px;max-width:1280px;margin:0 auto;scroll-margin-top:80px">
+  <div style="max-width:760px;margin:0 auto 70px;text-align:center">
+    <div class="reveal" style="color:var(--accent);font-weight:700;font-size:14px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:16px">La destination</div>
+    <h2 class="reveal reveal-d2" style="font-size:clamp(36px,5vw,62px);font-weight:800;letter-spacing:-.03em;line-height:1.02">Que faire à <span style="font-family:'Newsreader',serif;font-style:italic;font-weight:500">Albufeira</span></h2>
+    <p class="reveal reveal-d3" style="margin-top:20px;color:#5a6b78;font-size:19px;line-height:1.65">Plages dorées au pied des falaises, excursions en mer, vieille ville blanchie à la chaux et soirées animées — tout commence à quelques minutes de l'appartement.</p>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:30px">
+    <!-- Activity 1 — Plages -->
+    <div class="reveal reveal-l lift act-card" style="display:grid;grid-template-columns:1.05fr 1fr;gap:0;background:#fff;border:1px solid #efe6d6;border-radius:28px;overflow:hidden;box-shadow:0 18px 46px rgba(13,36,56,.07);min-height:340px">
+      <div class="act-img photo-card" style="order:1;position:relative;min-height:300px">
+        <img src="assets/images/ph09.jpeg" alt="Plage dorée d'Albufeira" loading="lazy">
+      </div>
+      <div class="act-txt" style="order:2;padding:clamp(32px,4.5vw,56px);display:flex;flex-direction:column;justify-content:center">
+        <div style="display:flex;align-items:center;gap:16px"><span style="font-family:'Newsreader',serif;font-size:40px;font-weight:500;color:#cdd9de;line-height:1">01</span><span style="font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)">Plages</span></div>
+        <h3 style="margin-top:18px;font-size:clamp(24px,2.6vw,32px);font-weight:800;letter-spacing:-.025em;line-height:1.1">Les plus belles plages</h3>
+        <p style="margin-top:12px;color:#5a6b78;font-size:16px;line-height:1.65">Praia da Oura, Falésia, Olhos de Água… des criques dorées entre falaises ocre et eaux turquoise.</p>
+        <div style="margin-top:24px;display:inline-flex;align-items:center;gap:9px;color:var(--accent);font-weight:600;font-size:14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4l2.6 1.6"/></svg>5 min à pied</div>
+      </div>
+    </div>
+
+    <!-- Activity 2 — En mer (VIDEO) -->
+    <div class="reveal reveal-r lift act-card" style="display:grid;grid-template-columns:1.05fr 1fr;gap:0;background:#fff;border:1px solid #efe6d6;border-radius:28px;overflow:hidden;box-shadow:0 18px 46px rgba(13,36,56,.07);min-height:340px">
+      <div class="act-img" style="order:2;position:relative;min-height:300px">
+        <video data-autoplay muted playsinline loop preload="metadata" style="width:100%;height:100%;object-fit:cover"><source src="assets/videos/vv-a07.mp4" type="video/mp4"></video>
+      </div>
+      <div class="act-txt" style="order:1;padding:clamp(32px,4.5vw,56px);display:flex;flex-direction:column;justify-content:center">
+        <div style="display:flex;align-items:center;gap:16px"><span style="font-family:'Newsreader',serif;font-size:40px;font-weight:500;color:#cdd9de;line-height:1">02</span><span style="font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)">En mer</span></div>
+        <h3 style="margin-top:18px;font-size:clamp(24px,2.6vw,32px);font-weight:800;letter-spacing:-.025em;line-height:1.1">Excursions en bateau & dauphins</h3>
+        <p style="margin-top:12px;color:#5a6b78;font-size:16px;line-height:1.65">Partez explorer les grottes de Benagil et observez les dauphins au large de la côte algarvienne.</p>
+        <div style="margin-top:24px;display:inline-flex;align-items:center;gap:9px;color:var(--accent);font-weight:600;font-size:14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4l2.6 1.6"/></svg>10 min · Marina</div>
+      </div>
+    </div>
+
+    <!-- Activity 3 — Nature -->
+    <div class="reveal reveal-l lift act-card" style="display:grid;grid-template-columns:1.05fr 1fr;gap:0;background:#fff;border:1px solid #efe6d6;border-radius:28px;overflow:hidden;box-shadow:0 18px 46px rgba(13,36,56,.07);min-height:340px">
+      <div class="act-img photo-card" style="order:1;position:relative;min-height:300px">
+        <img src="assets/images/ph06.jpeg" alt="Falaises et côte" loading="lazy">
+      </div>
+      <div class="act-txt" style="order:2;padding:clamp(32px,4.5vw,56px);display:flex;flex-direction:column;justify-content:center">
+        <div style="display:flex;align-items:center;gap:16px"><span style="font-family:'Newsreader',serif;font-size:40px;font-weight:500;color:#cdd9de;line-height:1">03</span><span style="font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)">Nature</span></div>
+        <h3 style="margin-top:18px;font-size:clamp(24px,2.6vw,32px);font-weight:800;letter-spacing:-.025em;line-height:1.1">Couchers de soleil & promenades</h3>
+        <p style="margin-top:12px;color:#5a6b78;font-size:16px;line-height:1.65">Balades le long de la côte au crépuscule, quand le ciel s'embrase au-dessus de l'Atlantique.</p>
+        <div style="margin-top:24px;display:inline-flex;align-items:center;gap:9px;color:var(--accent);font-weight:600;font-size:14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4l2.6 1.6"/></svg>Sur place</div>
+      </div>
+    </div>
+
+    <!-- Activity 4 — Grottes -->
+    <div class="reveal reveal-r lift act-card" style="display:grid;grid-template-columns:1.05fr 1fr;gap:0;background:#fff;border:1px solid #efe6d6;border-radius:28px;overflow:hidden;box-shadow:0 18px 46px rgba(13,36,56,.07);min-height:340px">
+      <div class="act-img photo-card" style="order:2;position:relative;min-height:300px">
+        <img src="assets/images/ph67.jpeg" alt="Grotte de Benagil" loading="lazy">
+      </div>
+      <div class="act-txt" style="order:1;padding:clamp(32px,4.5vw,56px);display:flex;flex-direction:column;justify-content:center">
+        <div style="display:flex;align-items:center;gap:16px"><span style="font-family:'Newsreader',serif;font-size:40px;font-weight:500;color:#cdd9de;line-height:1">04</span><span style="font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)">Aventure</span></div>
+        <h3 style="margin-top:18px;font-size:clamp(24px,2.6vw,32px);font-weight:800;letter-spacing:-.025em;line-height:1.1">Grottes de Benagil & falaises</h3>
+        <p style="margin-top:12px;color:#5a6b78;font-size:16px;line-height:1.65">Les formations rocheuses les plus célèbres d'Europe. Kayak, bateau ou SUP — à vous de choisir.</p>
+        <div style="margin-top:24px;display:inline-flex;align-items:center;gap:9px;color:var(--accent);font-weight:600;font-size:14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4l2.6 1.6"/></svg>20 min</div>
+      </div>
+    </div>
+
+    <!-- Activity 5 — Sports nautiques -->
+    <div class="reveal reveal-l lift act-card" style="display:grid;grid-template-columns:1.05fr 1fr;gap:0;background:#fff;border:1px solid #efe6d6;border-radius:28px;overflow:hidden;box-shadow:0 18px 46px rgba(13,36,56,.07);min-height:340px">
+      <div class="act-img photo-card" style="order:1;position:relative;min-height:300px">
+        <img src="assets/images/ph45.jpeg" alt="Jet-ski" loading="lazy">
+      </div>
+      <div class="act-txt" style="order:2;padding:clamp(32px,4.5vw,56px);display:flex;flex-direction:column;justify-content:center">
+        <div style="display:flex;align-items:center;gap:16px"><span style="font-family:'Newsreader',serif;font-size:40px;font-weight:500;color:#cdd9de;line-height:1">05</span><span style="font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)">Sports</span></div>
+        <h3 style="margin-top:18px;font-size:clamp(24px,2.6vw,32px);font-weight:800;letter-spacing:-.025em;line-height:1.1">Sports nautiques & sensations</h3>
+        <p style="margin-top:12px;color:#5a6b78;font-size:16px;line-height:1.65">Jet-ski, parasailing, surf, paddle — l'adrénaline de l'Atlantique à portée de main.</p>
+        <div style="margin-top:24px;display:inline-flex;align-items:center;gap:9px;color:var(--accent);font-weight:600;font-size:14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4l2.6 1.6"/></svg>5 min</div>
+      </div>
+    </div>
+
+    <!-- Activity 6 — Vieille ville -->
+    <div class="reveal reveal-r lift act-card" style="display:grid;grid-template-columns:1.05fr 1fr;gap:0;background:#fff;border:1px solid #efe6d6;border-radius:28px;overflow:hidden;box-shadow:0 18px 46px rgba(13,36,56,.07);min-height:340px">
+      <div class="act-img photo-card" style="order:2;position:relative;min-height:300px">
+        <img src="assets/images/ph15.jpeg" alt="Vieille ville" loading="lazy">
+      </div>
+      <div class="act-txt" style="order:1;padding:clamp(32px,4.5vw,56px);display:flex;flex-direction:column;justify-content:center">
+        <div style="display:flex;align-items:center;gap:16px"><span style="font-family:'Newsreader',serif;font-size:40px;font-weight:500;color:#cdd9de;line-height:1">06</span><span style="font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)">Culture</span></div>
+        <h3 style="margin-top:18px;font-size:clamp(24px,2.6vw,32px);font-weight:800;letter-spacing:-.025em;line-height:1.1">Vieille ville & shopping</h3>
+        <p style="margin-top:12px;color:#5a6b78;font-size:16px;line-height:1.65">Ruelles blanchies à la chaux, places animées, boutiques et restaurants typiques de l'Algarve.</p>
+        <div style="margin-top:24px;display:inline-flex;align-items:center;gap:9px;color:var(--accent);font-weight:600;font-size:14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4l2.6 1.6"/></svg>8 min</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STATS ============ -->
+<section style="position:relative;padding:120px 32px;overflow:hidden;background:var(--ink);color:#fff">
+  <div style="position:absolute;inset:0;background:radial-gradient(60% 60% at 80% 10%,rgba(25,182,201,.22),transparent),radial-gradient(50% 50% at 10% 90%,rgba(245,195,59,.14),transparent)"></div>
+  <div style="position:relative;max-width:1100px;margin:0 auto;text-align:center">
+    <h2 class="reveal" style="font-size:clamp(32px,4.4vw,54px);font-weight:800;letter-spacing:-.025em">Pourquoi Albufeira&nbsp;?</h2>
+    <p class="reveal reveal-d2" style="margin-top:16px;color:rgba(255,255,255,.78);font-size:18px;max-width:600px;margin-left:auto;margin-right:auto">Destination idéale entre détente et fête, baignée de soleil presque toute l'année.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;margin-top:56px">
+      <div class="reveal reveal-sc"><div style="font-size:clamp(44px,5vw,64px);font-weight:800;letter-spacing:-.03em;background:linear-gradient(120deg,var(--gold),var(--accent-2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent"><span data-count="300">0</span></div><div style="margin-top:6px;color:rgba(255,255,255,.82);font-weight:500">jours de soleil par an</div></div>
+      <div class="reveal reveal-sc reveal-d2"><div style="font-size:clamp(44px,5vw,64px);font-weight:800;letter-spacing:-.03em;background:linear-gradient(120deg,var(--gold),var(--accent-2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent"><span data-count="24" data-suffix="°">0</span></div><div style="margin-top:6px;color:rgba(255,255,255,.82);font-weight:500">température moyenne</div></div>
+      <div class="reveal reveal-sc reveal-d3"><div style="font-size:clamp(44px,5vw,64px);font-weight:800;letter-spacing:-.03em;background:linear-gradient(120deg,var(--gold),var(--accent-2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent"><span data-count="25" data-suffix="+">0</span></div><div style="margin-top:6px;color:rgba(255,255,255,.82);font-weight:500">plages à proximité</div></div>
+      <div class="reveal reveal-sc reveal-d4"><div style="font-size:clamp(44px,5vw,64px);font-weight:800;letter-spacing:-.03em;background:linear-gradient(120deg,var(--gold),var(--accent-2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent"><span data-count="6">0</span></div><div style="margin-top:6px;color:rgba(255,255,255,.82);font-weight:500">nuits de pur bonheur</div></div>
+    </div>
+    <div class="reveal" style="margin-top:50px;display:flex;flex-wrap:wrap;gap:12px;justify-content:center">
+      <span style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);padding:10px 18px;border-radius:30px;font-size:14px;font-weight:500">Magnifiques plages</span>
+      <span style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);padding:10px 18px;border-radius:30px;font-size:14px;font-weight:500">Vie nocturne réputée</span>
+      <span style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);padding:10px 18px;border-radius:30px;font-size:14px;font-weight:500">Restaurants</span>
+      <span style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);padding:10px 18px;border-radius:30px;font-size:14px;font-weight:500">Sports nautiques</span>
+      <span style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);padding:10px 18px;border-radius:30px;font-size:14px;font-weight:500">Golf</span>
+      <span style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);padding:10px 18px;border-radius:30px;font-size:14px;font-weight:500">Sorties en mer</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ APPARTEMENT ============ -->
+<section id="appartement" style="padding:120px 32px;max-width:1240px;margin:0 auto;scroll-margin-top:90px">
+  <div class="apt-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center">
+    <div class="reveal reveal-l">
+      <div style="color:var(--accent);font-weight:700;font-size:14px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:16px">L'appartement</div>
+      <h2 style="font-size:clamp(30px,4vw,48px);font-weight:800;letter-spacing:-.025em;line-height:1.08">Un cocon ensoleillé au cœur de la résidence Silchoro</h2>
+      <p style="margin-top:22px;color:#5a6b78;font-size:18px;line-height:1.7">Lumineux, calme et entièrement meublé, l'appartement vous accueille à quelques minutes des plus belles plages d'Albufeira. Réveillez-vous au son de l'océan, prenez votre café sur la terrasse, puis laissez-vous porter par la douceur de l'Algarve.</p>
+      <p style="margin-top:16px;color:#5a6b78;font-size:18px;line-height:1.7">Proche des restaurants, de la vie nocturne et de la marina — tout en restant un havre de paix idéal pour les familles comme pour les amis.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:28px">
+        <span style="background:#eaf6f8;color:#06576b;padding:9px 16px;border-radius:30px;font-size:14px;font-weight:600">Proche plages</span>
+        <span style="background:#eaf6f8;color:#06576b;padding:9px 16px;border-radius:30px;font-size:14px;font-weight:600">Restaurants</span>
+        <span style="background:#eaf6f8;color:#06576b;padding:9px 16px;border-radius:30px;font-size:14px;font-weight:600">Vie nocturne</span>
+        <span style="background:#fdf3d6;color:#8a6d12;padding:9px 16px;border-radius:30px;font-size:14px;font-weight:600">Calme & familial</span>
+      </div>
+    </div>
+    <div class="reveal reveal-r apt-images" style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:200px 200px;gap:14px">
+      <div class="lift img-tall photo-card" style="grid-row:span 2;border-radius:20px;overflow:hidden;box-shadow:0 18px 40px rgba(13,36,56,.12)"><img src="assets/images/int5.png" alt="Salon" loading="lazy"></div>
+      <div class="lift photo-card" style="border-radius:20px;overflow:hidden;box-shadow:0 18px 40px rgba(13,36,56,.12)"><img src="assets/images/int6.png" alt="Salle de bain" loading="lazy"></div>
+      <div class="lift photo-card" style="border-radius:20px;overflow:hidden;box-shadow:0 18px 40px rgba(13,36,56,.12)"><img src="assets/images/int7.png" alt="Terrasse" loading="lazy"></div>
+    </div>
+  </div>
+
+  <!-- Équipements -->
+  <div class="equip-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-top:56px">
+    <div class="reveal reveal-sc lift" style="background:#fff;border-radius:18px;padding:22px;border:1px solid #efe6d6;display:flex;align-items:center;gap:14px"><span style="width:44px;height:44px;border-radius:13px;background:#eef6f8;color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9 17V7h3.6a2.7 2.7 0 0 1 0 5.4H9"/></svg></span><span style="font-weight:600;font-size:15px">Parking privé</span></div>
+    <div class="reveal reveal-sc reveal-d2 lift" style="background:#fff;border-radius:18px;padding:22px;border:1px solid #efe6d6;display:flex;align-items:center;gap:14px"><span style="width:44px;height:44px;border-radius:13px;background:#eef6f8;color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17c1.6 0 1.6-1.3 3.2-1.3S7.8 17 9.4 17s1.6-1.3 3.2-1.3S14.2 17 15.8 17s1.6-1.3 3.2-1.3"/><path d="M7 14V6.5a2 2 0 0 1 4 0M7 10h4"/></svg></span><span style="font-weight:600;font-size:15px">Piscine</span></div>
+    <div class="reveal reveal-sc reveal-d3 lift" style="background:#fff;border-radius:18px;padding:22px;border:1px solid #efe6d6;display:flex;align-items:center;gap:14px"><span style="width:44px;height:44px;border-radius:13px;background:#eef6f8;color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v5M10 3v5M7 8a1.5 1.5 0 0 0 3 0M8.5 8v13"/><path d="M16 3c-1.6 0-2.3 2-2.3 4.5S15 11.5 16 11.5V21"/></svg></span><span style="font-weight:600;font-size:15px">Cuisine équipée</span></div>
+    <div class="reveal reveal-sc reveal-d4 lift" style="background:#fff;border-radius:18px;padding:22px;border:1px solid #efe6d6;display:flex;align-items:center;gap:14px"><span style="width:44px;height:44px;border-radius:13px;background:#eef6f8;color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11V8.5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2V11"/><path d="M3 13.5a2 2 0 0 1 4 0V16h10v-2.5a2 2 0 0 1 4 0V19h-2v-1.5H5V19H3z"/></svg></span><span style="font-weight:600;font-size:15px">Entièrement meublé</span></div>
+    <div class="reveal reveal-sc reveal-d5 lift" style="background:#fff;border-radius:18px;padding:22px;border:1px solid #efe6d6;display:flex;align-items:center;gap:14px"><span style="width:44px;height:44px;border-radius:13px;background:#eef6f8;color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s6.5-5.6 6.5-11A6.5 6.5 0 0 0 5.5 10c0 5.4 6.5 11 6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg></span><span style="font-weight:600;font-size:15px">Excellent emplacement</span></div>
+  </div>
+</section>
+
+<!-- ============ TARIFS ============ -->
+<section id="tarifs" style="padding:120px 32px;max-width:1240px;margin:0 auto;scroll-margin-top:90px">
+  <div style="text-align:center;max-width:640px;margin:0 auto 60px">
+    <div class="reveal" style="color:var(--accent);font-weight:700;font-size:14px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px">Nos tarifs</div>
+    <h2 class="reveal reveal-d2" style="font-size:clamp(32px,4.4vw,52px);font-weight:800;letter-spacing:-.025em;line-height:1.06">Des prix clairs, sans commission</h2>
+    <p class="reveal reveal-d3" style="margin-top:16px;color:#5a6b78;font-size:18px;line-height:1.6">Tarifs à la nuitée jusqu'à 20&nbsp;% inférieurs à Booking. Séjour de 6 nuits minimum.</p>
+  </div>
+  <div class="tarif-grid" style="display:grid;grid-template-columns:1.1fr 1fr;gap:24px;align-items:start">
+    <div class="reveal reveal-l" style="position:relative;background:linear-gradient(160deg,var(--accent),var(--accent-d));color:#fff;border-radius:26px;padding:42px;overflow:hidden;box-shadow:0 26px 60px rgba(10,92,134,.3)">
+      <div style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(245,195,59,.45),transparent 70%);animation:auroraMove 9s ease-in-out infinite"></div>
+      <div style="display:inline-block;background:rgba(245,195,59,.95);color:#5a4500;padding:6px 14px;border-radius:30px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase">Haute saison</div>
+      <div style="margin-top:22px;font-size:15px;color:rgba(255,255,255,.85)">Mi-juin → mi-septembre</div>
+      <div style="margin-top:14px;display:flex;align-items:baseline;gap:8px"><span style="font-size:18px;color:rgba(255,255,255,.8)">à partir de</span><span style="font-size:62px;font-weight:800;letter-spacing:-.03em"><span data-count="65">0</span>&nbsp;€</span><span style="font-size:17px;color:rgba(255,255,255,.8)">/ nuit</span></div>
+      <p style="margin-top:20px;font-size:15px;color:rgba(255,255,255,.85);line-height:1.6;max-width:380px">Les prix peuvent varier selon la période. Contactez directement le propriétaire pour connaître les offres en cours.</p>
+      <a href="#" class="magnetic wa-link" data-magnetic target="_blank" style="display:inline-flex;margin-top:26px;background:#fff;color:var(--accent);padding:14px 26px;border-radius:42px;font-weight:700;font-size:15px;align-items:center;gap:9px">Demander un devis →</a>
+    </div>
+    <div class="reveal reveal-r" style="background:#fff;border:1px solid #efe6d6;border-radius:26px;padding:34px;box-shadow:0 18px 44px rgba(13,36,56,.06)">
+      <div style="display:inline-block;background:#eaf6f8;color:#06576b;padding:6px 14px;border-radius:30px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase">Basse saison</div>
+      <div style="margin-top:24px;display:flex;flex-direction:column;gap:2px">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #f1ebde"><span style="font-weight:600">Octobre</span><span style="font-weight:700;font-size:18px">50&nbsp;€<span style="font-size:13px;color:#9aa7ad;font-weight:500"> /nuit</span></span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #f1ebde"><span style="font-weight:600">Novembre</span><span style="font-weight:700;font-size:18px">50&nbsp;€<span style="font-size:13px;color:#9aa7ad;font-weight:500"> /nuit</span></span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #f1ebde"><span style="font-weight:600">Décembre</span><span style="display:flex;align-items:center;gap:8px"><span style="background:#e9f9ec;color:#0f7a3a;font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px">PROMO</span><span style="font-weight:700;font-size:18px">43&nbsp;€<span style="font-size:13px;color:#9aa7ad;font-weight:500"> /nuit</span></span></span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #f1ebde"><span style="font-weight:600">Mars</span><span style="display:flex;align-items:center;gap:8px"><span style="background:#e9f9ec;color:#0f7a3a;font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px">PROMO</span><span style="font-weight:700;font-size:18px">43&nbsp;€<span style="font-size:13px;color:#9aa7ad;font-weight:500"> /nuit</span></span></span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #f1ebde"><span style="font-weight:600">Avril</span><span style="display:flex;align-items:center;gap:8px"><span style="background:#e9f9ec;color:#0f7a3a;font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px">PROMO</span><span style="font-weight:700;font-size:18px">43&nbsp;€<span style="font-size:13px;color:#9aa7ad;font-weight:500"> /nuit</span></span></span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #f1ebde"><span style="font-weight:600">Mai</span><span style="font-weight:700;font-size:18px">50&nbsp;€<span style="font-size:13px;color:#9aa7ad;font-weight:500"> /nuit</span></span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0"><span style="font-weight:600">Juin</span><span style="font-weight:700;font-size:18px">65&nbsp;€<span style="font-size:13px;color:#9aa7ad;font-weight:500"> /nuit</span></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="reveal" style="margin-top:26px;background:#fdf3d6;border-radius:18px;padding:22px 28px;display:flex;align-items:center;gap:16px;justify-content:center;text-align:center;flex-wrap:wrap">
+    <span style="width:42px;height:42px;border-radius:50%;background:var(--gold);color:#5a4500;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="2.3"/><circle cx="17" cy="17" r="2.3"/><line x1="18" y1="6" x2="6" y2="18"/></svg></span>
+    <span style="font-weight:700;font-size:18px;color:#7a5e10">Réservez en direct et profitez d'un tarif jusqu'à 20&nbsp;% inférieur à Booking.</span>
+  </div>
+</section>
+
+<!-- ============ CALENDRIER ============ -->
+<section id="calendrier" style="padding:110px 32px;background:#fff;scroll-margin-top:80px;border-top:1px solid #efe6d6;border-bottom:1px solid #efe6d6">
+  <div style="max-width:1100px;margin:0 auto">
+    <div style="text-align:center;max-width:640px;margin:0 auto 50px">
+      <div class="reveal" style="color:var(--accent);font-weight:700;font-size:14px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px">Disponibilités</div>
+      <h2 class="reveal reveal-d2" style="font-size:clamp(32px,4.4vw,52px);font-weight:800;letter-spacing:-.025em;line-height:1.06">Choisissez votre date d'arrivée</h2>
+      <p class="reveal reveal-d3" style="margin-top:16px;color:#5a6b78;font-size:18px;line-height:1.6">Séjour de <b style="color:var(--ink)">6 nuits</b>. Sélectionnez votre arrivée, le départ est calculé automatiquement.</p>
+    </div>
+    <div class="reveal reveal-sc" style="background:var(--sand);border:1px solid #efe6d6;border-radius:26px;padding:clamp(20px,3vw,40px);box-shadow:0 24px 60px rgba(13,36,56,.07)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:26px">
+        <button id="cal-prev" class="magnetic" data-magnetic style="width:46px;height:46px;border-radius:50%;border:1px solid #d8e2e6;background:#fff;font-size:18px;cursor:pointer;color:var(--accent);display:flex;align-items:center;justify-content:center">←</button>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
+          <span style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#5a6b78"><span style="width:14px;height:14px;border-radius:4px;background:#eaf6f8;border:1px solid #cfe4e8"></span>Basse saison</span>
+          <span style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#5a6b78"><span style="width:14px;height:14px;border-radius:4px;background:#fdf3d6"></span>Haute saison</span>
+          <span style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#5a6b78"><span style="width:14px;height:14px;border-radius:4px;background:#e9f9ec"></span>Promotion</span>
+          <span style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#5a6b78"><span style="width:14px;height:14px;border-radius:4px;background:#fff;border:1px solid #ddd"></span>Occupé</span>
+        </div>
+        <button id="cal-next" class="magnetic" data-magnetic style="width:46px;height:46px;border-radius:50%;border:1px solid #d8e2e6;background:#fff;font-size:18px;cursor:pointer;color:var(--accent);display:flex;align-items:center;justify-content:center">→</button>
+      </div>
+      <div id="cal-container" class="cal-months" style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,4vw,52px)"></div>
+      <div style="margin-top:30px;border-top:1px solid #e6ddcd;padding-top:24px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
+        <div><div style="font-size:13px;color:#9aa7ad;font-weight:600;text-transform:uppercase;letter-spacing:.1em">Votre séjour</div><div id="stay-label" style="font-size:20px;font-weight:700;margin-top:6px">Sélectionnez une date d'arrivée</div></div>
+        <div style="text-align:right"><div style="font-size:13px;color:#9aa7ad;font-weight:600;text-transform:uppercase;letter-spacing:.1em">À partir de</div><div id="stay-price" style="font-size:28px;font-weight:800;color:var(--accent);margin-top:4px;letter-spacing:-.02em">—</div></div>
+        <a href="#" class="magnetic wa-link" data-magnetic target="_blank" style="background:#25d366;color:#fff;padding:15px 28px;border-radius:42px;font-weight:700;font-size:15px;display:flex;align-items:center;gap:9px;box-shadow:0 12px 30px rgba(37,211,102,.35)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.4 2.1L8 9.6a16 16 0 0 0 6 6l1.2-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg>Réserver ces dates</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESERVATION ============ -->
+<section id="reservation" style="padding:110px 32px;background:linear-gradient(180deg,var(--sand),#f3ece0);scroll-margin-top:80px">
+  <div class="resa-grid" style="max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1fr 1.2fr;gap:56px;align-items:center">
+    <div class="reveal reveal-l">
+      <div style="color:var(--accent);font-weight:700;font-size:14px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px">Réservation</div>
+      <h2 style="font-size:clamp(30px,4vw,46px);font-weight:800;letter-spacing:-.025em;line-height:1.08">Réservez en moins de 3 clics</h2>
+      <p style="margin-top:18px;color:#5a6b78;font-size:18px;line-height:1.7">Remplissez le formulaire, puis confirmez sur WhatsApp ou réglez un acompte sécurisé via Stripe.</p>
+      <div style="margin-top:28px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:13px"><span style="width:30px;height:30px;border-radius:50%;background:#eaf6f8;color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px">1</span><span style="font-weight:500">Choisissez vos dates</span></div>
+        <div style="display:flex;align-items:center;gap:13px"><span style="width:30px;height:30px;border-radius:50%;background:#eaf6f8;color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px">2</span><span style="font-weight:500">Envoyez votre demande</span></div>
+        <div style="display:flex;align-items:center;gap:13px"><span style="width:30px;height:30px;border-radius:50%;background:#eaf6f8;color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px">3</span><span style="font-weight:500">Confirmez votre séjour</span></div>
+      </div>
+    </div>
+    <div class="reveal reveal-r" style="background:#fff;border-radius:26px;padding:36px;box-shadow:0 26px 60px rgba(13,36,56,.1)">
+      <div class="form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <input id="f-prenom" class="form-input" placeholder="Prénom">
+        <input id="f-nom" class="form-input" placeholder="Nom">
+        <input id="f-tel" class="form-input" placeholder="Téléphone">
+        <input id="f-email" class="form-input" placeholder="Email" type="email">
+        <input id="f-date" class="form-input" placeholder="Date d'arrivée">
+        <input id="f-voyageurs" class="form-input" type="number" min="1" placeholder="Voyageurs">
+      </div>
+      <textarea id="f-msg" class="form-input" placeholder="Votre message (optionnel)" rows="3" style="width:100%;margin-top:14px;resize:vertical"></textarea>
+      <button id="btn-wa-submit" class="magnetic" data-magnetic style="width:100%;margin-top:16px;background:#25d366;color:#fff;padding:16px;border:none;border-radius:14px;font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;font-family:inherit;box-shadow:0 12px 30px rgba(37,211,102,.32)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.4 2.1L8 9.6a16 16 0 0 0 6 6l1.2-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg>Réserver sur WhatsApp</button>
+      <button id="btn-stripe" class="magnetic" data-magnetic style="width:100%;margin-top:10px;background:var(--ink);color:#fff;padding:16px;border:none;border-radius:14px;font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;font-family:inherit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.6-3 7.8-7 9-4-1.2-7-4.4-7-9V6z"/><path d="m9 12 2 2 4-4"/></svg>Payer un acompte via Stripe</button>
+      <p style="text-align:center;margin-top:12px;font-size:12px;color:#9aa7ad">Paiement sécurisé · Connexion Stripe prévue</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ POURQUOI EN DIRECT ============ -->
+<section style="padding:110px 32px;max-width:1240px;margin:0 auto">
+  <div style="text-align:center;max-width:640px;margin:0 auto 56px">
+    <div class="reveal" style="color:var(--accent);font-weight:700;font-size:14px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px">Réservation directe</div>
+    <h2 class="reveal reveal-d2" style="font-size:clamp(32px,4.4vw,52px);font-weight:800;letter-spacing:-.025em;line-height:1.06">Pourquoi réserver chez nous&nbsp;?</h2>
+  </div>
+  <div class="trust-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px">
+    <div class="reveal reveal-sc lift" style="background:linear-gradient(160deg,var(--accent),var(--accent-d));color:#fff;border-radius:22px;padding:34px;box-shadow:0 20px 50px rgba(10,92,134,.25)"><div style="font-size:46px;font-weight:800;letter-spacing:-.03em;line-height:1"><span data-count="20" data-suffix="%">0</span></div><div style="margin-top:10px;font-size:17px;font-weight:600">moins cher que Booking</div><p style="margin-top:8px;font-size:14px;color:rgba(255,255,255,.82);line-height:1.5">Pas de commission plateforme.</p></div>
+    <div class="reveal reveal-sc reveal-d2 lift" style="background:#fff;border-radius:22px;padding:30px;border:1px solid #efe6d6;box-shadow:0 14px 34px rgba(13,36,56,.05)"><span style="width:48px;height:48px;border-radius:14px;background:#eef6f8;color:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:16px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg></span><div style="font-size:17px;font-weight:700">Réservation directe</div><p style="margin-top:7px;font-size:14px;color:#5a6b78;line-height:1.5">Un échange humain et réactif.</p></div>
+    <div class="reveal reveal-sc reveal-d3 lift" style="background:#fff;border-radius:22px;padding:30px;border:1px solid #efe6d6;box-shadow:0 14px 34px rgba(13,36,56,.05)"><span style="width:48px;height:48px;border-radius:14px;background:#eef6f8;color:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:16px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.6-3 7.8-7 9-4-1.2-7-4.4-7-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span><div style="font-size:17px;font-weight:700">Paiement sécurisé Stripe</div><p style="margin-top:7px;font-size:14px;color:#5a6b78;line-height:1.5">Acompte en toute sécurité.</p></div>
+    <div class="reveal reveal-sc reveal-d4 lift" style="background:#fff;border-radius:22px;padding:30px;border:1px solid #efe6d6;box-shadow:0 14px 34px rgba(13,36,56,.05)"><span style="width:48px;height:48px;border-radius:14px;background:#eef6f8;color:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:16px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v16"/><path d="M14 10h4a1 1 0 0 1 1 1v10"/><path d="M8 8h2M8 12h2M8 16h2"/></svg></span><div style="font-size:17px;font-weight:700">Résidence hôtelière</div><p style="margin-top:7px;font-size:14px;color:#5a6b78;line-height:1.5">Le confort d'un hôtel, l'intimité d'un appartement.</p></div>
+  </div>
+</section>
+
+<!-- ============ GALERIE ============ -->
+<section id="galerie" style="padding:120px 32px;max-width:1280px;margin:0 auto;scroll-margin-top:90px">
+  <div style="text-align:center;max-width:640px;margin:0 auto 54px">
+    <div class="reveal" style="color:var(--accent);font-weight:700;font-size:14px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px">Galerie</div>
+    <h2 class="reveal reveal-d2" style="font-size:clamp(32px,4.4vw,52px);font-weight:800;letter-spacing:-.025em;line-height:1.06">Un avant-goût de votre séjour</h2>
+    <p class="reveal reveal-d3" style="margin-top:16px;color:#5a6b78;font-size:18px">Cliquez sur une photo pour l'ouvrir en plein écran.</p>
+  </div>
+  <div class="gallery-masonry" style="columns:3;column-gap:16px">
+    <div class="reveal reveal-sc lift gallery-item" style="break-inside:avoid;margin-bottom:16px;border-radius:18px;overflow:hidden;height:300px;box-shadow:0 14px 34px rgba(13,36,56,.08);cursor:pointer"><img src="assets/images/ph50.jpeg" alt="Grottes" loading="lazy"></div>
+    <div class="reveal reveal-sc reveal-d2 lift gal-vid" style="break-inside:avoid;margin-bottom:16px;border-radius:18px;overflow:hidden;height:220px;box-shadow:0 14px 34px rgba(13,36,56,.08)"><video data-autoplay muted playsinline loop preload="metadata"><source src="assets/videos/vv-a02.mp4" type="video/mp4"></video></div>
+    <div class="reveal reveal-sc reveal-d3 lift gallery-item" style="break-inside:avoid;margin-bottom:16px;border-radius:18px;overflow:hidden;height:280px;box-shadow:0 14px 34px rgba(13,36,56,.08);cursor:pointer"><img src="assets/images/int4.png" alt="Salon" loading="lazy"></div>
+    <div class="reveal reveal-sc lift gallery-item" style="break-inside:avoid;margin-bottom:16px;border-radius:18px;overflow:hidden;height:240px;box-shadow:0 14px 34px rgba(13,36,56,.08);cursor:pointer"><img src="assets/images/ph01.jpg" alt="Résidence et piscine" loading="lazy"></div>
+    <div class="reveal reveal-sc reveal-d2 lift gallery-item" style="break-inside:avoid;margin-bottom:16px;border-radius:18px;overflow:hidden;height:310px;box-shadow:0 14px 34px rgba(13,36,56,.08);cursor:pointer"><img src="assets/images/ph10.jpeg" alt="Grotte de Benagil" loading="lazy"></div>
+    <div class="reveal reveal-sc reveal-d3 lift gallery-item" style="break-inside:avoid;margin-bottom:16px;border-radius:18px;overflow:hidden;height:230px;box-shadow:0 14px 34px rgba(13,36,56,.08);cursor:pointer"><img src="assets/images/ph55.jpeg" alt="Beach club" loading="lazy"></div>
+    <div class="reveal reveal-sc lift gal-vid" style="break-inside:avoid;margin-bottom:16px;border-radius:18px;overflow:hidden;height:260px;box-shadow:0 14px 34px rgba(13,36,56,.08)"><video data-autoplay muted playsinline loop preload="metadata"><source src="assets/videos/vv-a06.mp4" type="video/mp4"></video></div>
+    <div class="reveal reveal-sc reveal-d2 lift gallery-item" style="break-inside:avoid;margin-bottom:16px;border-radius:18px;overflow:hidden;height:290px;box-shadow:0 14px 34px rgba(13,36,56,.08);cursor:pointer"><img src="assets/images/ph03.jpg" alt="Vue aérienne piscine" loading="lazy"></div>
+    <div class="reveal reveal-sc reveal-d3 lift gallery-item" style="break-inside:avoid;margin-bottom:16px;border-radius:18px;overflow:hidden;height:210px;box-shadow:0 14px 34px rgba(13,36,56,.08);cursor:pointer"><img src="assets/images/ph44.jpg" alt="Lit" loading="lazy"></div>
+    <div class="reveal reveal-sc lift gallery-item" style="break-inside:avoid;margin-bottom:16px;border-radius:18px;overflow:hidden;height:270px;box-shadow:0 14px 34px rgba(13,36,56,.08);cursor:pointer"><img src="assets/images/ph40.jpg" alt="Chambre" loading="lazy"></div>
+    <div class="reveal reveal-sc reveal-d2 lift gallery-item" style="break-inside:avoid;margin-bottom:16px;border-radius:18px;overflow:hidden;height:250px;box-shadow:0 14px 34px rgba(13,36,56,.08);cursor:pointer"><img src="assets/images/ph35.jpg" alt="Lobby" loading="lazy"></div>
+    <div class="reveal reveal-sc reveal-d3 lift gal-vid" style="break-inside:avoid;margin-bottom:16px;border-radius:18px;overflow:hidden;height:240px;box-shadow:0 14px 34px rgba(13,36,56,.08)"><video data-autoplay muted playsinline loop preload="metadata"><source src="assets/videos/vv-a09.mp4" type="video/mp4"></video></div>
+  </div>
+</section>
+
+<!-- ============ AVIS ============ -->
+<section style="padding:110px 32px;background:#fff;border-top:1px solid #efe6d6;border-bottom:1px solid #efe6d6">
+  <div style="max-width:1240px;margin:0 auto">
+    <div style="text-align:center;max-width:640px;margin:0 auto 56px">
+      <div class="reveal" style="color:var(--accent);font-weight:700;font-size:14px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px">Avis voyageurs</div>
+      <h2 class="reveal reveal-d2" style="font-size:clamp(32px,4.4vw,52px);font-weight:800;letter-spacing:-.025em;line-height:1.06">Ils ont adoré leur séjour</h2>
+      <div class="reveal reveal-d3" style="margin-top:16px;display:inline-flex;align-items:center;gap:10px;font-size:18px;font-weight:600"><span style="color:var(--gold);font-size:20px">&#9733;&#9733;&#9733;&#9733;&#9733;</span> 4,9 / 5 · 120+ voyageurs ravis</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:20px">
+      <div class="reveal reveal-sc lift" style="background:var(--sand);border:1px solid #efe6d6;border-radius:22px;padding:30px"><div style="color:var(--gold);font-size:16px">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p style="margin-top:14px;font-size:16px;line-height:1.65;color:#33414c">&laquo; Appartement impeccable, lumineux et à deux pas de la plage. Le contact direct avec le propriétaire a tout simplifié — et bien moins cher que Booking ! &raquo;</p><div style="margin-top:20px;display:flex;align-items:center;gap:12px"><span style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">CM</span><div><div style="font-weight:700;font-size:15px">Camille M.</div><div style="font-size:13px;color:#9aa7ad">Juillet 2025 · Famille</div></div></div></div>
+      <div class="reveal reveal-sc reveal-d2 lift" style="background:var(--sand);border:1px solid #efe6d6;border-radius:22px;padding:30px"><div style="color:var(--gold);font-size:16px">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p style="margin-top:14px;font-size:16px;line-height:1.65;color:#33414c">&laquo; Parfait pour un séjour entre amis. La piscine, le parking, la cuisine équipée… tout y est. On reviendra à coup sûr. &raquo;</p><div style="margin-top:20px;display:flex;align-items:center;gap:12px"><span style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#e89b2a);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">TL</span><div><div style="font-weight:700;font-size:15px">Thomas L.</div><div style="font-size:13px;color:#9aa7ad">Septembre 2025 · Amis</div></div></div></div>
+      <div class="reveal reveal-sc reveal-d3 lift" style="background:var(--sand);border:1px solid #efe6d6;border-radius:22px;padding:30px"><div style="color:var(--gold);font-size:16px">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p style="margin-top:14px;font-size:16px;line-height:1.65;color:#33414c">&laquo; Séjour de rêve en couple. Le coucher de soleil depuis la terrasse était magique. Communication ultra réactive sur WhatsApp. &raquo;</p><div style="margin-top:20px;display:flex;align-items:center;gap:12px"><span style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--accent-2),var(--accent));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">SR</span><div><div style="font-weight:700;font-size:15px">Sophie R.</div><div style="font-size:13px;color:#9aa7ad">Mai 2025 · Couple</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section id="faq" style="padding:120px 32px;scroll-margin-top:90px">
+  <div style="max-width:820px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:50px">
+      <div class="reveal" style="color:var(--accent);font-weight:700;font-size:14px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px">FAQ</div>
+      <h2 class="reveal reveal-d2" style="font-size:clamp(32px,4.4vw,52px);font-weight:800;letter-spacing:-.025em;line-height:1.06">Questions fréquentes</h2>
+    </div>
+    <div class="reveal">
+      <details class="faq"><summary>Comment réserver&nbsp;?<span class="pl">+</span></summary><div class="ans">Choisissez votre date d'arrivée dans le calendrier, remplissez le formulaire de réservation, puis confirmez directement sur WhatsApp avec le propriétaire.</div></details>
+      <details class="faq"><summary>Comment payer&nbsp;?<span class="pl">+</span></summary><div class="ans">Vous réglez un acompte sécurisé via Stripe lors de la confirmation, puis le solde selon les modalités convenues avec le propriétaire.</div></details>
+      <details class="faq"><summary>Comment fonctionne le paiement Stripe&nbsp;?<span class="pl">+</span></summary><div class="ans">Stripe est une plateforme de paiement reconnue et ultra-sécurisée. Vous recevez un lien de paiement, vos données bancaires sont chiffrées et jamais partagées avec nous.</div></details>
+      <details class="faq"><summary>Comment accéder à l'appartement&nbsp;?<span class="pl">+</span></summary><div class="ans">Le propriétaire vous transmet toutes les instructions d'arrivée après confirmation de votre réservation. L'entrée est simple et autonome.</div></details>
+      <details class="faq"><summary>Combien de personnes peut accueillir l'appartement&nbsp;?<span class="pl">+</span></summary><div class="ans">L'appartement est idéal pour les couples, les familles et les petits groupes d'amis. Indiquez votre nombre de voyageurs dans le formulaire.</div></details>
+      <details class="faq"><summary>Les animaux sont-ils autorisés&nbsp;?<span class="pl">+</span></summary><div class="ans">Contactez directement le propriétaire via WhatsApp pour toute demande concernant les animaux.</div></details>
+      <details class="faq"><summary>Le ménage est-il compris&nbsp;?<span class="pl">+</span></summary><div class="ans">Oui, le ménage de fin de séjour est inclus afin que vous profitiez pleinement de vos vacances sans souci.</div></details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section id="contact" style="padding:110px 32px;background:linear-gradient(160deg,var(--accent),var(--ink));color:#fff">
+  <div class="contact-grid" style="max-width:1000px;margin:0 auto;display:grid;grid-template-columns:auto 1fr;gap:48px;align-items:center">
+    <div class="reveal reveal-l" style="text-align:center">
+      <div style="width:160px;height:160px;border-radius:50%;overflow:hidden;border:4px solid rgba(255,255,255,.2);box-shadow:0 20px 50px rgba(0,0,0,.3)"><img src="assets/images/ph30.jpg" alt="Propriétaire" loading="lazy"></div>
+      <div style="margin-top:16px;font-weight:700;font-size:18px">Votre hôte</div>
+      <div style="font-size:14px;color:rgba(255,255,255,.7)">Propriétaire · Silchoro</div>
+    </div>
+    <div class="reveal reveal-r">
+      <h2 style="font-size:clamp(30px,4vw,46px);font-weight:800;letter-spacing:-.025em;line-height:1.1">Une question&nbsp;? Parlons-en.</h2>
+      <p style="margin-top:16px;color:rgba(255,255,255,.82);font-size:18px;line-height:1.6;max-width:480px">Réponse rapide et personnalisée. Le moyen le plus simple de réserver au meilleur tarif.</p>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:30px">
+        <a href="#" class="magnetic wa-link" data-magnetic data-pulse target="_blank" style="background:#25d366;color:#fff;padding:17px 30px;border-radius:46px;font-weight:700;font-size:16px;display:flex;align-items:center;gap:10px;box-shadow:0 14px 36px rgba(37,211,102,.4)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.4 2.1L8 9.6a16 16 0 0 0 6 6l1.2-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg>WhatsApp</a>
+        <a href="#" class="magnetic mail-link" data-magnetic style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;padding:17px 30px;border-radius:46px;font-weight:700;font-size:16px;display:flex;align-items:center;gap:10px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 5 8-5"/></svg>Email</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer style="background:#081826;color:rgba(255,255,255,.7);padding:64px 32px 36px">
+  <div class="footer-grid" style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px">
+    <div>
+      <div style="display:flex;align-items:center;gap:11px;font-weight:800;font-size:20px;color:#fff"><span style="width:36px;height:36px;border-radius:11px;background:linear-gradient(140deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-family:'Newsreader',serif;font-style:italic;font-weight:500;font-size:20px">S</span>Silchoro<span style="color:var(--accent-2)">.</span></div>
+      <p style="margin-top:16px;font-size:14px;line-height:1.6;max-width:300px">Votre appartement de vacances à Albufeira. Réservez en direct, profitez du meilleur tarif.</p>
+    </div>
+    <div><div style="color:#fff;font-weight:700;font-size:14px;margin-bottom:14px">Navigation</div><div style="display:flex;flex-direction:column;gap:9px;font-size:14px"><a href="#activites">Albufeira</a><a href="#appartement">Appartement</a><a href="#tarifs">Tarifs</a><a href="#calendrier">Calendrier</a><a href="#galerie">Galerie</a></div></div>
+    <div><div style="color:#fff;font-weight:700;font-size:14px;margin-bottom:14px">Légal</div><div style="display:flex;flex-direction:column;gap:9px;font-size:14px"><a href="#">Mentions légales</a><a href="#">Politique de confidentialité</a><a href="#faq">FAQ</a></div></div>
+    <div><div style="color:#fff;font-weight:700;font-size:14px;margin-bottom:14px">Contact</div><div style="display:flex;flex-direction:column;gap:9px;font-size:14px"><a href="#" class="wa-link" target="_blank">WhatsApp</a><a href="#contact">Email</a><span style="opacity:.6">Paiement Stripe</span></div></div>
+  </div>
+  <div style="max-width:1240px;margin:40px auto 0;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:13px">
+    <span>&copy; 2026 Silchoro · Albufeira, Portugal</span>
+    <span style="opacity:.7">Réservez en direct — jusqu'à 20&nbsp;% moins cher que Booking</span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
