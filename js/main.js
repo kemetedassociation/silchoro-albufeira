@@ -3,23 +3,41 @@ document.addEventListener('DOMContentLoaded', () => {
   const EMAIL = 'contact@silchoro-albufeira.com';
   const PRICE_FROM = 43;
 
-  // ===== SCROLLYTELLING ENGINE (rewritten for perfect sync) =====
+  const isMobile = /Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent) || window.innerWidth <= 900;
+
+  // ===== MOBILE MENU =====
+  const burger = document.getElementById('nav-burger');
+  const mobileMenu = document.getElementById('mobile-menu');
+  if (burger && mobileMenu) {
+    burger.addEventListener('click', () => {
+      burger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+      document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+    });
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        burger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+        document.body.style.overflow = '';
+      });
+    });
+  }
+
+  // ===== SCROLLYTELLING ENGINE =====
   const scenes = document.querySelectorAll('.st-scene');
   const progressBar = document.querySelector('.st-progress');
-  const stContainer = document.querySelector('.st-container');
-  let lastRaf = 0;
 
   function lerp(a, b, t) { return a + (b - a) * t; }
   function clamp01(v) { return Math.max(0, Math.min(1, v)); }
   function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
-  // Smooth video scrubbing — avoid jumps
   const videoTargets = new Map();
 
   function updateScrollytelling() {
+    if (isMobile) return; // On mobile, videos autoplay — no scrubbing
+
     const scrollY = window.scrollY;
     const docH = document.body.scrollHeight - window.innerHeight;
-
     if (progressBar && docH > 0) {
       progressBar.style.transform = 'scaleX(' + (scrollY / docH) + ')';
     }
@@ -31,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const inView = rect.top < viewH && rect.bottom > 0;
       const progress = clamp01(-rect.top / (sceneH - viewH));
 
-      // Multi-video scene (data-multi)
       const isMulti = scene.hasAttribute('data-multi');
       if (isMulti) {
         const videos = scene.querySelectorAll('.st-multi-video video');
@@ -57,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
               videoTargets.delete(v);
             }
           });
-        } else if (isMulti && !inView) {
+        } else if (!inView) {
           scene.querySelectorAll('.st-multi-video video').forEach(v => {
             v.classList.remove('vid-active');
             if (!v.paused) v.pause();
@@ -65,15 +82,13 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         }
       } else {
-        // Single video sync
         const video = scene.querySelector(':scope > .st-video-wrap > video');
         if (video && inView) {
           if (video.paused && video.readyState >= 2) video.play().catch(() => {});
           if (video.duration && isFinite(video.duration)) {
             const target = progress * video.duration;
             if (!videoTargets.has(video)) videoTargets.set(video, video.currentTime);
-            const prev = videoTargets.get(video);
-            const smoothed = lerp(prev, target, 0.25);
+            const smoothed = lerp(videoTargets.get(video), target, 0.25);
             video.currentTime = smoothed;
             videoTargets.set(video, smoothed);
           }
@@ -83,117 +98,97 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Image zoom (for scroll-zoom scenes)
       const zoomImg = scene.querySelector('[data-scroll-zoom]');
       if (zoomImg && inView) {
         const scale = 1 + progress * 0.35;
-        const y = -progress * 15;
-        zoomImg.style.transform = `scale(${scale}) translateY(${y}%)`;
+        zoomImg.style.transform = `scale(${scale}) translateY(${-progress * 15}%)`;
       }
 
-      // Text panels — crossfade with smooth opacity
+      // Text panels (desktop only — mobile shows first panel via CSS)
       const panels = scene.querySelectorAll('.st-text');
       const count = panels.length;
       if (count === 0) return;
-
       panels.forEach((panel, i) => {
         const segSize = 1 / count;
         const center = (i + 0.5) * segSize;
         const halfWindow = segSize * 0.38;
         const fadeZone = segSize * 0.15;
-
-        const distFromCenter = Math.abs(progress - center);
+        const dist = Math.abs(progress - center);
         let opacity, yOffset;
-
-        if (distFromCenter <= halfWindow - fadeZone) {
-          // Fully visible
-          opacity = 1;
-          yOffset = 0;
-        } else if (distFromCenter <= halfWindow + fadeZone) {
-          // Fading in/out
-          const fadeProgress = (distFromCenter - (halfWindow - fadeZone)) / (fadeZone * 2);
-          opacity = 1 - easeOutCubic(clamp01(fadeProgress));
-          yOffset = progress < center
-            ? (1 - opacity) * 50
-            : -(1 - opacity) * 40;
-        } else {
-          opacity = 0;
-          yOffset = progress < center ? 60 : -40;
-        }
-
+        if (dist <= halfWindow - fadeZone) { opacity = 1; yOffset = 0; }
+        else if (dist <= halfWindow + fadeZone) {
+          const fp = (dist - (halfWindow - fadeZone)) / (fadeZone * 2);
+          opacity = 1 - easeOutCubic(clamp01(fp));
+          yOffset = progress < center ? (1 - opacity) * 50 : -(1 - opacity) * 40;
+        } else { opacity = 0; yOffset = progress < center ? 60 : -40; }
         panel.style.opacity = opacity;
         panel.style.transform = `translateY(${yOffset}px)`;
         panel.style.filter = opacity < 0.3 ? `blur(${(1 - opacity) * 8}px)` : 'none';
-
-        // Line animation
         const line = panel.querySelector('.st-line');
-        if (line) {
-          line.style.width = opacity > 0.5 ? '80px' : '0px';
-        }
+        if (line) line.style.width = opacity > 0.5 ? '80px' : '0px';
       });
     });
   }
 
-  // ===== SCROLL-CONTROLLED VIDEOS (activity section etc) =====
-  function updateScrollVideos() {
-    document.querySelectorAll('[data-scroll-video]').forEach(wrap => {
-      const video = wrap.querySelector('video');
-      if (!video || !video.duration) return;
-      const rect = wrap.getBoundingClientRect();
-      const viewH = window.innerHeight;
-      if (rect.top < viewH && rect.bottom > 0) {
-        const progress = clamp01((viewH - rect.top) / (viewH + rect.height));
-        video.currentTime = progress * video.duration;
-      }
+  // ===== MOBILE: autoplay videos when in viewport =====
+  function setupMobileVideos() {
+    const allVideos = document.querySelectorAll('.st-scene video, .act-card video, .gal-vid video');
+    const mobileVidObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.play().catch(() => {});
+        } else {
+          e.target.pause();
+        }
+      });
+    }, { threshold: 0.2 });
+    allVideos.forEach(v => {
+      v.muted = true;
+      v.playsInline = true;
+      v.loop = true;
+      v.setAttribute('playsinline', '');
+      v.setAttribute('webkit-playsinline', '');
+      v.removeAttribute('preload');
+      v.preload = 'metadata';
+      mobileVidObs.observe(v);
+    });
+    // On mobile multi-video, show first video
+    document.querySelectorAll('.st-multi-video video:first-child').forEach(v => {
+      v.style.opacity = '1';
     });
   }
 
-  // ===== CALENDAR STATE =====
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  let calY = today.getFullYear();
-  let calM = today.getMonth();
-  let arrival = null;
+  // ===== CALENDAR =====
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  let calY = today.getFullYear(), calM = today.getMonth(), arrival = null;
 
   const occupied = [];
-  for (let i = 0; i < 5; i++) {
-    const d = new Date(today.getFullYear(), today.getMonth(), 11 + i);
-    occupied.push(key(d));
-  }
-  for (let i = 0; i < 6; i++) {
-    const d = new Date(today.getFullYear(), today.getMonth() + 1, 8 + i);
-    occupied.push(key(d));
-  }
+  for (let i = 0; i < 5; i++) occupied.push(key(new Date(today.getFullYear(), today.getMonth(), 11 + i)));
+  for (let i = 0; i < 6; i++) occupied.push(key(new Date(today.getFullYear(), today.getMonth() + 1, 8 + i)));
 
   function key(d) { return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
   function parseKey(k) { const [y, m, da] = k.split('-').map(Number); return new Date(y, m - 1, da); }
-
   function seasonStatus(d) {
-    const k2 = key(d);
-    if (occupied.includes(k2)) return 'occ';
+    if (occupied.includes(key(d))) return 'occ';
     const m = d.getMonth();
     if (m === 11 || m === 2 || m === 3) return 'promo';
     if (m >= 5 && m <= 8) return 'high';
     if (m === 0 || m === 1) return 'closed';
     return 'low';
   }
-
   function nightlyPrice(m) {
     if (m >= 5 && m <= 8) return 65;
     if (m === 11 || m === 2 || m === 3) return 43;
     if (m === 9 || m === 10 || m === 4) return 50;
     return null;
   }
-
   function monthName(y, m) {
     const s = new Date(y, m, 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
     return s.charAt(0).toUpperCase() + s.slice(1);
   }
-
   function fmtDate(d) { return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }); }
   function waUrl(text) { return 'https://wa.me/' + PHONE + (text ? '?text=' + encodeURIComponent(text) : ''); }
 
-  // ===== CALENDAR RENDER =====
   function renderCalendar() {
     const container = document.getElementById('cal-container');
     if (!container) return;
@@ -204,16 +199,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let html = '';
     months.forEach(({ y, m }) => {
-      const first = new Date(y, m, 1);
-      const startDay = (first.getDay() + 6) % 7;
+      const startDay = (new Date(y, m, 1).getDay() + 6) % 7;
       const total = new Date(y, m + 1, 0).getDate();
       const depKey = arrival ? (() => { const a = parseKey(arrival); a.setDate(a.getDate() + 6); return key(a); })() : null;
 
-      html += `<div><div style="text-align:center;font-weight:700;font-size:19px;margin-bottom:16px;letter-spacing:-.01em">${monthName(y, m)}</div>
+      html += `<div><div style="text-align:center;font-weight:700;font-size:19px;margin-bottom:16px">${monthName(y, m)}</div>
         <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:8px">
           ${['L', 'M', 'M', 'J', 'V', 'S', 'D'].map(d => `<div style="text-align:center;font-size:11px;font-weight:700;color:#9aa7ad">${d}</div>`).join('')}
         </div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px">`;
-
       for (let i = 0; i < startDay; i++) html += '<div class="cal-day blank"></div>';
       for (let day = 1; day <= total; day++) {
         const date = new Date(y, m, day);
@@ -222,10 +215,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (date.getTime() < today.getTime()) st = 'occ';
         let cls = 'cal-day ' + st;
         if (arrival) {
-          const a = parseKey(arrival);
-          const dep = new Date(a); dep.setDate(a.getDate() + 6);
-          const t = new Date(y, m, day).getTime();
-          if (t > a.getTime() && t < dep.getTime()) cls += ' range';
+          const a = parseKey(arrival), dep = new Date(a); dep.setDate(a.getDate() + 6);
+          if (date.getTime() > a.getTime() && date.getTime() < dep.getTime()) cls += ' range';
         }
         if (arrival === k) cls += ' sel';
         if (depKey === k) cls += ' dep';
@@ -242,29 +233,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateStay() {
-    const labelEl = document.getElementById('stay-label');
-    const priceEl = document.getElementById('stay-price');
+    const labelEl = document.getElementById('stay-label'), priceEl = document.getElementById('stay-price');
     if (!labelEl || !priceEl) return;
-    if (!arrival) { labelEl.textContent = "Sélectionnez une date d’arrivée"; priceEl.textContent = '—'; return; }
-    const a = parseKey(arrival);
-    const dep = new Date(a); dep.setDate(a.getDate() + 6);
+    if (!arrival) { labelEl.textContent = "Sélectionnez une date d'arrivée"; priceEl.textContent = '—'; return; }
+    const a = parseKey(arrival), dep = new Date(a); dep.setDate(a.getDate() + 6);
     const p = nightlyPrice(a.getMonth());
     labelEl.textContent = fmtDate(a) + ' → ' + fmtDate(dep) + ' · 6 nuits';
     priceEl.textContent = p ? p + ' € / nuit' : 'Sur demande';
   }
-
-  function updateDateInput() {
-    const input = document.getElementById('f-date');
-    if (input && arrival) input.value = fmtDate(parseKey(arrival));
-  }
+  function updateDateInput() { const i = document.getElementById('f-date'); if (i && arrival) i.value = fmtDate(parseKey(arrival)); }
 
   document.getElementById('cal-prev')?.addEventListener('click', () => { calM--; if (calM < 0) { calM = 11; calY--; } renderCalendar(); });
   document.getElementById('cal-next')?.addEventListener('click', () => { calM++; if (calM > 11) { calM = 0; calY++; } renderCalendar(); });
 
-  // ===== PRICE FROM =====
+  // ===== PRICE + LINKS =====
   document.querySelectorAll('.price-from').forEach(el => { el.textContent = PRICE_FROM; });
-
-  // ===== WHATSAPP LINKS =====
   const waText = "Bonjour ! Je suis intéressé(e) par l'appartement Silchoro à Albufeira. Pouvez-vous m'indiquer les disponibilités et le meilleur tarif ?";
   document.querySelectorAll('.wa-link').forEach(el => { el.href = waUrl(waText); });
   const mailLink = document.querySelector('.mail-link');
@@ -281,12 +264,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.getElementById('f-date')?.addEventListener('focus', function () { if (arrival) this.value = fmtDate(parseKey(arrival)); });
 
-  // ===== REVEAL ON SCROLL =====
+  // ===== REVEAL =====
   const io = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+  }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
   function scanReveals() {
-    document.querySelectorAll('.reveal,.reveal-sc,.reveal-bl,.reveal-l,.reveal-r').forEach(el => { if (!el.dataset.io) { el.dataset.io = '1'; io.observe(el); } });
+    document.querySelectorAll('.reveal,.reveal-sc,.reveal-bl,.reveal-l,.reveal-r').forEach(el => {
+      if (!el.dataset.io) { el.dataset.io = '1'; io.observe(el); }
+    });
   }
   scanReveals(); setTimeout(scanReveals, 400); setTimeout(scanReveals, 1200);
 
@@ -296,41 +281,41 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { threshold: 0.4 });
   document.querySelectorAll('[data-count]').forEach(el => cio.observe(el));
   function countUp(el) {
-    const target = parseFloat(el.dataset.count) || 0;
-    const suffix = el.dataset.suffix || '';
-    const dur = 1500; const t0 = performance.now();
-    function step(t) { const p = Math.min(1, (t - t0) / dur); const e2 = 1 - Math.pow(1 - p, 3); el.textContent = Math.round(target * e2) + suffix; if (p < 1) requestAnimationFrame(step); }
+    const target = parseFloat(el.dataset.count) || 0, suffix = el.dataset.suffix || '';
+    const dur = 1500, t0 = performance.now();
+    function step(t) { const p = Math.min(1, (t - t0) / dur); el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))) + suffix; if (p < 1) requestAnimationFrame(step); }
     requestAnimationFrame(step);
   }
 
-  // ===== MASTER SCROLL HANDLER =====
+  // ===== MASTER SCROLL =====
   const nav = document.querySelector('.site-nav');
   const stickyBar = document.querySelector('.sticky-bar');
-
   function onFrame() {
     const y = window.scrollY;
     if (nav) { if (y > 40) nav.classList.add('scrolled'); else nav.classList.remove('scrolled'); }
     if (stickyBar) {
-      const docH = document.body.scrollHeight;
-      const show = y > window.innerHeight * 2 && (y + window.innerHeight) < docH - 360;
+      const show = y > window.innerHeight * 1.5 && (y + window.innerHeight) < document.body.scrollHeight - 360;
       stickyBar.style.transform = show ? 'translateY(0)' : 'translateY(140%)';
     }
-    updateScrollytelling();
-    updateScrollVideos();
+    if (!isMobile) {
+      updateScrollytelling();
+    }
     requestAnimationFrame(onFrame);
   }
   requestAnimationFrame(onFrame);
 
-  // ===== MAGNETIC BUTTONS =====
-  document.querySelectorAll('[data-magnetic]').forEach(el => {
-    el.addEventListener('mousemove', ev => { const r = el.getBoundingClientRect(); el.style.transform = 'translate(' + ((ev.clientX - r.left - r.width / 2) * 0.3) + 'px,' + ((ev.clientY - r.top - r.height / 2) * 0.4) + 'px) scale(1.04)'; });
-    el.addEventListener('mouseleave', () => { el.style.transform = 'translate(0,0) scale(1)'; });
-  });
-  document.querySelectorAll('[data-float]').forEach(el => { el.style.animation = 'floaty 4s ease-in-out infinite'; });
-  document.querySelectorAll('[data-pulse]').forEach(el => { el.style.animation = 'pulseRing 2.2s ease-out infinite'; });
+  // ===== MAGNETIC (desktop only) =====
+  if (!isMobile) {
+    document.querySelectorAll('[data-magnetic]').forEach(el => {
+      el.addEventListener('mousemove', ev => { const r = el.getBoundingClientRect(); el.style.transform = 'translate(' + ((ev.clientX - r.left - r.width / 2) * 0.3) + 'px,' + ((ev.clientY - r.top - r.height / 2) * 0.4) + 'px) scale(1.04)'; });
+      el.addEventListener('mouseleave', () => { el.style.transform = 'translate(0,0) scale(1)'; });
+    });
+    document.querySelectorAll('[data-float]').forEach(el => { el.style.animation = 'floaty 4s ease-in-out infinite'; });
+    document.querySelectorAll('[data-pulse]').forEach(el => { el.style.animation = 'pulseRing 2.2s ease-out infinite'; });
+  }
 
-  // ===== CUSTOM CURSOR =====
-  if (window.matchMedia('(min-width:761px)').matches) {
+  // ===== CUSTOM CURSOR (desktop only) =====
+  if (!isMobile && window.matchMedia('(min-width:901px)').matches) {
     const dot = document.querySelector('.cursor-dot');
     const ring = document.querySelector('.cursor-ring');
     if (dot && ring) {
@@ -345,34 +330,36 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ===== LIGHTBOX =====
-  const lb = document.querySelector('.lb');
-  const lbImg = document.getElementById('lb-img');
+  const lb = document.querySelector('.lb'), lbImg = document.getElementById('lb-img');
   document.querySelectorAll('.gallery-item').forEach(el => {
-    el.addEventListener('click', () => {
-      const img = el.querySelector('img');
-      if (img && lb && lbImg) { lbImg.src = img.src; lb.classList.add('on'); }
-    });
+    el.addEventListener('click', () => { const img = el.querySelector('img'); if (img && lb && lbImg) { lbImg.src = img.src; lb.classList.add('on'); } });
   });
   function closeLightbox() { if (lb) lb.classList.remove('on'); }
   document.querySelector('.lb-x')?.addEventListener('click', closeLightbox);
   lb?.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
-  // ===== AUTO-PLAY INLINE VIDEOS ON INTERSECTION =====
-  const vidObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      const v = e.target.querySelector('video[data-autoplay]');
-      if (!v) return;
-      if (e.isIntersecting) v.play().catch(() => {});
-      else v.pause();
-    });
-  }, { threshold: 0.3 });
-  document.querySelectorAll('.gal-vid, .act-card').forEach(el => vidObs.observe(el));
+  // ===== AUTO-PLAY INLINE VIDEOS (desktop — activity cards + gallery) =====
+  if (!isMobile) {
+    const vidObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        const v = e.target.querySelector('video[data-autoplay]');
+        if (!v) return;
+        if (e.isIntersecting) v.play().catch(() => {}); else v.pause();
+      });
+    }, { threshold: 0.3 });
+    document.querySelectorAll('.gal-vid, .act-card').forEach(el => vidObs.observe(el));
+  }
 
   // ===== INIT =====
   renderCalendar();
-  scenes.forEach(scene => {
-    const v = scene.querySelector('video');
-    if (v) { v.preload = 'auto'; v.muted = true; v.playsInline = true; }
-  });
+
+  if (isMobile) {
+    setupMobileVideos();
+  } else {
+    scenes.forEach(scene => {
+      const v = scene.querySelector('video');
+      if (v) { v.preload = 'auto'; v.muted = true; v.playsInline = true; }
+    });
+  }
 });
