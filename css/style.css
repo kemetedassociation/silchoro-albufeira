@@ -147,7 +147,19 @@ details.faq .ans{padding:0 4px 28px;max-width:760px;color:#5a6b78;font-size:17px
    RESPONSIVE — MOBILE FIRST OVERRIDES
    ========================================================================== */
 
+/* ===== TABLET (≤900px) ===== */
 @media(max-width:900px){
+  /* Section padding — reduce horizontal + vertical */
+  section{padding-left:20px!important;padding-right:20px!important}
+  section[style*="padding:130px"]{padding-top:80px!important;padding-bottom:70px!important}
+  section[style*="padding:120px"]{padding-top:72px!important;padding-bottom:72px!important}
+  section[style*="padding:110px"]{padding-top:64px!important;padding-bottom:64px!important}
+  footer{padding:48px 20px 32px!important}
+
+  /* Inner containers */
+  .tarif-grid .reveal{padding:28px!important}
+  .resa-grid .reveal.reveal-r{padding:28px!important}
+
   /* Nav */
   .site-nav{padding:12px 16px!important}
   .site-nav.scrolled{padding:10px 16px!important}
@@ -156,7 +168,7 @@ details.faq .ans{padding:0 4px 28px;max-width:760px;color:#5a6b78;font-size:17px
   .nav-burger{display:flex}
   .cursor-dot,.cursor-ring{display:none!important}
 
-  /* Scrollytelling — KEEP sticky + scroll text, but videos autoplay */
+  /* Scrollytelling */
   .st-scene{height:250vh}
   .st-scene[data-multi]{height:300vh}
   .st-video-wrap{height:100vh;height:100svh}
@@ -164,21 +176,19 @@ details.faq .ans{padding:0 4px 28px;max-width:760px;color:#5a6b78;font-size:17px
   .st-sub{font-size:clamp(15px,4vw,19px)!important;margin-top:16px!important}
   .st-tag{font-size:10px;padding:7px 14px;margin-bottom:18px}
   .st-line{margin-top:20px}
-  .st-text{padding:0 24px}
-
-  /* On mobile multi-video, just show first video (autoplay) */
+  .st-text{padding:0 20px}
   .st-multi-video video{opacity:0!important}
   .st-multi-video video:first-child{opacity:1!important}
 
-  /* Sections */
-  .act-card{grid-template-columns:1fr!important;border-radius:22px!important}
+  /* Section grids */
+  .act-card{grid-template-columns:1fr!important;border-radius:20px!important}
   .act-card .act-img{min-height:220px!important;order:1!important}
   .act-card .act-txt{order:2!important;padding:24px 20px!important}
   .apt-grid{grid-template-columns:1fr!important;gap:28px!important}
   .apt-images{grid-template-columns:1fr 1fr!important;grid-template-rows:180px 180px!important}
   .tarif-grid{grid-template-columns:1fr!important}
   .cal-months{grid-template-columns:1fr!important}
-  .resa-grid{grid-template-columns:1fr!important;gap:32px!important}
+  .resa-grid{grid-template-columns:1fr!important;gap:28px!important}
   .contact-grid{grid-template-columns:1fr!important;text-align:center}
   .contact-grid .reveal-r{text-align:center}
   .contact-grid .reveal-r div:last-child{justify-content:center}
@@ -203,10 +213,22 @@ details.faq .ans{padding:0 4px 28px;max-width:760px;color:#5a6b78;font-size:17px
   .sticky-bar__inner{border-radius:16px;padding:10px 14px;gap:10px}
 }
 
+/* ===== PHONE (≤560px) ===== */
 @media(max-width:560px){
+  section{padding-left:16px!important;padding-right:16px!important}
+  section[style*="padding:130px"]{padding-top:56px!important;padding-bottom:48px!important}
+  section[style*="padding:120px"]{padding-top:52px!important;padding-bottom:52px!important}
+  section[style*="padding:110px"]{padding-top:48px!important;padding-bottom:48px!important}
+  footer{padding:36px 16px 28px!important}
+
   .st-scene{height:220vh}
   .st-scene[data-multi]{height:280vh}
   .st-h{font-size:clamp(26px,10vw,40px)!important}
+  .st-text{padding:0 16px}
+
+  .tarif-grid .reveal{padding:22px!important}
+  .resa-grid .reveal.reveal-r{padding:22px 18px!important}
+
   .footer-grid{grid-template-columns:1fr!important}
   .form-grid{grid-template-columns:1fr!important}
   .apt-images{grid-template-columns:1fr!important;grid-template-rows:220px 160px 160px!important}
@@ -215,4 +237,15 @@ details.faq .ans{padding:0 4px 28px;max-width:760px;color:#5a6b78;font-size:17px
   .equip-grid{grid-template-columns:1fr 1fr!important}
   .sticky-bar__inner{flex-direction:column;align-items:stretch;text-align:center}
   .sticky-bar__inner>div:last-child{justify-content:center}
+
+  /* Calendar */
+  #stay-label{font-size:16px!important}
+  #stay-price{font-size:22px!important}
+
+  /* Hero CTA buttons — stack vertically */
+  .st-text [style*="display:flex"][style*="gap:16px"]{flex-direction:column!important;align-items:center}
+  .st-text [style*="display:inline-flex"][style*="gap:18px"]{flex-direction:column!important;gap:12px!important;padding:14px 20px!important}
+
+  /* Price block in hero — tighter */
+  .st-text [style*="display:inline-flex"][style*="gap:18px"] div[style*="font-size:clamp(30px"]{font-size:28px!important}
 }
