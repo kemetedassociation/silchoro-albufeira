@@ -149,14 +149,7 @@ details.faq .ans{padding:0 4px 28px;max-width:760px;color:#5a6b78;font-size:17px
 
 /* ===== TABLET (≤900px) ===== */
 @media(max-width:900px){
-  /* Section padding — reduce horizontal + vertical */
-  section{padding-left:20px!important;padding-right:20px!important}
-  section[style*="padding:130px"]{padding-top:80px!important;padding-bottom:70px!important}
-  section[style*="padding:120px"]{padding-top:72px!important;padding-bottom:72px!important}
-  section[style*="padding:110px"]{padding-top:64px!important;padding-bottom:64px!important}
-  footer{padding:48px 20px 32px!important}
-
-  /* Inner containers */
+  /* Inner containers tighter on tablet */
   .tarif-grid .reveal{padding:28px!important}
   .resa-grid .reveal.reveal-r{padding:28px!important}
 
@@ -215,12 +208,6 @@ details.faq .ans{padding:0 4px 28px;max-width:760px;color:#5a6b78;font-size:17px
 
 /* ===== PHONE (≤560px) ===== */
 @media(max-width:560px){
-  section{padding-left:16px!important;padding-right:16px!important}
-  section[style*="padding:130px"]{padding-top:56px!important;padding-bottom:48px!important}
-  section[style*="padding:120px"]{padding-top:52px!important;padding-bottom:52px!important}
-  section[style*="padding:110px"]{padding-top:48px!important;padding-bottom:48px!important}
-  footer{padding:36px 16px 28px!important}
-
   .st-scene{height:220vh}
   .st-scene[data-multi]{height:280vh}
   .st-h{font-size:clamp(26px,10vw,40px)!important}
