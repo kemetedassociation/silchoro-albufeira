@@ -5,6 +5,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const isMobile = /Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent) || window.innerWidth <= 900;
 
+  // ===== DROPDOWN NAV (desktop) =====
+  const ddBtn = document.getElementById('nav-dd-btn');
+  const ddMenu = document.getElementById('nav-dropdown');
+  if (ddBtn && ddMenu) {
+    ddBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const open = ddMenu.classList.toggle('open');
+      ddBtn.classList.toggle('open', open);
+      ddBtn.setAttribute('aria-expanded', open);
+    });
+    ddMenu.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        ddMenu.classList.remove('open');
+        ddBtn.classList.remove('open');
+        ddBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+    document.addEventListener('click', () => {
+      ddMenu.classList.remove('open');
+      ddBtn.classList.remove('open');
+      ddBtn.setAttribute('aria-expanded', 'false');
+    });
+  }
+
   // ===== MOBILE MENU =====
   const burger = document.getElementById('nav-burger');
   const mobileMenu = document.getElementById('mobile-menu');
@@ -22,6 +46,50 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.overflow = '';
       });
     });
+  }
+
+  // ===== APARTMENT CAROUSEL =====
+  const track = document.getElementById('apt-track');
+  const dotsContainer = document.getElementById('apt-dots');
+  if (track) {
+    const slides = track.querySelectorAll('.apt-carousel-slide');
+    const total = slides.length;
+    let cur = 0;
+
+    function slideWidth() {
+      return slides[0].offsetWidth + 12;
+    }
+    function buildDots() {
+      const pages = Math.ceil(total / 2);
+      dotsContainer.innerHTML = '';
+      for (let i = 0; i < pages; i++) {
+        const d = document.createElement('div');
+        d.className = 'apt-dot' + (i === 0 ? ' active' : '');
+        d.addEventListener('click', () => goTo(i * 2));
+        dotsContainer.appendChild(d);
+      }
+    }
+    function goTo(idx) {
+      cur = Math.max(0, Math.min(idx, total - 1));
+      const offset = -(cur * slideWidth());
+      track.style.transform = `translateX(${offset}px)`;
+      dotsContainer.querySelectorAll('.apt-dot').forEach((d, i) => {
+        d.classList.toggle('active', i === Math.floor(cur / 2));
+      });
+    }
+    buildDots();
+    document.getElementById('apt-prev')?.addEventListener('click', () => goTo(cur - 2));
+    document.getElementById('apt-next')?.addEventListener('click', () => goTo(cur + 2));
+
+    // Touch swipe
+    let tx = 0;
+    track.parentElement.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+    track.parentElement.addEventListener('touchend', e => {
+      const dx = tx - e.changedTouches[0].clientX;
+      if (Math.abs(dx) > 40) goTo(dx > 0 ? cur + 2 : cur - 2);
+    }, { passive: true });
+
+    window.addEventListener('resize', buildDots);
   }
 
   // ===== SCROLLYTELLING ENGINE =====
@@ -140,9 +208,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ===== MOBILE VIDEO AUTOPLAY VIA INTERSECTION =====
+  // Respirez multi-video (data-multi scene) is handled by the scrollytelling engine
+  // on all devices — only non-scrollytelling videos use this simpler autoplay observer
   function setupMobileVideos() {
+    const scrollyVideos = new Set(document.querySelectorAll('.st-multi-video video'));
+
     const obs = new IntersectionObserver(entries => {
       entries.forEach(e => {
+        if (scrollyVideos.has(e.target)) return; // handled by scrollytelling engine
         if (e.isIntersecting) e.target.play().catch(() => {});
         else e.target.pause();
       });
@@ -155,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
       v.setAttribute('playsinline', '');
       v.setAttribute('webkit-playsinline', '');
       v.preload = 'metadata';
-      obs.observe(v);
+      if (!scrollyVideos.has(v)) obs.observe(v);
     });
   }
 

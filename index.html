@@ -37,22 +37,51 @@
 </div>
 
 <!-- ============ NAV ============ -->
-<nav class="site-nav">
-  <a href="#" style="display:flex;align-items:center;gap:11px;font-weight:800;font-size:20px;letter-spacing:-.02em">
+<nav class="site-nav" style="position:relative">
+  <a href="#" style="display:flex;align-items:center;gap:11px;font-weight:800;font-size:20px;letter-spacing:-.02em;flex-shrink:0">
     <span style="width:36px;height:36px;border-radius:11px;background:linear-gradient(140deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Newsreader',serif;font-style:italic;font-weight:500;font-size:20px">S</span>
     <span>Silchoro<span style="color:var(--accent)">.</span></span>
   </a>
-  <div class="nav-links" style="display:flex;align-items:center;gap:28px;font-size:15px;font-weight:500">
-    <a class="navlink" href="#activites">Albufeira</a>
-    <a class="navlink" href="#appartement">Appartement</a>
-    <a class="navlink" href="#tarifs">Tarifs</a>
-    <a class="navlink" href="#calendrier">Calendrier</a>
-    <a class="navlink" href="#galerie">Galerie</a>
-    <a class="navlink" href="#faq">FAQ</a>
+
+  <!-- Desktop dropdown trigger -->
+  <div class="nav-links" style="position:relative">
+    <button class="nav-dropdown-btn" id="nav-dd-btn" aria-haspopup="true" aria-expanded="false">
+      Explorer
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="nav-dropdown" id="nav-dropdown">
+      <a href="#activites">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s6.5-5.6 6.5-11A6.5 6.5 0 0 0 5.5 10c0 5.4 6.5 11 6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
+        Albufeira
+      </a>
+      <a href="#appartement">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Appartement
+      </a>
+      <a href="#tarifs">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="2.3"/><circle cx="17" cy="17" r="2.3"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+        Tarifs
+      </a>
+      <hr>
+      <a href="#calendrier">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2.5"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Calendrier
+      </a>
+      <a href="#galerie">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Galerie
+      </a>
+      <a href="#faq">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 1 1 3.6 2.9c-.5.1-.9.5-.9 1v1"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg>
+        FAQ
+      </a>
+    </div>
   </div>
-  <a href="#reservation" class="magnetic nav-cta-desktop" data-magnetic style="background:var(--accent);color:#fff;padding:12px 24px;border-radius:40px;font-weight:600;font-size:15px;box-shadow:0 10px 30px rgba(10,92,134,.28)">Réserver</a>
+
+  <a href="#reservation" class="magnetic nav-cta-desktop" data-magnetic style="background:var(--accent);color:#fff;padding:11px 22px;border-radius:40px;font-weight:600;font-size:15px;box-shadow:0 8px 24px rgba(10,92,134,.3);flex-shrink:0">Réserver</a>
   <button class="nav-burger" id="nav-burger" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
+
 <!-- Mobile menu overlay -->
 <div class="mobile-menu" id="mobile-menu">
   <a href="#activites" class="mob-link">Albufeira</a>
@@ -163,14 +192,14 @@
     </div>
   </section>
 
-  <!-- SCENE 4 — Respirez (multi-video: vv-a03, vv-a08, vv-a10, vv-a11) -->
+  <!-- SCENE 4 — Respirez (multi-video: vv-a03, vv-a08, vv-a10, vv-a12) -->
   <section class="st-scene" data-scene="4" data-multi style="height:500vh">
     <div class="st-video-wrap">
       <div class="st-multi-video">
         <video muted playsinline preload="auto" loop data-seg="0"><source src="assets/videos/vv-a03.mp4" type="video/mp4"></video>
         <video muted playsinline preload="auto" loop data-seg="1"><source src="assets/videos/vv-a08.mp4" type="video/mp4"></video>
         <video muted playsinline preload="auto" loop data-seg="2"><source src="assets/videos/vv-a10.mp4" type="video/mp4"></video>
-        <video muted playsinline preload="auto" loop data-seg="3"><source src="assets/videos/vv-a11.mp4" type="video/mp4"></video>
+        <video muted playsinline preload="auto" loop data-seg="3"><source src="assets/videos/vv-a12.mp4" type="video/mp4"></video>
       </div>
       <div class="st-dim" style="background:linear-gradient(180deg,rgba(8,30,48,.3) 0%,rgba(8,30,48,.06) 40%,rgba(8,30,48,.5) 100%)"></div>
       <div class="st-vignette"></div>
@@ -371,10 +400,28 @@
         <span style="background:#fdf3d6;color:#8a6d12;padding:9px 16px;border-radius:30px;font-size:14px;font-weight:600">Calme & familial</span>
       </div>
     </div>
-    <div class="reveal reveal-r apt-images" style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:200px 200px;gap:14px">
-      <div class="lift img-tall photo-card" style="grid-row:span 2;border-radius:20px;overflow:hidden;box-shadow:0 18px 40px rgba(13,36,56,.12)"><img src="assets/images/int5.png" alt="Salon" loading="lazy"></div>
-      <div class="lift photo-card" style="border-radius:20px;overflow:hidden;box-shadow:0 18px 40px rgba(13,36,56,.12)"><img src="assets/images/int6.png" alt="Salle de bain" loading="lazy"></div>
-      <div class="lift photo-card" style="border-radius:20px;overflow:hidden;box-shadow:0 18px 40px rgba(13,36,56,.12)"><img src="assets/images/int7.png" alt="Terrasse" loading="lazy"></div>
+    <div class="reveal reveal-r" style="width:100%">
+      <div class="apt-carousel" id="apt-carousel">
+        <div class="apt-carousel-track" id="apt-track">
+          <div class="apt-carousel-slide"><img src="assets/images/int11.png" alt="Salon vue" loading="lazy"></div>
+          <div class="apt-carousel-slide"><img src="assets/images/int13.png" alt="Salon terrasse" loading="lazy"></div>
+          <div class="apt-carousel-slide"><img src="assets/images/int12.png" alt="Salon TV" loading="lazy"></div>
+          <div class="apt-carousel-slide"><img src="assets/images/int10.png" alt="Canapé" loading="lazy"></div>
+          <div class="apt-carousel-slide"><img src="assets/images/int4.png" alt="Cuisine salon" loading="lazy"></div>
+          <div class="apt-carousel-slide"><img src="assets/images/int5.png" alt="Salon" loading="lazy"></div>
+          <div class="apt-carousel-slide"><img src="assets/images/int8.png" alt="Chambre" loading="lazy"></div>
+          <div class="apt-carousel-slide"><img src="assets/images/int9.png" alt="Chambre 2" loading="lazy"></div>
+          <div class="apt-carousel-slide"><img src="assets/images/int6.png" alt="Salle de bain" loading="lazy"></div>
+          <div class="apt-carousel-slide"><img src="assets/images/int7.png" alt="Terrasse" loading="lazy"></div>
+          <div class="apt-carousel-slide"><img src="assets/images/int3.png" alt="Hall d'entrée" loading="lazy"></div>
+          <div class="apt-carousel-slide"><img src="assets/images/int2.png" alt="Salle de jeux" loading="lazy"></div>
+        </div>
+      </div>
+      <div class="apt-carousel-nav">
+        <button class="apt-carousel-btn" id="apt-prev" aria-label="Précédent">←</button>
+        <div class="apt-carousel-dots" id="apt-dots"></div>
+        <button class="apt-carousel-btn" id="apt-next" aria-label="Suivant">→</button>
+      </div>
     </div>
   </div>
 
