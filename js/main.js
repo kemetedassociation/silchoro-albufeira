@@ -6,56 +6,31 @@
    SCENE CONFIGURATION
    To add a scene: add entry here + matching HTML
    ───────────────────────────────────────────── */
+// Standard single-sequence scenes
+const STANDARD_SCENES = [
+  { id: 'scene1', basePath: 'assets/frames/scene1', count: 251, scrollHeight: 3500 },
+  { id: 'scene2', basePath: 'assets/frames/scene2', count: 251, scrollHeight: 3500 },
+  { id: 'scene3', basePath: 'assets/frames/scene3', count: 251, scrollHeight: 2800 },
+];
+
+// Respirez: 4 sequences played end-to-end on ONE pinned canvas
+// vv-a03 → vv-a08 → vv-a10 → vv-a11
+const RESPIREZ_SEQ = [
+  { id: 'resp-a', basePath: 'assets/frames/resp-a', count: 251 },
+  { id: 'resp-b', basePath: 'assets/frames/resp-b', count: 251 },
+  { id: 'resp-c', basePath: 'assets/frames/resp-c', count: 251 },
+  { id: 'resp-d', basePath: 'assets/frames/resp-d', count: 251 },
+];
+const RESPIREZ_SCENE = {
+  type           : 'multi-seq',
+  wrapperId      : 'st-wrap-respirez',
+  sequences      : RESPIREZ_SEQ,
+  totalScrollHeight: 2800 * 4,   // 4 sequences × 2800px = 11200px total
+};
+
 const SCENE_CONFIG = [
-  {
-    id: 'scene1',
-    basePath: 'assets/frames/scene1',
-    count: 251,
-    scrollHeight: 3500,
-    label: 'La résidence'
-  },
-  {
-    id: 'scene2',
-    basePath: 'assets/frames/scene2',
-    count: 251,
-    scrollHeight: 3500,
-    label: "L'appartement"
-  },
-  {
-    id: 'scene3',
-    basePath: 'assets/frames/scene3',
-    count: 251,
-    scrollHeight: 2800,
-    label: 'Albufeira'
-  },
-  {
-    id: 'resp-a',
-    basePath: 'assets/frames/resp-a',
-    count: 251,
-    scrollHeight: 2200,
-    label: 'Respirez'
-  },
-  {
-    id: 'resp-b',
-    basePath: 'assets/frames/resp-b',
-    count: 251,
-    scrollHeight: 2200,
-    label: 'Grottes'
-  },
-  {
-    id: 'resp-c',
-    basePath: 'assets/frames/resp-c',
-    count: 251,
-    scrollHeight: 2200,
-    label: 'Algarve'
-  },
-  {
-    id: 'resp-d',
-    basePath: 'assets/frames/resp-d',
-    count: 251,
-    scrollHeight: 2200,
-    label: 'Nuit'
-  }
+  ...STANDARD_SCENES,
+  RESPIREZ_SCENE,
 ];
 
 const PHONE = '33777777777';
@@ -96,13 +71,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (c) gsap.to(c, { opacity: 1, duration: 0.8, ease: 'power2.out' });
   };
 
-  // Mobile: reduce to every other frame for perf
-  const mobileScenes = isMobile
-    ? SCENE_CONFIG.map(s => ({ ...s, count: Math.ceil(s.count / 2) }))
+  // Flatten all sequences for the preloader (it only cares about basePath + count)
+  const allSeqs = [
+    ...STANDARD_SCENES,
+    ...RESPIREZ_SEQ,
+  ].map(s => isMobile ? { ...s, count: Math.ceil(s.count / 2) } : s);
+
+  // scrollController gets full SCENE_CONFIG (with type info)
+  const controllerScenes = isMobile
+    ? SCENE_CONFIG.map(s => {
+        if (s.type === 'multi-seq') {
+          return {
+            ...s,
+            sequences: s.sequences.map(seq => ({ ...seq, count: Math.ceil(seq.count / 2) })),
+          };
+        }
+        return { ...s, count: Math.ceil(s.count / 2) };
+      })
     : SCENE_CONFIG;
 
-  const controller = new ScrollController(preloader, mobileScenes);
-  preloader.load(mobileScenes);
+  const controller = new ScrollController(preloader, controllerScenes);
+  preloader.load(allSeqs);
 
   /* --- DROPDOWN NAV --- */
   const ddBtn  = document.getElementById('nav-dd-btn');
