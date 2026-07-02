@@ -49,14 +49,14 @@ const MOB_SCROLL = 0.5;   // scroll-height multiplier for mobile
    LOADER — animated messages
    ───────────────────────────────────────────── */
 const LOADER_MSGS = [
-  'Préparation de votre séjour à Albufeira…',
-  'Saviez-vous ? « Albufeira » vient de l'arabe — cela signifie « le lagon ».',
-  'Devinette : on ne m'admire qu'en kayak. Je suis percée de lumière comme une cathédrale. Qui suis-je ?',
-  'La grotte de Benagil — à 20 minutes de l'appartement.',
-  'L'Algarve est la région la plus ensoleillée d'Europe : 300 jours de soleil par an.',
-  'Devinette : dorée à l'aube, turquoise à midi, rose au coucher du soleil…',
-  'C'est la mer d'Algarve. Elle vous attend.',
-  'Prêt dans quelques instants…',
+  `Préparation de votre séjour à Albufeira…`,
+  `Saviez-vous ? « Albufeira » vient de l’arabe — cela signifie « le lagon ».`,
+  `Devinette : on ne m’admire qu’en kayak. Je suis percée de lumière comme une cathédrale. Qui suis-je ?`,
+  `La grotte de Benagil — à 20 minutes de l’appartement.`,
+  `L’Algarve est la région la plus ensoleilée d’Europe : 300 jours de soleil par an.`,
+  `Devinette : dorée à l’aube, turquoise à midi, rose au coucher du soleil…`,
+  `C’est la mer d’Algarve. Elle vous attend.`,
+  `Prêt dans quelques instants…`,
 ];
 let _msgIdx = 0;
 let _msgTimer = null;
@@ -74,21 +74,6 @@ function startLoaderMsgs() {
   }, 3200);
 }
 
-function updateLoader(pct) {
-  const bar  = document.getElementById('loader-bar');
-  const num  = document.getElementById('loader-pct');
-  const scrim = document.getElementById('site-loader');
-  if (bar) bar.style.width = pct + '%';
-  if (num) num.textContent  = Math.round(pct) + ' %';
-  if (scrim && pct >= 100) {
-    clearInterval(_msgTimer);
-    setTimeout(() => {
-      scrim.style.opacity = '0';
-      setTimeout(() => scrim.remove(), 800);
-    }, 250);
-  }
-}
-
 /* ─────────────────────────────────────────────
    BOOT
    ───────────────────────────────────────────── */
@@ -96,19 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   startLoaderMsgs();
 
-  /* --- PRELOADER --- */
+  /* --- PRELOADER + SCENE CONFIG --- */
   const preloader = new FramePreloader();
-  preloader.onProgress = updateLoader;
-  preloader.onReady    = () => {
-    // Start scroll controller as soon as first scene is ready
-    controller.init();
-    // Reveal first canvas
-    const c = document.getElementById('canvas-scene1');
-    if (c) gsap.to(c, { opacity: 1, duration: 0.8, ease: 'power2.out' });
-  };
 
-  // Flatten all sequences for the preloader
-  // Mobile: stride=2 → every other frame (f0001,f0003,…) for full video coverage at half the load
   const allSeqs = [
     ...STANDARD_SCENES,
     ...RESPIREZ_SEQ,
@@ -117,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
     : { ...s, stride: 1 }
   );
 
-  // scrollController gets full SCENE_CONFIG with type info + mobile adjustments
   const controllerScenes = isMobile
     ? SCENE_CONFIG.map(s => {
         if (s.type === 'multi-seq') {
@@ -140,8 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
       })
     : SCENE_CONFIG;
 
-  // Sync wrapper div heights with effective scrollHeights (critical on mobile)
-  // If the div is taller than the GSAP end point, the canvas drifts after unpin
+  // Sync wrapper heights before GSAP init to prevent canvas drift after unpin
   if (isMobile) {
     controllerScenes.forEach(s => {
       if (s.type === 'multi-seq') {
@@ -154,7 +127,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /* --- SCROLL CONTROLLER — start immediately, canvases fill as frames arrive --- */
   const controller = new ScrollController(preloader, controllerScenes);
+  controller.init();
+
+  /* --- LOADER DISMISS — max 4 s or once loading flows (whichever first) --- */
+  let _loaderDone = false;
+  function dismissLoader() {
+    if (_loaderDone) return;
+    _loaderDone = true;
+    clearInterval(_msgTimer);
+    const bar   = document.getElementById('loader-bar');
+    const scrim = document.getElementById('site-loader');
+    if (bar) bar.style.width = '100%';
+    setTimeout(() => {
+      if (scrim) { scrim.style.opacity = '0'; setTimeout(() => scrim.remove(), 800); }
+    }, 300);
+  }
+  setTimeout(dismissLoader, 4000); // safety net: never block longer than 4 s
+
+  preloader.onProgress = pct => {
+    const bar = document.getElementById('loader-bar');
+    const num = document.getElementById('loader-pct');
+    if (bar) bar.style.width = pct + '%';
+    if (num) num.textContent = Math.round(pct) + ' %';
+    if (pct >= 5) dismissLoader(); // dismiss early once loading starts flowing
+  };
+
   preloader.load(allSeqs);
 
   /* --- DROPDOWN NAV --- */

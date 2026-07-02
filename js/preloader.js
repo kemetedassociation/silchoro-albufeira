@@ -59,7 +59,9 @@ class FramePreloader {
       };
       img.onerror = () => {
         this.loading.delete(url);
-        this.loadedFrames++;   // keep progress moving even on 404
+        this.loadedFrames++;
+        const pct = Math.round((this.loadedFrames / this.totalFrames) * 100);
+        this.onProgress?.(Math.min(pct, 100)); // also update bar on 404
         reject(new Error(`Failed: ${url}`));
       };
       img.src = url;
