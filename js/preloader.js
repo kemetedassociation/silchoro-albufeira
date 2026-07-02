@@ -1,25 +1,27 @@
 /**
  * preloader.js — Progressive frame loader
- * - stride support: load every Nth frame (e.g. stride=2 → f0001,f0003,...,f0251)
- * - sequential background loading: scene2 waits for scene1 to finish
- * - onReady fires at 20% (ensures first scene is mostly ready before unlocking scroll)
+ *
+ * Critical design: frame() looks up URLs by basePath (not object identity).
+ * This lets preloader.load(allSeqs) and scrollController(controllerScenes)
+ * use different object instances — only basePath must match.
  */
 
 class FramePreloader {
   constructor() {
-    this.cache       = new Map();
-    this.loading     = new Set();
-    this.totalFrames = 0;
+    this.cache        = new Map();  // url → HTMLImageElement
+    this.loading      = new Set();  // urls currently fetching
+    this.totalFrames  = 0;
     this.loadedFrames = 0;
-    this.onProgress  = null;
-    this.onReady     = null;
-    this.readyFired  = false;
+    this.onProgress   = null;
+    this.onReady      = null;
+    this.readyFired   = false;
+    this._urlsByPath  = new Map();  // basePath → url[] — the key fix
   }
 
   /**
-   * Build URL list for a scene.
-   * stride=1 → every frame (f0001…f0251)
-   * stride=2 → every other frame (f0001,f0003,…,f0251) — full coverage, half the files
+   * Build sequential frame URL list.
+   * stride=1 → every frame   (f0001…f0251)
+   * stride=2 → every 2nd     (f0001,f0003,…f0251) — full coverage, half the files
    */
   static urls(basePath, count, stride = 1, pad = 4) {
     const list = [];
@@ -31,7 +33,7 @@ class FramePreloader {
   }
 
   _loadOne(url) {
-    if (this.cache.has(url)) return Promise.resolve(this.cache.get(url));
+    if (this.cache.has(url))   return Promise.resolve(this.cache.get(url));
     if (this.loading.has(url)) {
       return new Promise(res => {
         const poll = setInterval(() => {
@@ -41,15 +43,15 @@ class FramePreloader {
     }
     this.loading.add(url);
     return new Promise((resolve, reject) => {
-      const img       = new Image();
-      img.decoding    = 'async';
+      const img    = new Image();
+      img.decoding = 'async';
       img.onload = () => {
         this.cache.set(url, img);
         this.loading.delete(url);
         this.loadedFrames++;
         const pct = Math.round((this.loadedFrames / this.totalFrames) * 100);
         this.onProgress?.(Math.min(pct, 100));
-        if (!this.readyFired && pct >= 20) {
+        if (!this.readyFired && pct >= 15) {
           this.readyFired = true;
           this.onReady?.();
         }
@@ -57,7 +59,7 @@ class FramePreloader {
       };
       img.onerror = () => {
         this.loading.delete(url);
-        this.loadedFrames++;          // count as loaded so progress keeps moving
+        this.loadedFrames++;   // keep progress moving even on 404
         reject(new Error(`Failed: ${url}`));
       };
       img.src = url;
@@ -77,23 +79,28 @@ class FramePreloader {
   }
 
   /**
-   * Main entry — load scenes in strict priority order.
+   * Load scenes in priority order.
+   * URLs are stored BOTH on the scene object AND in _urlsByPath (keyed by basePath).
+   * This means frame() works even if the caller uses a different object instance.
+   *
    * @param {Array<{basePath, count, stride?}>} scenes
    */
   async load(scenes) {
     this.totalFrames = scenes.reduce((s, sc) => s + sc.count, 0);
 
     for (const scene of scenes) {
-      scene.urls = FramePreloader.urls(scene.basePath, scene.count, scene.stride || 1);
+      const urls = FramePreloader.urls(scene.basePath, scene.count, scene.stride || 1);
+      scene.urls = urls;                         // mutate for direct lookup
+      this._urlsByPath.set(scene.basePath, urls); // index by basePath for cross-object lookup
     }
 
-    // Priority 1: scene1 — 12 concurrent, block until done
+    // Priority 1: first scene — 12 concurrent, block until done
     if (scenes[0]) {
       await this._loadBatch(scenes[0].urls, 12);
     }
 
-    // Priority 2+: remaining scenes strictly in sequence, 4 concurrent each
-    // Sequential = scene2 fully loads before scene3 starts → smoother progression
+    // Priority 2+: remaining scenes — strict sequence, 4 concurrent each
+    // Ensures scene2 frames are ready before scene3 starts loading
     const rest = scenes.slice(1);
     (async () => {
       for (const scene of rest) {
@@ -106,15 +113,22 @@ class FramePreloader {
     return this.cache.get(url) || null;
   }
 
-  /** Get a frame image by scene config + frame index */
+  /**
+   * Get a frame by scene config + index.
+   * Falls back to basePath lookup so it works regardless of object identity.
+   */
   frame(scene, idx) {
-    if (!scene.urls || !scene.urls.length) return null;
-    const i = Math.max(0, Math.min(Math.round(idx), scene.urls.length - 1));
-    return this.get(scene.urls[i]);
+    // Primary: urls on the scene object itself
+    // Fallback: look up by basePath (handles cross-instance usage)
+    const urls = scene.urls || this._urlsByPath.get(scene.basePath);
+    if (!urls || !urls.length) return null;
+    const i = Math.max(0, Math.min(Math.round(idx), urls.length - 1));
+    return this.get(urls[i]);
   }
 
   isLoaded(scene) {
-    return scene.urls?.every(u => this.cache.has(u)) ?? false;
+    const urls = scene.urls || this._urlsByPath.get(scene.basePath);
+    return urls?.every(u => this.cache.has(u)) ?? false;
   }
 }
 
