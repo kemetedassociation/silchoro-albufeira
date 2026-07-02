@@ -16,13 +16,26 @@
 <body>
 
 <!-- LOADER -->
-<div id="site-loader" style="position:fixed;inset:0;z-index:99999;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;transition:opacity .6s ease">
-  <div style="font-family:'Newsreader',serif;font-style:italic;font-size:clamp(28px,5vw,48px);color:#fff;letter-spacing:-.01em;opacity:.9">Silchoro.</div>
-  <div style="width:clamp(200px,40vw,320px)">
-    <div style="height:2px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden">
-      <div id="loader-bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent-2),var(--gold));border-radius:2px;transition:width .15s ease"></div>
+<div id="site-loader">
+  <div class="ld-aurora"></div>
+
+  <div class="ld-brand">
+    <span class="ld-s">S</span>ilchoro<span class="ld-pt">.</span>
+  </div>
+
+  <div class="ld-msg-wrap">
+    <p id="ld-msg" class="ld-msg">Préparation de votre séjour à Albufeira…</p>
+  </div>
+
+  <div class="ld-progress">
+    <div class="ld-track">
+      <div id="loader-bar" class="ld-fill"></div>
     </div>
-    <div id="loader-pct" style="margin-top:10px;text-align:center;font-size:12px;font-weight:600;letter-spacing:.14em;color:rgba(255,255,255,.42)">0%</div>
+    <span id="loader-pct" class="ld-pct">0 %</span>
+  </div>
+
+  <div class="ld-dots">
+    <span></span><span></span><span></span>
   </div>
 </div>
 

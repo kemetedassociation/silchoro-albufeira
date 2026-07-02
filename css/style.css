@@ -50,6 +50,101 @@ video{
 @keyframes pulseRing{0%{box-shadow:0 0 0 0 rgba(37,211,102,.5)}70%{box-shadow:0 0 0 16px rgba(37,211,102,0)}100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
 
+/* ===== LOADER ===== */
+#site-loader{
+  position:fixed;inset:0;z-index:99999;
+  background:var(--ink);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:clamp(20px,4vh,36px);
+  transition:opacity .8s ease;
+  overflow:hidden;
+}
+.ld-aurora{
+  position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 25% 75%,rgba(25,182,201,.13) 0%,transparent 58%),
+             radial-gradient(ellipse at 75% 25%,rgba(10,92,134,.10) 0%,transparent 54%);
+  animation:ldAurora 7s ease-in-out infinite;
+}
+@keyframes ldAurora{
+  0%,100%{opacity:.5;transform:scale(1)}
+  50%{opacity:1;transform:scale(1.06)}
+}
+.ld-brand{
+  font-family:'Schibsted Grotesk',sans-serif;
+  font-weight:800;font-size:clamp(30px,6vw,50px);
+  color:#fff;letter-spacing:-.03em;
+  position:relative;z-index:1;
+}
+.ld-s{
+  font-family:'Newsreader',serif;font-style:italic;
+  font-weight:500;color:var(--accent-2);
+}
+.ld-pt{color:var(--gold)}
+
+.ld-msg-wrap{
+  height:clamp(44px,7vh,60px);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;z-index:1;
+}
+.ld-msg{
+  font-family:'Newsreader',serif;font-style:italic;
+  font-size:clamp(14px,3.5vw,19px);
+  color:rgba(255,255,255,.58);
+  text-align:center;
+  max-width:min(420px,88vw);
+  padding:0 20px;
+  line-height:1.5;
+  transition:opacity .5s ease,transform .5s ease;
+}
+.ld-msg.fade{opacity:0;transform:translateY(10px)}
+
+.ld-progress{
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  width:min(300px,72vw);position:relative;z-index:1;
+}
+.ld-track{
+  width:100%;height:2px;
+  background:rgba(255,255,255,.1);
+  border-radius:2px;overflow:hidden;
+  position:relative;
+}
+.ld-fill{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--accent-2),var(--gold));
+  border-radius:2px;
+  transition:width .2s ease;
+}
+.ld-track::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);
+  transform:translateX(-100%);
+  animation:ldShimmer 1.8s ease-in-out infinite;
+}
+@keyframes ldShimmer{
+  0%{transform:translateX(-100%)}
+  100%{transform:translateX(200%)}
+}
+.ld-pct{
+  font-size:11px;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.28);
+}
+
+/* Pulsing dots */
+.ld-dots{display:flex;gap:8px;position:relative;z-index:1}
+.ld-dots span{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,.25);
+  animation:ldDot 1.4s ease-in-out infinite;
+}
+.ld-dots span:nth-child(2){animation-delay:.2s}
+.ld-dots span:nth-child(3){animation-delay:.4s}
+@keyframes ldDot{
+  0%,80%,100%{transform:scale(1);opacity:.25}
+  40%{transform:scale(1.5);opacity:.9}
+}
+
 /* ===== CANVAS SCROLLYTELLING ===== */
 .st-wrap{position:relative}
 .st-sticky{
@@ -61,10 +156,7 @@ video{
   position:absolute;inset:0;
   width:100%;height:100%;
   display:block;
-  will-change:contents;
-  /* image-rendering: optimizeQuality ensures sharp pixels on mobile DPR≥2 */
-  image-rendering:-webkit-optimize-contrast;
-  image-rendering:crisp-edges;
+  /* No image-rendering override — default (auto) is best for photos/video */
 }
 .st-dim{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(8,30,48,.35) 0%,rgba(8,30,48,.08) 42%,rgba(8,30,48,.44) 100%);pointer-events:none}
 .st-vignette{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse at center,transparent 38%,rgba(8,30,48,.52) 100%);pointer-events:none}

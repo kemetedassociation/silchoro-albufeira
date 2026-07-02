@@ -46,19 +46,46 @@ const MOB_COUNT  = 126;   // Math.ceil(251 / MOB_STRIDE)
 const MOB_SCROLL = 0.5;   // scroll-height multiplier for mobile
 
 /* ─────────────────────────────────────────────
-   LOADER UI
+   LOADER — animated messages
    ───────────────────────────────────────────── */
+const LOADER_MSGS = [
+  'Préparation de votre séjour à Albufeira…',
+  'Saviez-vous ? « Albufeira » vient de l'arabe — cela signifie « le lagon ».',
+  'Devinette : on ne m'admire qu'en kayak. Je suis percée de lumière comme une cathédrale. Qui suis-je ?',
+  'La grotte de Benagil — à 20 minutes de l'appartement.',
+  'L'Algarve est la région la plus ensoleillée d'Europe : 300 jours de soleil par an.',
+  'Devinette : dorée à l'aube, turquoise à midi, rose au coucher du soleil…',
+  'C'est la mer d'Algarve. Elle vous attend.',
+  'Prêt dans quelques instants…',
+];
+let _msgIdx = 0;
+let _msgTimer = null;
+
+function startLoaderMsgs() {
+  const el = document.getElementById('ld-msg');
+  if (!el) return;
+  _msgTimer = setInterval(() => {
+    el.classList.add('fade');
+    setTimeout(() => {
+      _msgIdx = (_msgIdx + 1) % LOADER_MSGS.length;
+      el.textContent = LOADER_MSGS[_msgIdx];
+      el.classList.remove('fade');
+    }, 500);
+  }, 3200);
+}
+
 function updateLoader(pct) {
-  const bar   = document.getElementById('loader-bar');
-  const num   = document.getElementById('loader-pct');
+  const bar  = document.getElementById('loader-bar');
+  const num  = document.getElementById('loader-pct');
   const scrim = document.getElementById('site-loader');
-  if (bar)  bar.style.width = pct + '%';
-  if (num)  num.textContent  = pct + '%';
+  if (bar) bar.style.width = pct + '%';
+  if (num) num.textContent  = Math.round(pct) + ' %';
   if (scrim && pct >= 100) {
+    clearInterval(_msgTimer);
     setTimeout(() => {
       scrim.style.opacity = '0';
-      setTimeout(() => scrim.remove(), 600);
-    }, 200);
+      setTimeout(() => scrim.remove(), 800);
+    }, 250);
   }
 }
 
@@ -66,6 +93,8 @@ function updateLoader(pct) {
    BOOT
    ───────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
+
+  startLoaderMsgs();
 
   /* --- PRELOADER --- */
   const preloader = new FramePreloader();

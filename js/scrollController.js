@@ -1,14 +1,16 @@
 /**
  * scrollController.js — GSAP ScrollTrigger + Canvas 2D
  *
- * Supports two scene types:
- *   - standard   : one sequence, one canvas
- *   - multi-seq  : N sequences played end-to-end on ONE pinned canvas
+ * scene types:
+ *   standard  : one sequence, one canvas (id = scene.id)
+ *   multi-seq : N sequences on ONE canvas (id = wrapperId minus "st-wrap-" prefix)
  *
- * Rules:
- *   - pinSpacing:false on every scene → sections butt together, zero gaps
- *   - RAF lock is PER-SCENE (local var) so scenes never block each other
- *   - Canvas resize resets transform before scaling → no DPR accumulation
+ * Key invariants:
+ *   - pinSpacing:false → sections butt together, zero whitespace gaps
+ *   - Per-scene RAF lock → scenes never block each other
+ *   - ctx.setTransform() on resize → no DPR accumulation
+ *   - Redraw last frame on resize → no blank flash after orientation change
+ *   - Canvas lookup uses correct ID for both scene types
  */
 
 class ScrollController {
@@ -16,42 +18,66 @@ class ScrollController {
     this.preloader = preloader;
     this.scenes    = scenes;
     this.dpr       = Math.min(window.devicePixelRatio || 1, 2);
-    this.isMobile  = window.innerWidth <= 900;
   }
 
-  /* ── canvas helpers ──────────────────────────── */
+  /* ─── canvas setup ─────────────────────────────── */
 
+  /**
+   * Find canvas by id, size it, attach ResizeObserver.
+   * Returns { canvas, ctx, setRedraw } or null if not found.
+   */
   _makeCanvas(id) {
     const canvas = document.getElementById(`canvas-${id}`);
-    if (!canvas) return null;
+    if (!canvas) {
+      console.warn(`[ScrollController] canvas not found: canvas-${id}`);
+      return null;
+    }
     const ctx = canvas.getContext('2d', { alpha: false, willReadFrequently: false });
-    this._resizeCanvas(canvas, ctx);
-    const ro = new ResizeObserver(() => this._resizeCanvas(canvas, ctx));
+    let _redrawFn = null;
+
+    const resize = () => {
+      const w = canvas.offsetWidth  || window.innerWidth;
+      const h = canvas.offsetHeight || window.innerHeight;
+      if (w <= 0 || h <= 0) return;
+      // Setting .width/.height resets context — apply transform fresh
+      canvas.width  = Math.round(w * this.dpr);
+      canvas.height = Math.round(h * this.dpr);
+      ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+      // Redraw last frame so canvas never shows blank after resize
+      if (_redrawFn) _redrawFn();
+    };
+
+    const ro = new ResizeObserver(resize);
     ro.observe(canvas.parentElement || canvas);
-    return { canvas, ctx };
+    resize();
+
+    return {
+      canvas,
+      ctx,
+      /** Register a callback that redraws the current frame on resize */
+      setRedraw: fn => { _redrawFn = fn; },
+    };
   }
 
-  _resizeCanvas(canvas, ctx) {
-    const w = canvas.offsetWidth  || window.innerWidth;
-    const h = canvas.offsetHeight || window.innerHeight;
-    // Setting canvas dimensions resets the 2D context — scale fresh each time
-    canvas.width  = Math.round(w * this.dpr);
-    canvas.height = Math.round(h * this.dpr);
-    ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
-  }
+  /* ─── frame rendering ──────────────────────────── */
 
   _drawFrame(ctx, img, canvas) {
     if (!img || !img.naturalWidth) return;
     const cw = canvas.offsetWidth  || window.innerWidth;
     const ch = canvas.offsetHeight || window.innerHeight;
-    // Cover-fit: fill the viewport, center the image
+    if (cw <= 0 || ch <= 0) return;
+
+    // Cover-fit: preserve aspect ratio, center the image
     const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
     const sw    = img.naturalWidth  * scale;
     const sh    = img.naturalHeight * scale;
+
+    // Clear before draw — avoids ghost artifacts if image didn't fill last time
+    ctx.clearRect(0, 0, cw, ch);
     ctx.drawImage(img, (cw - sw) / 2, (ch - sh) / 2, sw, sh);
   }
 
-  /* ── text panel animation ────────────────────── */
+  /* ─── text panels ──────────────────────────────── */
 
   _animatePanels(panels, progress) {
     const n = panels.length;
@@ -82,26 +108,31 @@ class ScrollController {
     });
   }
 
-  /* ── register one STANDARD scene ────────────── */
+  /* ─── standard scene ───────────────────────────── */
 
   _registerStandard(scene) {
+    // Canvas ID for standard scenes: "canvas-scene1", "canvas-scene2", etc.
     const cv = this._makeCanvas(scene.id);
     if (!cv) return;
-    const { canvas, ctx } = cv;
+    const { canvas, ctx, setRedraw } = cv;
 
-    // Per-scene RAF lock — scenes never block each other
     let raf = false;
-
-    const tryFirstFrame = () => {
-      const f = this.preloader.frame(scene, 0);
-      if (f) { this._drawFrame(ctx, f, canvas); return; }
-      setTimeout(tryFirstFrame, 80);
-    };
-    tryFirstFrame();
+    let lastFrame = null;
 
     const panels = Array.from(
       document.querySelectorAll(`#st-wrap-${scene.id} .st-text`)
     );
+
+    // Draw first available frame while rest load
+    const tryFirstFrame = () => {
+      const f = this.preloader.frame(scene, 0);
+      if (f) { lastFrame = f; this._drawFrame(ctx, f, canvas); return; }
+      setTimeout(tryFirstFrame, 80);
+    };
+    tryFirstFrame();
+
+    // On resize, redraw whatever frame was last shown
+    setRedraw(() => { if (lastFrame) this._drawFrame(ctx, lastFrame, canvas); });
 
     ScrollTrigger.create({
       trigger   : `#st-wrap-${scene.id}`,
@@ -117,10 +148,10 @@ class ScrollController {
           const progress = self.progress;
           const idx   = Math.min(Math.round(progress * (scene.count - 1)), scene.count - 1);
           const frame = this.preloader.frame(scene, idx);
-          if (frame) this._drawFrame(ctx, frame, canvas);
+          if (frame) { lastFrame = frame; this._drawFrame(ctx, frame, canvas); }
           this._animatePanels(panels, progress);
         });
-      }
+      },
     });
 
     gsap.set(canvas, { opacity: 0 });
@@ -128,21 +159,25 @@ class ScrollController {
       trigger: `#st-wrap-${scene.id}`,
       start  : 'top 80%',
       once   : true,
-      onEnter: () => gsap.to(canvas, { opacity: 1, duration: 0.55, ease: 'power2.out' })
+      onEnter: () => gsap.to(canvas, { opacity: 1, duration: 0.55, ease: 'power2.out' }),
     });
   }
 
-  /* ── register MULTI-SEQUENCE scene (Respirez) ── */
+  /* ─── multi-sequence scene (Respirez) ─────────── */
 
   _registerMultiSeq(sceneGroup) {
     const { wrapperId, sequences, totalScrollHeight } = sceneGroup;
-    const cv = this._makeCanvas(wrapperId);
+
+    // Canvas ID: strip "st-wrap-" prefix from wrapperId
+    // "st-wrap-respirez" → "respirez" → looks for "canvas-respirez" in HTML
+    const canvasId = wrapperId.replace(/^st-wrap-/, '');
+    const cv = this._makeCanvas(canvasId);
     if (!cv) return;
-    const { canvas, ctx } = cv;
+    const { canvas, ctx, setRedraw } = cv;
 
     const seqCount = sequences.length;
-    // Per-scene RAF lock
     let raf = false;
+    let lastFrame = null;
 
     const panels = Array.from(
       document.querySelectorAll(`#${wrapperId} .st-text`)
@@ -150,10 +185,12 @@ class ScrollController {
 
     const tryFirstFrame = () => {
       const f = this.preloader.frame(sequences[0], 0);
-      if (f) { this._drawFrame(ctx, f, canvas); return; }
+      if (f) { lastFrame = f; this._drawFrame(ctx, f, canvas); return; }
       setTimeout(tryFirstFrame, 80);
     };
     tryFirstFrame();
+
+    setRedraw(() => { if (lastFrame) this._drawFrame(ctx, lastFrame, canvas); });
 
     ScrollTrigger.create({
       trigger   : `#${wrapperId}`,
@@ -168,7 +205,7 @@ class ScrollController {
           raf = false;
           const progress = self.progress;
 
-          // Map global progress → active sequence + local progress
+          // Map 0→1 across all sequences proportionally
           const seqIdx      = Math.min(Math.floor(progress * seqCount), seqCount - 1);
           const seqProgress = (progress * seqCount) - seqIdx;
           const seq         = sequences[seqIdx];
@@ -177,11 +214,11 @@ class ScrollController {
             seq.count - 1
           );
           const frame = this.preloader.frame(seq, frameIdx);
-          if (frame) this._drawFrame(ctx, frame, canvas);
+          if (frame) { lastFrame = frame; this._drawFrame(ctx, frame, canvas); }
 
           this._animatePanels(panels, progress);
         });
-      }
+      },
     });
 
     gsap.set(canvas, { opacity: 0 });
@@ -189,35 +226,29 @@ class ScrollController {
       trigger: `#${wrapperId}`,
       start  : 'top 80%',
       once   : true,
-      onEnter: () => gsap.to(canvas, { opacity: 1, duration: 0.55, ease: 'power2.out' })
+      onEnter: () => gsap.to(canvas, { opacity: 1, duration: 0.55, ease: 'power2.out' }),
     });
   }
 
-  /* ── PUBLIC ──────────────────────────────────── */
+  /* ─── public ───────────────────────────────────── */
 
   init() {
     if (!window.gsap || !window.ScrollTrigger) {
-      console.warn('GSAP / ScrollTrigger not loaded'); return;
+      console.warn('[ScrollController] GSAP / ScrollTrigger not loaded');
+      return;
     }
     gsap.registerPlugin(ScrollTrigger);
 
-    // iOS Safari: prevent rubber-band snap from breaking pinning
+    // Prevents iOS address-bar resize from mis-triggering pin recalculation
     ScrollTrigger.config({ ignoreMobileResize: true });
 
-    this.scenes
-      .filter(s => s.type !== 'multi-seq')
-      .forEach(s => this._registerStandard(s));
+    this.scenes.filter(s => s.type !== 'multi-seq').forEach(s => this._registerStandard(s));
+    this.scenes.filter(s => s.type === 'multi-seq').forEach(s => this._registerMultiSeq(s));
 
-    this.scenes
-      .filter(s => s.type === 'multi-seq')
-      .forEach(s => this._registerMultiSeq(s));
-
-    // Refresh after layout settles (fonts, safe-area, etc.)
     setTimeout(() => ScrollTrigger.refresh(), 500);
 
-    // Re-refresh on orientation change (iOS)
     window.addEventListener('orientationchange', () => {
-      setTimeout(() => ScrollTrigger.refresh(), 300);
+      setTimeout(() => ScrollTrigger.refresh(), 400);
     });
   }
 
