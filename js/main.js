@@ -326,6 +326,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /* --- AUTOPLAY VIDEOS --- */
+  const videoIO = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.play().catch(() => {});
+      else e.target.pause();
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('video[data-autoplay]').forEach(v => videoIO.observe(v));
+
   /* --- LIGHTBOX --- */
   const lb = document.querySelector('.lb');
   const lbImg = document.getElementById('lb-img');
