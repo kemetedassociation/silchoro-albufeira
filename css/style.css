@@ -61,7 +61,10 @@ video{
   position:absolute;inset:0;
   width:100%;height:100%;
   display:block;
-  /* Native compositor rendering — no translateZ so full DPR preserved */
+  will-change:contents;
+  /* image-rendering: optimizeQuality ensures sharp pixels on mobile DPR≥2 */
+  image-rendering:-webkit-optimize-contrast;
+  image-rendering:crisp-edges;
 }
 .st-dim{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(8,30,48,.35) 0%,rgba(8,30,48,.08) 42%,rgba(8,30,48,.44) 100%);pointer-events:none}
 .st-vignette{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse at center,transparent 38%,rgba(8,30,48,.52) 100%);pointer-events:none}
@@ -187,7 +190,7 @@ details.faq .ans{padding:0 4px 28px;max-width:760px;color:#5a6b78;font-size:17px
 .nav-burger.open span:nth-child(3){transform:rotate(-45deg) translate(2.5px,-2.5px)}
 
 /* Mobile menu */
-.mobile-menu{position:fixed;inset:0;z-index:899;background:var(--sand);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;opacity:0;pointer-events:none;transition:opacity .35s cubic-bezier(.16,1,.3,1);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:calc(80px + var(--safe-t)) 24px calc(24px + var(--safe-b))}
+.mobile-menu{position:fixed;inset:0;z-index:899;background:var(--sand);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;opacity:0;pointer-events:none;transition:opacity .35s cubic-bezier(.16,1,.3,1);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:calc(80px + var(--safe-t)) 24px calc(40px + var(--safe-b))}
 .mobile-menu.open{opacity:1;pointer-events:auto}
 .mobile-menu a{display:block;font-size:28px;font-weight:800;color:var(--ink);letter-spacing:-.02em;padding:16px 0;opacity:0;transform:translateY(20px);transition:opacity .4s,transform .5s cubic-bezier(.16,1,.3,1),color .2s}
 .mobile-menu.open a{opacity:1;transform:none}
@@ -219,7 +222,7 @@ details.faq .ans{padding:0 4px 28px;max-width:760px;color:#5a6b78;font-size:17px
 /* ===== APARTMENT PHOTO CAROUSEL ===== */
 .apt-carousel{position:relative;overflow:hidden;border-radius:22px;width:100%;touch-action:pan-y}
 .apt-carousel-track{display:flex;transition:transform .55s cubic-bezier(.16,1,.3,1);will-change:transform}
-.apt-carousel-slide{flex:0 0 calc(50% - 6px);height:300px;border-radius:16px;overflow:hidden;margin-right:12px}
+.apt-carousel-slide{flex:0 0 calc(50% - 6px);height:300px;border-radius:16px;overflow:hidden;margin-right:12px;flex-shrink:0}
 .apt-carousel-slide:last-child{margin-right:0}
 .apt-carousel-slide img{width:100%;height:100%;object-fit:cover}
 .apt-carousel-nav{display:flex;align-items:center;justify-content:space-between;margin-top:16px;gap:12px}
@@ -229,7 +232,7 @@ details.faq .ans{padding:0 4px 28px;max-width:760px;color:#5a6b78;font-size:17px
 .apt-dot{width:7px;height:7px;border-radius:50%;background:rgba(13,36,56,.18);cursor:pointer;transition:background .2s,transform .2s}
 .apt-dot.active{background:var(--accent);transform:scale(1.3)}
 @media(max-width:900px){
-  .apt-carousel-slide{flex:0 0 calc(100% - 12px);height:240px}
+  .apt-carousel-slide{flex:0 0 calc(100% - 4px);height:260px}
 }
 
 /* ==========================================================================
@@ -293,31 +296,51 @@ details.faq .ans{padding:0 4px 28px;max-width:760px;color:#5a6b78;font-size:17px
 
 /* ===== PHONE (≤560px) ===== */
 @media(max-width:560px){
-  .st-scene{height:220vh}
-  .st-scene[data-multi]{height:280vh}
+  /* Scrollytelling text */
   .st-h{font-size:clamp(26px,10vw,40px)!important}
   .st-text{padding:0 16px}
+  .st-sub{font-size:clamp(14px,4.2vw,18px)!important}
 
+  /* Layout grids */
   .tarif-grid .reveal{padding:22px!important}
   .resa-grid .reveal.reveal-r{padding:22px 18px!important}
-
   .footer-grid{grid-template-columns:1fr!important}
   .form-grid{grid-template-columns:1fr!important}
   .apt-images{grid-template-columns:1fr!important;grid-template-rows:220px 160px 160px!important}
   .apt-images .img-tall{grid-row:span 1!important}
   .trust-grid{grid-template-columns:1fr!important}
   .equip-grid{grid-template-columns:1fr 1fr!important}
-  .sticky-bar__inner{flex-direction:column;align-items:stretch;text-align:center}
-  .sticky-bar__inner>div:last-child{justify-content:center}
+  .gallery-masonry{columns:1!important}
+
+  /* Apartment carousel — bigger slides on phone */
+  .apt-carousel-slide{flex:0 0 calc(100% - 4px)!important;height:260px!important}
+
+  /* Sticky bar — keep row, just compact */
+  .sticky-bar__inner{
+    padding:9px 12px!important;
+    gap:8px!important;
+    border-radius:14px!important;
+  }
+  .sticky-bar__inner>div:first-child>div:first-child{font-size:10px!important}
+  .sticky-bar__inner>div:first-child>div:last-child{font-size:17px!important}
 
   /* Calendar */
-  #stay-label{font-size:16px!important}
-  #stay-price{font-size:22px!important}
+  #stay-label{font-size:15px!important}
+  #stay-price{font-size:20px!important}
+  .cal-day{font-size:12px!important;border-radius:8px!important}
 
   /* Hero CTA buttons — stack vertically */
-  .st-text [style*="display:flex"][style*="gap:16px"]{flex-direction:column!important;align-items:center}
-  .st-text [style*="display:inline-flex"][style*="gap:18px"]{flex-direction:column!important;gap:12px!important;padding:14px 20px!important}
+  .st-text [style*="display:flex"][style*="gap:14px"]{flex-direction:column!important;align-items:center!important}
+  .st-text [style*="display:inline-flex"][style*="gap:18px"]{flex-direction:column!important;gap:10px!important;padding:14px 18px!important;width:100%;max-width:320px}
 
-  /* Price block in hero — tighter */
-  .st-text [style*="display:inline-flex"][style*="gap:18px"] div[style*="font-size:clamp(30px"]{font-size:28px!important}
+  /* Price block divider */
+  .st-text [style*="width:1px"][style*="height:44px"]{display:none!important}
+}
+
+/* ===== VERY SMALL (≤375px — iPhone SE, older Android) ===== */
+@media(max-width:375px){
+  .st-h{font-size:clamp(22px,9vw,34px)!important}
+  .sticky-bar__inner{gap:6px!important}
+  .apt-carousel-slide{height:220px!important}
+  nav .site-nav{padding-left:12px!important;padding-right:12px!important}
 }

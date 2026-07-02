@@ -5,7 +5,10 @@
  *   - standard   : one sequence, one canvas
  *   - multi-seq  : N sequences played end-to-end on ONE pinned canvas
  *
- * Principle: 1 scroll px = 1 exact frame, no interpolation.
+ * Rules:
+ *   - pinSpacing:false on every scene → sections butt together, zero gaps
+ *   - RAF lock is PER-SCENE (local var) so scenes never block each other
+ *   - Canvas resize resets transform before scaling → no DPR accumulation
  */
 
 class ScrollController {
@@ -14,7 +17,6 @@ class ScrollController {
     this.scenes    = scenes;
     this.dpr       = Math.min(window.devicePixelRatio || 1, 2);
     this.isMobile  = window.innerWidth <= 900;
-    this._raf      = false;
   }
 
   /* ── canvas helpers ──────────────────────────── */
@@ -25,25 +27,27 @@ class ScrollController {
     const ctx = canvas.getContext('2d', { alpha: false, willReadFrequently: false });
     this._resizeCanvas(canvas, ctx);
     const ro = new ResizeObserver(() => this._resizeCanvas(canvas, ctx));
-    ro.observe(canvas);
+    ro.observe(canvas.parentElement || canvas);
     return { canvas, ctx };
   }
 
   _resizeCanvas(canvas, ctx) {
     const w = canvas.offsetWidth  || window.innerWidth;
     const h = canvas.offsetHeight || window.innerHeight;
+    // Setting canvas dimensions resets the 2D context — scale fresh each time
     canvas.width  = Math.round(w * this.dpr);
     canvas.height = Math.round(h * this.dpr);
-    ctx.scale(this.dpr, this.dpr);
+    ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
   }
 
   _drawFrame(ctx, img, canvas) {
     if (!img || !img.naturalWidth) return;
     const cw = canvas.offsetWidth  || window.innerWidth;
     const ch = canvas.offsetHeight || window.innerHeight;
+    // Cover-fit: fill the viewport, center the image
     const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
-    const sw = img.naturalWidth  * scale;
-    const sh = img.naturalHeight * scale;
+    const sw    = img.naturalWidth  * scale;
+    const sh    = img.naturalHeight * scale;
     ctx.drawImage(img, (cw - sw) / 2, (ch - sh) / 2, sw, sh);
   }
 
@@ -53,10 +57,10 @@ class ScrollController {
     const n = panels.length;
     if (!n) return;
     panels.forEach((el, i) => {
-      const center    = (i + 0.5) / n;
-      const halfWin   = 0.38 / n;
-      const fadeZone  = 0.14 / n;
-      const dist      = Math.abs(progress - center);
+      const center   = (i + 0.5) / n;
+      const halfWin  = 0.38 / n;
+      const fadeZone = 0.14 / n;
+      const dist     = Math.abs(progress - center);
       let opacity, ty;
 
       if (dist < halfWin - fadeZone) {
@@ -72,7 +76,7 @@ class ScrollController {
 
       el.style.opacity   = opacity;
       el.style.transform = `translateY(${ty}px)`;
-      el.style.filter    = opacity < 0.25 ? `blur(${(1 - opacity) * 7}px)` : 'none';
+      el.style.filter    = opacity < 0.25 ? `blur(${(1 - opacity) * 6}px)` : 'none';
       const line = el.querySelector('.st-line');
       if (line) line.style.width = opacity > 0.5 ? '80px' : '0';
     });
@@ -85,7 +89,9 @@ class ScrollController {
     if (!cv) return;
     const { canvas, ctx } = cv;
 
-    // Show first frame immediately when available
+    // Per-scene RAF lock — scenes never block each other
+    let raf = false;
+
     const tryFirstFrame = () => {
       const f = this.preloader.frame(scene, 0);
       if (f) { this._drawFrame(ctx, f, canvas); return; }
@@ -98,16 +104,16 @@ class ScrollController {
     );
 
     ScrollTrigger.create({
-      trigger : `#st-wrap-${scene.id}`,
-      start   : 'top top',
-      end     : `+=${scene.scrollHeight || 3000}`,
-      pin     : `#st-wrap-${scene.id} .st-sticky`,
-      pinSpacing: false,   // ← no extra padding inserted, scenes butt together
-      onUpdate: self => {
-        if (this._raf) return;
-        this._raf = true;
+      trigger   : `#st-wrap-${scene.id}`,
+      start     : 'top top',
+      end       : `+=${scene.scrollHeight || 3000}`,
+      pin       : `#st-wrap-${scene.id} .st-sticky`,
+      pinSpacing: false,
+      onUpdate  : self => {
+        if (raf) return;
+        raf = true;
         requestAnimationFrame(() => {
-          this._raf = false;
+          raf = false;
           const progress = self.progress;
           const idx   = Math.min(Math.round(progress * (scene.count - 1)), scene.count - 1);
           const frame = this.preloader.frame(scene, idx);
@@ -117,7 +123,6 @@ class ScrollController {
       }
     });
 
-    // Fade-in on first entry
     gsap.set(canvas, { opacity: 0 });
     ScrollTrigger.create({
       trigger: `#st-wrap-${scene.id}`,
@@ -127,8 +132,7 @@ class ScrollController {
     });
   }
 
-  /* ── register MULTI-SEQUENCE Respirez scene ──── */
-  //  One pinned viewport, N sequences end-to-end
+  /* ── register MULTI-SEQUENCE scene (Respirez) ── */
 
   _registerMultiSeq(sceneGroup) {
     const { wrapperId, sequences, totalScrollHeight } = sceneGroup;
@@ -137,7 +141,10 @@ class ScrollController {
     const { canvas, ctx } = cv;
 
     const seqCount = sequences.length;
-    const panels   = Array.from(
+    // Per-scene RAF lock
+    let raf = false;
+
+    const panels = Array.from(
       document.querySelectorAll(`#${wrapperId} .st-text`)
     );
 
@@ -153,17 +160,17 @@ class ScrollController {
       start     : 'top top',
       end       : `+=${totalScrollHeight}`,
       pin       : `#${wrapperId} .st-sticky`,
-      pinSpacing: false,   // ← no gap after this pinned block
+      pinSpacing: false,
       onUpdate  : self => {
-        if (this._raf) return;
-        this._raf = true;
+        if (raf) return;
+        raf = true;
         requestAnimationFrame(() => {
-          this._raf = false;
+          raf = false;
           const progress = self.progress;
 
-          // Which sequence is active?
+          // Map global progress → active sequence + local progress
           const seqIdx      = Math.min(Math.floor(progress * seqCount), seqCount - 1);
-          const seqProgress = (progress * seqCount) - seqIdx;   // 0→1 within sequence
+          const seqProgress = (progress * seqCount) - seqIdx;
           const seq         = sequences[seqIdx];
           const frameIdx    = Math.min(
             Math.round(seqProgress * (seq.count - 1)),
@@ -172,13 +179,11 @@ class ScrollController {
           const frame = this.preloader.frame(seq, frameIdx);
           if (frame) this._drawFrame(ctx, frame, canvas);
 
-          // Animate text panels across full progress range
           this._animatePanels(panels, progress);
         });
       }
     });
 
-    // Fade in
     gsap.set(canvas, { opacity: 0 });
     ScrollTrigger.create({
       trigger: `#${wrapperId}`,
@@ -188,7 +193,7 @@ class ScrollController {
     });
   }
 
-  /* ── PUBLIC: initialise all scenes ──────────── */
+  /* ── PUBLIC ──────────────────────────────────── */
 
   init() {
     if (!window.gsap || !window.ScrollTrigger) {
@@ -196,18 +201,24 @@ class ScrollController {
     }
     gsap.registerPlugin(ScrollTrigger);
 
-    // Standard single-sequence scenes
+    // iOS Safari: prevent rubber-band snap from breaking pinning
+    ScrollTrigger.config({ ignoreMobileResize: true });
+
     this.scenes
       .filter(s => s.type !== 'multi-seq')
       .forEach(s => this._registerStandard(s));
 
-    // Multi-sequence scenes
     this.scenes
       .filter(s => s.type === 'multi-seq')
       .forEach(s => this._registerMultiSeq(s));
 
-    // Refresh after fonts / layout settle
-    setTimeout(() => ScrollTrigger.refresh(), 400);
+    // Refresh after layout settles (fonts, safe-area, etc.)
+    setTimeout(() => ScrollTrigger.refresh(), 500);
+
+    // Re-refresh on orientation change (iOS)
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => ScrollTrigger.refresh(), 300);
+    });
   }
 
   refresh() { ScrollTrigger.refresh(); }

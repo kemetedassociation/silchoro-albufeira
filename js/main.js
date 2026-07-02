@@ -38,6 +38,13 @@ const EMAIL = 'contact@silchoro-albufeira.com';
 const PRICE_FROM = 43;
 const isMobile = /Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent) || window.innerWidth <= 900;
 
+// Mobile perf constants
+// stride=2 → load f0001,f0003,…,f0251 (even coverage, half the requests)
+// scrollHeight ×0.5 → page is 50% shorter on mobile (less exhausting to scroll)
+const MOB_STRIDE = 2;
+const MOB_COUNT  = 126;   // Math.ceil(251 / MOB_STRIDE)
+const MOB_SCROLL = 0.5;   // scroll-height multiplier for mobile
+
 /* ─────────────────────────────────────────────
    LOADER UI
    ───────────────────────────────────────────── */
@@ -71,24 +78,52 @@ document.addEventListener('DOMContentLoaded', () => {
     if (c) gsap.to(c, { opacity: 1, duration: 0.8, ease: 'power2.out' });
   };
 
-  // Flatten all sequences for the preloader (it only cares about basePath + count)
+  // Flatten all sequences for the preloader
+  // Mobile: stride=2 → every other frame (f0001,f0003,…) for full video coverage at half the load
   const allSeqs = [
     ...STANDARD_SCENES,
     ...RESPIREZ_SEQ,
-  ].map(s => isMobile ? { ...s, count: Math.ceil(s.count / 2) } : s);
+  ].map(s => isMobile
+    ? { ...s, count: MOB_COUNT, stride: MOB_STRIDE }
+    : { ...s, stride: 1 }
+  );
 
-  // scrollController gets full SCENE_CONFIG (with type info)
+  // scrollController gets full SCENE_CONFIG with type info + mobile adjustments
   const controllerScenes = isMobile
     ? SCENE_CONFIG.map(s => {
         if (s.type === 'multi-seq') {
           return {
             ...s,
-            sequences: s.sequences.map(seq => ({ ...seq, count: Math.ceil(seq.count / 2) })),
+            totalScrollHeight: Math.round(s.totalScrollHeight * MOB_SCROLL),
+            sequences: s.sequences.map(seq => ({
+              ...seq,
+              count : MOB_COUNT,
+              stride: MOB_STRIDE,
+            })),
           };
         }
-        return { ...s, count: Math.ceil(s.count / 2) };
+        return {
+          ...s,
+          count       : MOB_COUNT,
+          stride      : MOB_STRIDE,
+          scrollHeight: Math.round((s.scrollHeight || 3000) * MOB_SCROLL),
+        };
       })
     : SCENE_CONFIG;
+
+  // Sync wrapper div heights with effective scrollHeights (critical on mobile)
+  // If the div is taller than the GSAP end point, the canvas drifts after unpin
+  if (isMobile) {
+    controllerScenes.forEach(s => {
+      if (s.type === 'multi-seq') {
+        const el = document.getElementById(s.wrapperId);
+        if (el) el.style.height = s.totalScrollHeight + 'px';
+      } else {
+        const el = document.getElementById(`st-wrap-${s.id}`);
+        if (el) el.style.height = (s.scrollHeight || 3000) + 'px';
+      }
+    });
+  }
 
   const controller = new ScrollController(preloader, controllerScenes);
   preloader.load(allSeqs);
@@ -139,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const total   = slides.length;
     let cur = 0;
 
-    const getSlideW = () => slides[0].offsetWidth + 12;
+    const getSlideW = () => slides[0].offsetWidth + (isMobile ? 4 : 12);
     const pages     = () => Math.ceil(total / perView);
 
     function buildDots() {
