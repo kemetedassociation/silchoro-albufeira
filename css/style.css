@@ -1,4 +1,5 @@
 *{box-sizing:border-box;margin:0;padding:0}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 :root{
   --accent:#0a5c86;--accent-d:#0e7aa8;--accent-2:#19b6c9;
   --gold:#f5c33b;--sand:#faf6ef;--ink:#0d2438;

@@ -33,7 +33,7 @@ const SCENE_CONFIG = [
   RESPIREZ_SCENE,
 ];
 
-const PHONE = '33777777777'; // TODO: remplacer par le numéro WhatsApp de LUZDOSOL (format international sans + ni 0, ex: 351912345678)
+const PHONE = ''; // TODO: numéro WhatsApp de LUZDOSOL (format international sans + ni 0, ex: 351912345678). Tant que vide, les boutons "WhatsApp" basculent automatiquement sur l'email pour ne jamais contacter un mauvais numéro.
 const EMAIL = 'luzdosol351@gmail.com';
 const PRICE_FROM = 43;
 const RESA_TRACKER_URL = ''; // TODO: coller ici l'URL /exec du déploiement Google Apps Script (voir google-apps-script/Code.gs) pour activer l'email d'avis J+1
@@ -361,7 +361,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* --- WA / MAIL LINKS --- */
   const t = key => (window.luzdosolT ? window.luzdosolT(key) : key);
-  const waUrl = txt => `https://wa.me/${PHONE}` + (txt ? `?text=${encodeURIComponent(txt)}` : '');
+  // Tant que PHONE n'est pas configuré, on ne prend jamais le risque de contacter un vrai inconnu :
+  // tous les liens "WhatsApp" basculent silencieusement sur un email pré-rempli.
+  const waUrl = txt => PHONE
+    ? `https://wa.me/${PHONE}` + (txt ? `?text=${encodeURIComponent(txt)}` : '')
+    : `mailto:${EMAIL}` + (txt ? `?subject=${encodeURIComponent('LUZDOSOL - Albufeira')}&body=${encodeURIComponent(txt)}` : '');
   function refreshWaLinks() {
     document.querySelectorAll('.wa-link').forEach(el => { el.href = waUrl(t('wa_intro_msg')); });
   }
@@ -464,6 +468,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   document.getElementById('btn-wa-submit')?.addEventListener('click',()=>{
     const v=id=>document.getElementById(id)?.value||'';
+    const requiredIds=['f-prenom','f-nom','f-tel','f-email','f-date','f-voyageurs'];
+    for(const id of requiredIds){
+      const el=document.getElementById(id);
+      if(el && !el.checkValidity()){ el.reportValidity(); el.focus(); return; }
+    }
     trackReservation(v);
     window.open(waUrl(`${t('wa_resa_greeting')}\n\n${t('label_name')} : ${v('f-prenom')} ${v('f-nom')}\n${t('label_phone')} : ${v('f-tel')}\n${t('label_email')} : ${v('f-email')}\n${t('label_arrival')} : ${v('f-date')||(arrival?fmtDate(parseKey(arrival)):t('label_tbd'))}\n${t('label_travelers')} : ${v('f-voyageurs')}\n${t('label_message')} : ${v('f-msg')}`),'_blank');
   });
