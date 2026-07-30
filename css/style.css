@@ -318,6 +318,7 @@ details.faq .ans{padding:0 4px 28px;max-width:760px;color:#5a6b78;font-size:17px
 .mobile-menu.open a:nth-child(6){transition-delay:.25s}
 .mobile-menu.open a:nth-child(7){transition-delay:.3s}
 .mobile-menu.open a:nth-child(8){transition-delay:.35s}
+.mobile-menu.open a:nth-child(9){transition-delay:.4s}
 .mobile-menu a:active{color:var(--accent)}
 .mobile-menu .mob-cta{margin-top:20px;background:var(--accent);color:#fff!important;padding:18px 44px;border-radius:46px;font-size:18px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 12px 30px rgba(10,92,134,.25)}
 

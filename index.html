@@ -116,6 +116,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
         <span data-i18n="nav_galerie">Galerie</span>
       </a>
+      <a href="guide.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span data-i18n="nav_guide">Guide du séjour</span>
+      </a>
       <a href="#faq">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 1 1 3.6 2.9c-.5.1-.9.5-.9 1v1"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg>
         FAQ
@@ -146,6 +150,7 @@
   <a href="#tarifs" class="mob-link" data-i18n="nav_tarifs">Tarifs</a>
   <a href="#calendrier" class="mob-link" data-i18n="nav_calendrier">Calendrier</a>
   <a href="#galerie" class="mob-link" data-i18n="nav_galerie">Galerie</a>
+  <a href="guide.html" class="mob-link" data-i18n="nav_guide">Guide du séjour</a>
   <a href="#faq" class="mob-link">FAQ</a>
   <a href="#reservation" class="mob-link mob-cta" data-i18n="mob_reserve_arrow">Réserver →</a>
 </div>
@@ -382,6 +387,20 @@
       </div>
     </div>
   </div>
+</section>
+
+<!-- ============ GUIDE TEASER ============ -->
+<section style="padding:0 clamp(16px,4vw,32px) clamp(56px,10vw,110px);max-width:1280px;margin:0 auto">
+  <a href="guide.html" class="reveal lift" style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;background:linear-gradient(120deg,var(--ink),var(--accent));color:#fff;border-radius:26px;padding:clamp(28px,4vw,40px) clamp(28px,5vw,48px);text-decoration:none;box-shadow:0 20px 50px rgba(13,36,56,.18)">
+    <div style="display:flex;align-items:center;gap:20px">
+      <span style="width:56px;height:56px;border-radius:16px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:26px">📖</span>
+      <div>
+        <div style="font-weight:800;font-size:clamp(19px,2.2vw,24px);letter-spacing:-.01em" data-i18n="guide_teaser_title">Notre guide complet du séjour</div>
+        <p style="margin-top:6px;color:rgba(255,255,255,.78);font-size:15px;max-width:480px" data-i18n="guide_teaser_sub">Restaurants, vie nocturne et plus belles villes de l'Algarve — nos meilleures adresses, sélectionnées pour vous.</p>
+      </div>
+    </div>
+    <span style="background:#fff;color:var(--ink);padding:13px 26px;border-radius:40px;font-weight:700;font-size:14px;white-space:nowrap;flex-shrink:0" data-i18n="guide_teaser_cta">Voir le guide →</span>
+  </a>
 </section>
 
 <!-- ============ STATS ============ -->
@@ -651,7 +670,7 @@
       <div style="display:flex;align-items:center;gap:11px;font-weight:800;font-size:20px;color:#fff"><span style="width:36px;height:36px;border-radius:11px;background:linear-gradient(140deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-family:'Newsreader',serif;font-style:italic;font-weight:500;font-size:20px">L</span>UZDOSOL<span style="color:var(--accent-2)">.</span></div>
       <p style="margin-top:16px;font-size:14px;line-height:1.6;max-width:300px" data-i18n="footer_desc">Votre appartement de vacances à Albufeira. Réservez en direct, profitez du meilleur tarif.</p>
     </div>
-    <div><div style="color:#fff;font-weight:700;font-size:14px;margin-bottom:14px" data-i18n="footer_nav_title">Navigation</div><div style="display:flex;flex-direction:column;gap:9px;font-size:14px"><a href="#activites" data-i18n="nav_albufeira">Albufeira</a><a href="#appartement" data-i18n="nav_appartement">Appartement</a><a href="#tarifs" data-i18n="nav_tarifs">Tarifs</a><a href="#calendrier" data-i18n="nav_calendrier">Calendrier</a><a href="#galerie" data-i18n="nav_galerie">Galerie</a></div></div>
+    <div><div style="color:#fff;font-weight:700;font-size:14px;margin-bottom:14px" data-i18n="footer_nav_title">Navigation</div><div style="display:flex;flex-direction:column;gap:9px;font-size:14px"><a href="#activites" data-i18n="nav_albufeira">Albufeira</a><a href="#appartement" data-i18n="nav_appartement">Appartement</a><a href="#tarifs" data-i18n="nav_tarifs">Tarifs</a><a href="#calendrier" data-i18n="nav_calendrier">Calendrier</a><a href="#galerie" data-i18n="nav_galerie">Galerie</a><a href="guide.html" data-i18n="nav_guide">Guide du séjour</a></div></div>
     <div><div style="color:#fff;font-weight:700;font-size:14px;margin-bottom:14px" data-i18n="footer_legal_title">Légal</div><div style="display:flex;flex-direction:column;gap:9px;font-size:14px"><a href="mentions-legales.html" data-i18n="footer_legal1">Mentions légales</a><a href="politique-confidentialite.html" data-i18n="footer_legal2">Politique de confidentialité</a><a href="#faq">FAQ</a></div></div>
     <div><div style="color:#fff;font-weight:700;font-size:14px;margin-bottom:14px" data-i18n="footer_contact_title">Contact</div><div style="display:flex;flex-direction:column;gap:9px;font-size:14px"><a href="#" class="wa-link" target="_blank">WhatsApp</a><a href="#contact">Email</a><a href="https://instagram.com/luzdosol351" target="_blank" rel="noopener">Instagram</a><span style="opacity:.6" data-i18n="footer_paypal">Paiement par virement PayPal</span></div></div>
   </div>
