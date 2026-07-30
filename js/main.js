@@ -33,9 +33,10 @@ const SCENE_CONFIG = [
   RESPIREZ_SCENE,
 ];
 
-const PHONE = '33777777777';
-const EMAIL = 'contact@silchoro-albufeira.com';
+const PHONE = '33777777777'; // TODO: remplacer par le numéro WhatsApp de LUZDOSOL (format international sans + ni 0, ex: 351912345678)
+const EMAIL = 'luzdosol351@gmail.com';
 const PRICE_FROM = 43;
+const RESA_TRACKER_URL = ''; // TODO: coller ici l'URL /exec du déploiement Google Apps Script (voir google-apps-script/Code.gs) pour activer l'email d'avis J+1
 const isMobile = /Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent) || window.innerWidth <= 900;
 
 // Mobile perf constants
@@ -223,15 +224,25 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
     buildDots();
-    document.getElementById('apt-prev')?.addEventListener('click', () => goTo(cur - perView));
-    document.getElementById('apt-next')?.addEventListener('click', () => goTo(cur + perView));
+    document.getElementById('apt-prev')?.addEventListener('click', () => { goTo(cur - perView); startAuto(); });
+    document.getElementById('apt-next')?.addEventListener('click', () => { goTo(cur + perView); startAuto(); });
     let tx = 0;
-    track.parentElement.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+    track.parentElement.addEventListener('touchstart', e => { tx = e.touches[0].clientX; stopAuto(); }, { passive: true });
     track.parentElement.addEventListener('touchend', e => {
       const dx = tx - e.changedTouches[0].clientX;
       if (Math.abs(dx) > 40) goTo(dx > 0 ? cur + perView : cur - perView);
+      startAuto();
     }, { passive: true });
     window.addEventListener('resize', () => { buildDots(); goTo(cur); });
+
+    /* Défilement automatique toutes les 6s, pause au survol/interaction */
+    let autoTimer = null;
+    function nextSlide() { goTo(cur + perView >= total ? 0 : cur + perView); }
+    function startAuto() { stopAuto(); autoTimer = setInterval(nextSlide, 6000); }
+    function stopAuto() { if (autoTimer) clearInterval(autoTimer); }
+    startAuto();
+    track.parentElement.addEventListener('mouseenter', stopAuto);
+    track.parentElement.addEventListener('mouseleave', startAuto);
   }
 
   /* --- NAV SCROLL STYLE --- */
@@ -349,9 +360,13 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLB(); });
 
   /* --- WA / MAIL LINKS --- */
-  const waText = "Bonjour ! Je suis intéressé(e) par l'appartement Silchoro à Albufeira. Pouvez-vous m'indiquer les disponibilités et le meilleur tarif ?";
-  const waUrl = t => `https://wa.me/${PHONE}` + (t ? `?text=${encodeURIComponent(t)}` : '');
-  document.querySelectorAll('.wa-link').forEach(el => { el.href = waUrl(waText); });
+  const t = key => (window.luzdosolT ? window.luzdosolT(key) : key);
+  const waUrl = txt => `https://wa.me/${PHONE}` + (txt ? `?text=${encodeURIComponent(txt)}` : '');
+  function refreshWaLinks() {
+    document.querySelectorAll('.wa-link').forEach(el => { el.href = waUrl(t('wa_intro_msg')); });
+  }
+  refreshWaLinks();
+  window.addEventListener('luzdosol-lang-change', () => { refreshWaLinks(); renderCalendar(); });
   const ml = document.querySelector('.mail-link');
   if (ml) ml.href = `mailto:${EMAIL}`;
   document.querySelectorAll('.price-from').forEach(el => { el.textContent = PRICE_FROM; });
@@ -360,8 +375,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const today = new Date(); today.setHours(0, 0, 0, 0);
   let calY = today.getFullYear(), calM = today.getMonth(), arrival = null;
   const occ = [];
-  for (let i = 0; i < 5; i++) occ.push(key(new Date(calY, calM, 11 + i)));
-  for (let i = 0; i < 6; i++) occ.push(key(new Date(calY, calM + 1, 8 + i)));
+  // Dates réellement occupées, synchronisées depuis Booking.com (voir .github/workflows/sync-booking-calendar.yml)
+  fetch('data/booked-dates.json').then(r => r.ok ? r.json() : null).then(d => {
+    if (d && Array.isArray(d.bookedDates)) {
+      occ.length = 0;
+      d.bookedDates.forEach(k => occ.push(k));
+      renderCalendar();
+    }
+  }).catch(() => {});
 
   function key(d) { return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; }
   function parseKey(k) { const [y,m,da]=k.split('-').map(Number); return new Date(y,m-1,da); }
@@ -379,8 +400,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if ([9,10,4].includes(m)) return 50;
     return null;
   }
-  function fmtDate(d) { return d.toLocaleDateString('fr-FR',{day:'numeric',month:'long'}); }
-  function monthName(y,m) { const s=new Date(y,m,1).toLocaleDateString('fr-FR',{month:'long',year:'numeric'}); return s[0].toUpperCase()+s.slice(1); }
+  const calLocale = () => (window.LUZDOSOL_LOCALE_MAP && window.LUZDOSOL_LOCALE_MAP[window.LUZDOSOL_LANG]) || 'fr-FR';
+  function fmtDate(d) { return d.toLocaleDateString(calLocale(),{day:'numeric',month:'long'}); }
+  function monthName(y,m) { const s=new Date(y,m,1).toLocaleDateString(calLocale(),{month:'long',year:'numeric'}); return s[0].toUpperCase()+s.slice(1); }
 
   function renderCalendar() {
     const cont = document.getElementById('cal-container');
@@ -418,11 +440,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateStay(){
     const l=document.getElementById('stay-label'),p=document.getElementById('stay-price');
     if(!l||!p)return;
-    if(!arrival){l.textContent="Sélectionnez une date d'arrivée";p.textContent='—';return;}
+    if(!arrival){l.textContent=t('stay_default');l.dataset.set='0';p.textContent='—';return;}
+    l.dataset.set='1';
     const a=parseKey(arrival),dep=new Date(a);dep.setDate(a.getDate()+6);
     const pr=nightlyPrice(a.getMonth());
-    l.textContent=fmtDate(a)+' → '+fmtDate(dep)+' · 6 nuits';
-    p.textContent=pr?pr+' € / nuit':'Sur demande';
+    l.textContent=fmtDate(a)+' → '+fmtDate(dep)+' · 6 '+t('nights_word');
+    p.textContent=pr?pr+t('per_night'):t('on_request');
   }
   function updateDateInput(){const i=document.getElementById('f-date');if(i&&arrival)i.value=fmtDate(parseKey(arrival));}
   document.getElementById('cal-prev')?.addEventListener('click',()=>{calM--;if(calM<0){calM=11;calY--;}renderCalendar();});
@@ -430,12 +453,22 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCalendar();
 
   /* --- FORM --- */
+  function trackReservation(v){
+    if(!RESA_TRACKER_URL)return;
+    const depart=arrival?(()=>{const a=parseKey(arrival);a.setDate(a.getDate()+6);return fmtDate(a);})():'';
+    const body=new URLSearchParams({
+      prenom:v('f-prenom'),nom:v('f-nom'),email:v('f-email'),tel:v('f-tel'),
+      arrivee:v('f-date')||(arrival?fmtDate(parseKey(arrival)):''),depart,voyageurs:v('f-voyageurs')
+    });
+    fetch(RESA_TRACKER_URL,{method:'POST',mode:'no-cors',body}).catch(()=>{});
+  }
   document.getElementById('btn-wa-submit')?.addEventListener('click',()=>{
     const v=id=>document.getElementById(id)?.value||'';
-    window.open(waUrl(`Bonjour ! Je souhaite réserver l'appartement Silchoro à Albufeira.\n\nNom : ${v('f-prenom')} ${v('f-nom')}\nTéléphone : ${v('f-tel')}\nEmail : ${v('f-email')}\nArrivée : ${v('f-date')||(arrival?fmtDate(parseKey(arrival)):'à définir')}\nVoyageurs : ${v('f-voyageurs')}\nMessage : ${v('f-msg')}`),'_blank');
+    trackReservation(v);
+    window.open(waUrl(`${t('wa_resa_greeting')}\n\n${t('label_name')} : ${v('f-prenom')} ${v('f-nom')}\n${t('label_phone')} : ${v('f-tel')}\n${t('label_email')} : ${v('f-email')}\n${t('label_arrival')} : ${v('f-date')||(arrival?fmtDate(parseKey(arrival)):t('label_tbd'))}\n${t('label_travelers')} : ${v('f-voyageurs')}\n${t('label_message')} : ${v('f-msg')}`),'_blank');
   });
-  document.getElementById('btn-stripe')?.addEventListener('click',()=>{
-    window.open(waUrl('Bonjour, je souhaite régler un acompte via Stripe pour ma réservation à Albufeira.'),'_blank');
+  document.getElementById('btn-paypal')?.addEventListener('click',()=>{
+    window.open(waUrl(t('wa_paypal_msg')),'_blank');
   });
   document.getElementById('f-date')?.addEventListener('focus',function(){if(arrival)this.value=fmtDate(parseKey(arrival));});
 });
