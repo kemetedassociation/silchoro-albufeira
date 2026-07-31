@@ -33,7 +33,7 @@ const SCENE_CONFIG = [
   RESPIREZ_SCENE,
 ];
 
-const PHONE = ''; // TODO: numéro WhatsApp de LUZDOSOL (format international sans + ni 0, ex: 351912345678). Tant que vide, les boutons "WhatsApp" basculent automatiquement sur l'email pour ne jamais contacter un mauvais numéro.
+const PHONE = '33622907584'; // Numéro WhatsApp de LUZDOSOL
 const EMAIL = 'luzdosol351@gmail.com';
 const PRICE_FROM = 43;
 const RESA_TRACKER_URL = ''; // TODO: coller ici l'URL /exec du déploiement Google Apps Script (voir google-apps-script/Code.gs) pour activer l'email d'avis J+1
