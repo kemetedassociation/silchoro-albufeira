@@ -13,19 +13,18 @@ const STANDARD_SCENES = [
   { id: 'scene3', basePath: 'assets/frames/scene3', count: 251, scrollHeight: 2800 },
 ];
 
-// Respirez: 4 sequences played end-to-end on ONE pinned canvas
-// vv-a03 → vv-a08 → vv-a10 → vv-a11
+// Respirez: 3 sequences played end-to-end on ONE pinned canvas
+// vv-a03 → vv-a08 → vv-a11
 const RESPIREZ_SEQ = [
   { id: 'resp-a', basePath: 'assets/frames/resp-a', count: 251 },
   { id: 'resp-b', basePath: 'assets/frames/resp-b', count: 251 },
-  { id: 'resp-c', basePath: 'assets/frames/resp-c', count: 251 },
   { id: 'resp-d', basePath: 'assets/frames/resp-d', count: 251 },
 ];
 const RESPIREZ_SCENE = {
   type           : 'multi-seq',
   wrapperId      : 'st-wrap-respirez',
   sequences      : RESPIREZ_SEQ,
-  totalScrollHeight: 2800 * 4,   // 4 sequences × 2800px = 11200px total
+  totalScrollHeight: 2800 * 3,   // 3 sequences × 2800px = 8400px total
 };
 
 const SCENE_CONFIG = [
@@ -39,12 +38,13 @@ const PRICE_FROM = 43;
 const RESA_TRACKER_URL = ''; // TODO: coller ici l'URL /exec du déploiement Google Apps Script (voir google-apps-script/Code.gs) pour activer l'email d'avis J+1
 const isMobile = /Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent) || window.innerWidth <= 900;
 
-// Mobile perf constants
-// stride=2 → load f0001,f0003,…,f0251 (even coverage, half the requests)
-// scrollHeight ×0.5 → page is 50% shorter on mobile (less exhausting to scroll)
-const MOB_STRIDE = 2;
-const MOB_COUNT  = 126;   // Math.ceil(251 / MOB_STRIDE)
-const MOB_SCROLL = 0.5;   // scroll-height multiplier for mobile
+// Perf constants
+// stride=2 → load f0001,f0003,…,f0251 (even coverage, half the requests) — applied
+// on both desktop and mobile so the whole site is visually ready much faster.
+// scrollHeight ×0.5 → additionally, page is 50% shorter on mobile (less exhausting to scroll)
+const FRAME_STRIDE = 2;
+const FRAME_COUNT  = 126;   // Math.ceil(251 / FRAME_STRIDE)
+const MOB_SCROLL   = 0.5;   // scroll-height multiplier for mobile only
 
 /* ─────────────────────────────────────────────
    LOADER — animated messages
@@ -88,32 +88,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const allSeqs = [
     ...STANDARD_SCENES,
     ...RESPIREZ_SEQ,
-  ].map(s => isMobile
-    ? { ...s, count: MOB_COUNT, stride: MOB_STRIDE }
-    : { ...s, stride: 1 }
-  );
+  ].map(s => ({ ...s, count: FRAME_COUNT, stride: FRAME_STRIDE }));
 
-  const controllerScenes = isMobile
-    ? SCENE_CONFIG.map(s => {
-        if (s.type === 'multi-seq') {
-          return {
-            ...s,
-            totalScrollHeight: Math.round(s.totalScrollHeight * MOB_SCROLL),
-            sequences: s.sequences.map(seq => ({
-              ...seq,
-              count : MOB_COUNT,
-              stride: MOB_STRIDE,
-            })),
-          };
-        }
-        return {
-          ...s,
-          count       : MOB_COUNT,
-          stride      : MOB_STRIDE,
-          scrollHeight: Math.round((s.scrollHeight || 3000) * MOB_SCROLL),
-        };
-      })
-    : SCENE_CONFIG;
+  const controllerScenes = SCENE_CONFIG.map(s => {
+    if (s.type === 'multi-seq') {
+      return {
+        ...s,
+        totalScrollHeight: Math.round(s.totalScrollHeight * (isMobile ? MOB_SCROLL : 1)),
+        sequences: s.sequences.map(seq => ({
+          ...seq,
+          count : FRAME_COUNT,
+          stride: FRAME_STRIDE,
+        })),
+      };
+    }
+    return {
+      ...s,
+      count       : FRAME_COUNT,
+      stride      : FRAME_STRIDE,
+      scrollHeight: Math.round((s.scrollHeight || 3000) * (isMobile ? MOB_SCROLL : 1)),
+    };
+  });
 
   // Sync wrapper heights before GSAP init to prevent canvas drift after unpin
   if (isMobile) {

@@ -96,17 +96,17 @@ class FramePreloader {
       this._urlsByPath.set(scene.basePath, urls); // index by basePath for cross-object lookup
     }
 
-    // Priority 1: first scene — 12 concurrent, block until done
+    // Priority 1: first scene — 16 concurrent, block until done
     if (scenes[0]) {
-      await this._loadBatch(scenes[0].urls, 12);
+      await this._loadBatch(scenes[0].urls, 16);
     }
 
-    // Priority 2+: remaining scenes — strict sequence, 4 concurrent each
+    // Priority 2+: remaining scenes — strict sequence, 8 concurrent each
     // Ensures scene2 frames are ready before scene3 starts loading
     const rest = scenes.slice(1);
     (async () => {
       for (const scene of rest) {
-        await this._loadBatch(scene.urls, 4).catch(() => {});
+        await this._loadBatch(scene.urls, 8).catch(() => {});
       }
     })();
   }

@@ -27,9 +27,9 @@
 
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/style.css">
-  <!-- GSAP + ScrollTrigger -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <!-- GSAP + ScrollTrigger — self-hosted, deferred so they never block first paint -->
+  <script src="js/vendor/gsap.min.js" defer></script>
+  <script src="js/vendor/ScrollTrigger.min.js" defer></script>
 </head>
 <body>
 
@@ -231,7 +231,7 @@
 </div>
 
 <!-- ── RESPIREZ : 1 pinned canvas, 4 sequences end-to-end ── -->
-<div id="st-wrap-respirez" class="st-wrap" style="height:11200px">
+<div id="st-wrap-respirez" class="st-wrap" style="height:8400px">
   <div class="st-sticky">
     <canvas id="canvas-respirez" class="st-canvas" style="opacity:0"></canvas>
     <div class="st-dim" style="background:linear-gradient(180deg,rgba(8,30,48,.32) 0%,rgba(8,30,48,.06) 40%,rgba(8,30,48,.5) 100%)"></div>
@@ -259,18 +259,7 @@
       <div class="st-line"></div>
     </div></div>
 
-    <!-- seq 2 (vv-a10) : panels 5-6 -->
-    <div class="st-overlay"><div class="st-text">
-      <h2 class="st-h" style="font-size:clamp(28px,4.5vw,64px)" data-i18n-html="resp_h2_algarve">L'Algarve,<br><i>grandeur nature.</i></h2>
-      <p class="st-sub" data-i18n="resp_sub_algarve">Des falaises dorées aux plages infinies — chaque jour est une carte postale.</p>
-      <div class="st-line"></div>
-    </div></div>
-    <div class="st-overlay"><div class="st-text">
-      <p class="st-sub" style="font-size:clamp(18px,2.8vw,30px);font-weight:500;font-family:'Newsreader',serif;font-style:italic;max-width:700px">« 300 jours de soleil. L'Algarve ne connaît pas la grisaille. »</p>
-      <div class="st-line"></div>
-    </div></div>
-
-    <!-- seq 3 (vv-a11) : panels 7-8 -->
+    <!-- seq 2 (vv-a11) : panels 5-6 -->
     <div class="st-overlay"><div class="st-text">
       <p class="st-sub" style="font-size:clamp(18px,2.8vw,30px);font-weight:500;font-family:'Newsreader',serif;font-style:italic;max-width:700px">« Le soleil se couche. La nuit d'Albufeira commence à peine. »</p>
       <div class="st-line"></div>
@@ -680,10 +669,10 @@
   </div>
 </footer>
 
-<script src="js/i18n.js"></script>
-<script src="js/preloader.js"></script>
-<script src="js/scrollController.js"></script>
-<script src="js/main.js"></script>
+<script src="js/i18n.js" defer></script>
+<script src="js/preloader.js" defer></script>
+<script src="js/scrollController.js" defer></script>
+<script src="js/main.js" defer></script>
 
 <!-- Mesure d'audience respectueuse de la vie privée (aucun cookie, aucune donnée personnelle) -->
 <!-- TODO: créer un compte gratuit sur https://www.goatcounter.com/ (2 min, sans carte bancaire),
