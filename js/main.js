@@ -13,18 +13,19 @@ const STANDARD_SCENES = [
   { id: 'scene3', basePath: 'assets/frames/scene3', count: 251, scrollHeight: 2800 },
 ];
 
-// Respirez: 3 sequences played end-to-end on ONE pinned canvas
-// vv-a03 → vv-a08 → vv-a11
+// Respirez: 4 sequences played end-to-end on ONE pinned canvas
+// vv-a03 → vv-a08 → vv-a11a → vv-a11
 const RESPIREZ_SEQ = [
   { id: 'resp-a', basePath: 'assets/frames/resp-a', count: 251 },
   { id: 'resp-b', basePath: 'assets/frames/resp-b', count: 251 },
+  { id: 'resp-c', basePath: 'assets/frames/resp-c', count: 251 },
   { id: 'resp-d', basePath: 'assets/frames/resp-d', count: 251 },
 ];
 const RESPIREZ_SCENE = {
   type           : 'multi-seq',
   wrapperId      : 'st-wrap-respirez',
   sequences      : RESPIREZ_SEQ,
-  totalScrollHeight: 2800 * 3,   // 3 sequences × 2800px = 8400px total
+  totalScrollHeight: 2800 * 4,   // 4 sequences × 2800px = 11200px total
 };
 
 const SCENE_CONFIG = [
