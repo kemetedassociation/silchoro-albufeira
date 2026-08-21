@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Fetch the Booking.com iCal export for LUZDOSOL and write data/booked-dates.json.
+"""Fetch iCal exports for LUZDOSOL (Booking.com and/or Airbnb) and write data/booked-dates.json.
 
 Run by .github/workflows/sync-booking-calendar.yml on a schedule.
-Requires the BOOKING_ICAL_URL environment variable (the iCal export link
-from Booking.com Extranet > Calendrier > Synchroniser les calendriers).
+Reads iCal export URLs from the BOOKING_ICAL_URL and/or AIRBNB_ICAL_URL
+environment variables (at least one must be set):
+  - Booking.com Extranet > Calendrier > Synchroniser les calendriers
+  - Airbnb Hosting > Calendrier > disponibilité > Synchroniser les calendriers > Exporter le calendrier
 """
 import json
 import os
@@ -11,7 +13,10 @@ import sys
 import urllib.request
 from datetime import date, timedelta
 
-ICAL_URL = os.environ.get("BOOKING_ICAL_URL", "")
+ICAL_SOURCES = {
+    "Booking.com": os.environ.get("BOOKING_ICAL_URL", ""),
+    "Airbnb": os.environ.get("AIRBNB_ICAL_URL", ""),
+}
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "booked-dates.json")
 
 
@@ -62,22 +67,24 @@ def to_key(d):
 
 
 def main():
-    if not ICAL_URL:
-        print("BOOKING_ICAL_URL is not set — skipping sync.", file=sys.stderr)
+    sources = {name: url for name, url in ICAL_SOURCES.items() if url}
+    if not sources:
+        print("Neither BOOKING_ICAL_URL nor AIRBNB_ICAL_URL is set — skipping sync.", file=sys.stderr)
         sys.exit(1)
 
-    ics_text = fetch_ical(ICAL_URL)
-    events = parse_events(ics_text)
-
     booked = set()
-    for ev in events:
-        try:
-            start = parse_date(ev["DTSTART"])
-            end = parse_date(ev["DTEND"])
-        except (KeyError, ValueError):
-            continue
-        for d in expand_range(start, end):
-            booked.add(to_key(d))
+    for name, url in sources.items():
+        ics_text = fetch_ical(url)
+        events = parse_events(ics_text)
+        for ev in events:
+            try:
+                start = parse_date(ev["DTSTART"])
+                end = parse_date(ev["DTEND"])
+            except (KeyError, ValueError):
+                continue
+            for d in expand_range(start, end):
+                booked.add(to_key(d))
+        print(f"{name}: {len(events)} events")
 
     booked_sorted = sorted(booked, key=lambda k: tuple(map(int, k.split("-"))))
 
