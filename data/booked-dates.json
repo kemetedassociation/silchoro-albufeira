@@ -1,4 +1,9 @@
 {
-  "bookedDates": [],
-  "updatedAt": null
+  "bookedDates": [
+    "2026-9-10",
+    "2026-9-11",
+    "2026-9-12",
+    "2026-9-13"
+  ],
+  "updatedAt": "2026-08-21"
 }
