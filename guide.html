@@ -114,9 +114,63 @@
 <div class="cursor-ring"></div>
 <div class="st-progress"></div>
 
+<div id="page-transition" class="pt-active"><img src="assets/icons/logo-mark.webp" alt=""></div>
+
+<div class="sticky-bar">
+  <div class="sticky-bar__inner">
+    <div style="color:#fff;line-height:1.15">
+      <div style="font-size:12px;color:rgba(255,255,255,.62);font-weight:600;letter-spacing:.04em" data-i18n="price_from">À partir de</div>
+      <div style="font-size:21px;font-weight:800;letter-spacing:-.02em"><span class="price-from">43</span>&nbsp;€<span style="font-size:13px;font-weight:500;color:rgba(255,255,255,.7)" data-i18n="per_night"> / nuit</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <a href="tarifs.html#calendrier" class="magnetic" data-magnetic data-i18n="nav_reserve" style="background:#fff;color:var(--ink);padding:12px 22px;border-radius:40px;font-weight:700;font-size:15px;white-space:nowrap">Réserver</a>
+      <a href="#" class="magnetic wa-link" data-magnetic target="_blank" aria-label="WhatsApp" style="width:46px;height:46px;border-radius:50%;background:#25d366;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.4 2.1L8 9.6a16 16 0 0 0 6 6l1.2-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg></a>
+    </div>
+  </div>
+</div>
+
+<nav class="site-nav">
+  <a href="index.html" style="display:flex;align-items:center;gap:11px;font-weight:800;font-size:20px;letter-spacing:-.02em;flex-shrink:0">
+    <img src="assets/icons/logo-mark.webp" alt="LUZDOSOL" width="36" height="36" style="width:36px;height:36px;border-radius:11px;object-fit:cover">
+    <span>UZDOSOL<span style="color:var(--accent)">.</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="appartement.html" class="nav-link" data-i18n="nav_appartement">Appartement</a>
+    <a href="albufeira.html" class="nav-link" data-i18n="nav_albufeira">Albufeira</a>
+    <a href="tarifs.html" class="nav-link" data-i18n="nav_tarifs">Tarifs</a>
+    <a href="galerie.html" class="nav-link" data-i18n="nav_galerie">Galerie</a>
+    <a href="guide.html" class="nav-link active" data-i18n="nav_guide">Guide</a>
+    <a href="contact.html" class="nav-link" data-i18n="nav_contact">Contact</a>
+  </div>
+  <div class="lang-switch" aria-label="Langue">
+    <button data-lang="fr" type="button">FR</button>
+    <button data-lang="en" type="button">EN</button>
+    <button data-lang="es" type="button">ES</button>
+    <button data-lang="pt" type="button">PT</button>
+  </div>
+  <a href="tarifs.html#reservation" class="magnetic nav-cta-desktop" data-magnetic data-i18n="nav_reserve" style="background:var(--accent);color:#fff;padding:11px 22px;border-radius:40px;font-weight:600;font-size:15px;box-shadow:0 8px 24px rgba(10,92,134,.3);flex-shrink:0">Réserver</a>
+  <button class="nav-burger" id="nav-burger" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <div class="lang-switch lang-switch-mobile" aria-label="Langue">
+    <button data-lang="fr" type="button">FR</button>
+    <button data-lang="en" type="button">EN</button>
+    <button data-lang="es" type="button">ES</button>
+    <button data-lang="pt" type="button">PT</button>
+  </div>
+  <a href="appartement.html" class="mob-link" data-i18n="nav_appartement">Appartement</a>
+  <a href="albufeira.html" class="mob-link" data-i18n="nav_albufeira">Albufeira</a>
+  <a href="tarifs.html" class="mob-link" data-i18n="nav_tarifs">Tarifs</a>
+  <a href="galerie.html" class="mob-link" data-i18n="nav_galerie">Galerie</a>
+  <a href="guide.html" class="mob-link" data-i18n="nav_guide">Guide du séjour</a>
+  <a href="contact.html" class="mob-link" data-i18n="nav_contact">Contact</a>
+  <a href="tarifs.html#reservation" class="mob-link mob-cta" data-i18n="mob_reserve_arrow">Réserver →</a>
+</div>
+
 <div class="guide-hero-wrap">
   <div class="guide-hero-sticky">
-    <img class="guide-hero-img" src="assets/images/ph03.jpg" alt="Vue aérienne d'Albufeira">
+    <img class="guide-hero-img" src="assets/images/ph03.webp" alt="Vue aérienne d'Albufeira">
     <div class="st-dim"></div>
     <div class="st-vignette"></div>
     <a class="guide-back guide-hero-back magnetic" data-magnetic href="index.html">&larr; Retour au site</a>
@@ -164,9 +218,9 @@
 
   <div class="guide-eyebrow reveal" style="margin-top:36px">Services utiles</div>
   <div class="svc-row reveal reveal-sc">
-    <div class="svc-card"><img src="assets/guide/a-015.jpg" alt="Taxi à Albufeira" loading="lazy"><div class="scrim"></div><span>Taxi</span></div>
-    <div class="svc-card"><img src="assets/guide/a-016.jpg" alt="Pharmacie à Albufeira" loading="lazy"><div class="scrim"></div><span>Pharmacie</span></div>
-    <div class="svc-card"><img src="assets/guide/a-017.jpg" alt="Hôpital à Albufeira" loading="lazy"><div class="scrim"></div><span>Hôpital</span></div>
+    <div class="svc-card"><img src="assets/guide/a-015.webp" alt="Taxi à Albufeira" loading="lazy"><div class="scrim"></div><span>Taxi</span></div>
+    <div class="svc-card"><img src="assets/guide/a-016.webp" alt="Pharmacie à Albufeira" loading="lazy"><div class="scrim"></div><span>Pharmacie</span></div>
+    <div class="svc-card"><img src="assets/guide/a-017.webp" alt="Hôpital à Albufeira" loading="lazy"><div class="scrim"></div><span>Hôpital</span></div>
   </div>
 </section>
 
@@ -208,6 +262,27 @@
   <a class="guide-back" href="index.html" style="color:var(--accent)">&larr; Retour au site LUZDOSOL</a>
 </div>
 
+<!-- ============ FOOTER ============ -->
+<footer style="background:#081826;color:rgba(255,255,255,.7);padding:clamp(36px,8vw,64px) clamp(16px,4vw,32px) clamp(24px,4vw,36px)">
+  <div class="footer-grid" style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px">
+    <div>
+      <div style="display:flex;align-items:center;gap:11px;font-weight:800;font-size:20px;color:#fff"><img src="assets/icons/logo-mark.webp" alt="LUZDOSOL" width="36" height="36" style="width:36px;height:36px;border-radius:11px;object-fit:cover">UZDOSOL<span style="color:var(--accent-2)">.</span></div>
+      <p style="margin-top:16px;font-size:14px;line-height:1.6;max-width:300px" data-i18n="footer_desc">Votre appartement de vacances à Albufeira. Réservez en direct, profitez du meilleur tarif.</p>
+    </div>
+    <div><div style="color:#fff;font-weight:700;font-size:14px;margin-bottom:14px" data-i18n="footer_nav_title">Navigation</div><div style="display:flex;flex-direction:column;gap:9px;font-size:14px"><a href="appartement.html" data-i18n="nav_appartement">Appartement</a><a href="albufeira.html" data-i18n="nav_albufeira">Albufeira</a><a href="tarifs.html" data-i18n="nav_tarifs">Tarifs</a><a href="galerie.html" data-i18n="nav_galerie">Galerie</a><a href="guide.html" data-i18n="nav_guide">Guide du séjour</a></div></div>
+    <div><div style="color:#fff;font-weight:700;font-size:14px;margin-bottom:14px" data-i18n="footer_legal_title">Légal</div><div style="display:flex;flex-direction:column;gap:9px;font-size:14px"><a href="mentions-legales.html" data-i18n="footer_legal1">Mentions légales</a><a href="politique-confidentialite.html" data-i18n="footer_legal2">Politique de confidentialité</a><a href="contact.html#faq">FAQ</a></div></div>
+    <div><div style="color:#fff;font-weight:700;font-size:14px;margin-bottom:14px" data-i18n="footer_contact_title">Contact</div><div style="display:flex;flex-direction:column;gap:9px;font-size:14px"><a href="#" class="wa-link" target="_blank">WhatsApp</a><a href="contact.html">Email</a><a href="https://instagram.com/luzdosol351" target="_blank" rel="noopener">Instagram</a><span style="opacity:.6" data-i18n="footer_paypal">Paiement par virement PayPal</span></div></div>
+  </div>
+  <div style="max-width:1240px;margin:40px auto 0;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:13px">
+    <span>&copy; 2026 LUZDOSOL · Albufeira, Portugal</span>
+    <span style="opacity:.7" data-i18n="footer_tag">Réservez en direct — le meilleur tarif, sans commission</span>
+  </div>
+</footer>
+
+<script src="js/i18n.js" defer></script>
+<script src="js/main.js" defer></script>
+<script src="js/pageTransition.js" defer></script>
+<script src="js/chatbot.js" defer></script>
 <script src="js/guide.js"></script>
 </body>
 </html>

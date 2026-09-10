@@ -1,0 +1,7 @@
+name = "luzdosol-chatbot"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# La clé API Anthropic ne va JAMAIS ici — elle se configure en secret :
+#   wrangler secret put ANTHROPIC_API_KEY

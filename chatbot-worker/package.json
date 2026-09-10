@@ -1,0 +1,17 @@
+{
+  "name": "luzdosol-chatbot-worker",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "*"
+  },
+  "devDependencies": {
+    "typescript": "*",
+    "wrangler": "*",
+    "@cloudflare/workers-types": "*"
+  }
+}

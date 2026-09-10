@@ -6,31 +6,15 @@
    SCENE CONFIGURATION
    To add a scene: add entry here + matching HTML
    ───────────────────────────────────────────── */
-// Standard single-sequence scenes
+// Standard single-sequence scenes — allégé : 2 séquences courtes (au lieu de 7)
+// servant uniquement de hero sur la page d'accueil.
 const STANDARD_SCENES = [
-  { id: 'scene1', basePath: 'assets/frames/scene1', count: 251, scrollHeight: 3500 },
-  { id: 'scene2', basePath: 'assets/frames/scene2', count: 251, scrollHeight: 3500 },
-  { id: 'scene3', basePath: 'assets/frames/scene3', count: 251, scrollHeight: 2800 },
+  { id: 'hero-a', basePath: 'assets/frames/hero-a', count: 84, scrollHeight: 1800 },
+  { id: 'hero-b', basePath: 'assets/frames/hero-b', count: 84, scrollHeight: 1500 },
 ];
-
-// Respirez: 4 sequences played end-to-end on ONE pinned canvas
-// vv-a03 → vv-a08 → vv-a11a → vv-a11
-const RESPIREZ_SEQ = [
-  { id: 'resp-a', basePath: 'assets/frames/resp-a', count: 251 },
-  { id: 'resp-b', basePath: 'assets/frames/resp-b', count: 251 },
-  { id: 'resp-c', basePath: 'assets/frames/resp-c', count: 251 },
-  { id: 'resp-d', basePath: 'assets/frames/resp-d', count: 251 },
-];
-const RESPIREZ_SCENE = {
-  type           : 'multi-seq',
-  wrapperId      : 'st-wrap-respirez',
-  sequences      : RESPIREZ_SEQ,
-  totalScrollHeight: 2800 * 4,   // 4 sequences × 2800px = 11200px total
-};
 
 const SCENE_CONFIG = [
   ...STANDARD_SCENES,
-  RESPIREZ_SCENE,
 ];
 
 const PHONE = '33610418154'; // Numéro WhatsApp de LUZDOSOL
@@ -40,11 +24,10 @@ const RESA_TRACKER_URL = ''; // TODO: coller ici l'URL /exec du déploiement Goo
 const isMobile = /Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent) || window.innerWidth <= 900;
 
 // Perf constants
-// stride=2 → load f0001,f0003,…,f0251 (even coverage, half the requests) — applied
-// on both desktop and mobile so the whole site is visually ready much faster.
-// scrollHeight ×0.5 → additionally, page is 50% shorter on mobile (less exhausting to scroll)
-const FRAME_STRIDE = 2;
-const FRAME_COUNT  = 126;   // Math.ceil(251 / FRAME_STRIDE)
+// Les séquences sur disque ont déjà été allégées à 84 frames (au lieu de 251) — stride=1.
+// scrollHeight ×0.5 → page 50% plus courte sur mobile (moins fatiguant à scroller)
+const FRAME_STRIDE = 1;
+const FRAME_COUNT  = 84;
 const MOB_SCROLL   = 0.5;   // scroll-height multiplier for mobile only
 
 /* ─────────────────────────────────────────────
@@ -81,6 +64,11 @@ function startLoaderMsgs() {
    ───────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
 
+  /* Le loader plein écran + les scènes canvas n'existent que sur l'accueil
+     (index.html) — les autres pages n'ont ni #site-loader ni canvas, donc on
+     évite tout téléchargement de frames inutile ailleurs. */
+  if (document.getElementById('site-loader')) {
+
   startLoaderMsgs();
 
   /* --- PRELOADER + SCENE CONFIG --- */
@@ -88,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const allSeqs = [
     ...STANDARD_SCENES,
-    ...RESPIREZ_SEQ,
   ].map(s => ({ ...s, count: FRAME_COUNT, stride: FRAME_STRIDE }));
 
   const controllerScenes = SCENE_CONFIG.map(s => {
@@ -152,6 +139,8 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   preloader.load(allSeqs);
+
+  } // fin du bloc loader + scènes canvas (accueil uniquement)
 
   /* --- DROPDOWN NAV --- */
   const ddBtn  = document.getElementById('nav-dd-btn');
@@ -243,10 +232,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* --- NAV SCROLL STYLE --- */
   const nav = document.querySelector('.site-nav');
+  const navForceSolid = nav && nav.dataset.solid === '1';
   const stickyBar = document.querySelector('.sticky-bar');
+  if (nav && navForceSolid) nav.classList.add('scrolled');
   window.addEventListener('scroll', () => {
     const y = window.scrollY;
-    if (nav) nav.classList.toggle('scrolled', y > 40);
+    if (nav && !navForceSolid) nav.classList.toggle('scrolled', y > 40);
     if (stickyBar) {
       const show = y > window.innerHeight * 1.5
         && (y + window.innerHeight) < document.body.scrollHeight - 360;
@@ -273,6 +264,22 @@ document.addEventListener('DOMContentLoaded', () => {
       .forEach(el => { if (!el.dataset.io) { el.dataset.io = '1'; io.observe(el); } });
   }
   scanReveals(); setTimeout(scanReveals, 600); setTimeout(scanReveals, 1400);
+
+  /* --- ONGLETS FLUIDES (tarifs.html : Tarifs / Disponibilités / Réserver) --- */
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  if (tabBtns.length) {
+    const panels = document.querySelectorAll('.tab-panel');
+    function activateTab(id, updateHash) {
+      tabBtns.forEach(b => b.classList.toggle('active', b.dataset.tab === id));
+      panels.forEach(p => p.classList.toggle('active', p.id === id));
+      if (updateHash) history.replaceState(null, '', '#' + id);
+      scanReveals();
+    }
+    tabBtns.forEach(b => b.addEventListener('click', () => activateTab(b.dataset.tab, true)));
+    const wanted = location.hash.slice(1);
+    const initial = [...panels].some(p => p.id === wanted) ? wanted : (panels[0] && panels[0].id);
+    if (initial) activateTab(initial, false);
+  }
 
   /* --- COUNT-UP --- */
   const cio = new IntersectionObserver(entries => {

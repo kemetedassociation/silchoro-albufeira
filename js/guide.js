@@ -65,7 +65,7 @@ class AutoCarousel {
   build() {
     const slides = this.items.map((it, i) => `
       <div class="ac-slide" data-i="${i}">
-        <img src="assets/guide/${it.img}.jpg" alt="${it.name}" loading="${i === 0 ? 'eager' : 'lazy'}">
+        <img src="assets/guide/${it.img}.webp" alt="${it.name}" loading="${i === 0 ? 'eager' : 'lazy'}">
         <div class="ac-scrim"></div>
         <div class="ac-caption">
           <div class="ac-tag">${it.tag}</div>
@@ -110,7 +110,7 @@ class MiniCarousel {
     this.images = images;
     this.duration = opts.duration || 2600;
     this.i = 0;
-    el.innerHTML = images.map((img, i) => `<div class="mini-ac-slide${i === 0 ? ' active' : ''}"><img src="assets/guide/${img}.jpg" alt="" loading="lazy"></div>`).join('');
+    el.innerHTML = images.map((img, i) => `<div class="mini-ac-slide${i === 0 ? ' active' : ''}"><img src="assets/guide/${img}.webp" alt="" loading="lazy"></div>`).join('');
     this.slideEls = Array.from(el.querySelectorAll('.mini-ac-slide'));
     setInterval(() => {
       this.i = (this.i + 1) % this.images.length;
