@@ -20,7 +20,7 @@ const SCENE_CONFIG = [
 const PHONE = '33610418154'; // Numéro WhatsApp de LUZDOSOL
 const EMAIL = 'luzdosol351@gmail.com';
 const PRICE_FROM = 43;
-const RESA_TRACKER_URL = ''; // TODO: coller ici l'URL /exec du déploiement Google Apps Script (voir google-apps-script/Code.gs) pour activer l'email d'avis J+1
+const RESA_TRACKER_URL = 'https://script.google.com/macros/s/AKfycbyHowI4AtFBh-jnZXlfA3_YoU3i9TBmur-LDlGXnDQsen8N3AIh17BKJj1-E7o_Hgd5Lw/exec';
 const isMobile = /Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent) || window.innerWidth <= 900;
 
 // Perf constants
