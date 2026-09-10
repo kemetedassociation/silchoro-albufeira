@@ -1,5 +1,5 @@
 /**
- * LUZDOSOL — suivi des réservations + emails automatiques
+ * LUZDOSOL — suivi des réservations + emails automatiques + feuille formatée
  *
  * Séquence d'emails automatiques envoyés au voyageur :
  * 1. À la réservation (immédiat)      → merci + consignes / prochaines étapes
@@ -8,17 +8,24 @@
  * 4. 3 jours après l'arrivée (J+3)    → prise de nouvelles à mi-séjour
  * 5. Le lendemain du départ           → demande d'avis Google + suggestions
  *
+ * La feuille "Reservations" est mise en forme automatiquement : lignes colorées
+ * selon le statut du séjour (à venir / en cours / terminé), lien WhatsApp cliquable
+ * par ligne, en-tête figé. Un onglet "Aperçu" résume les chiffres clés.
+ *
  * Mise en place (à faire une seule fois, depuis le compte luzdosol351@gmail.com) :
  * 1. Aller sur sheets.google.com → créer une feuille vide, la nommer "LUZDOSOL - Réservations".
  * 2. Extensions > Apps Script. Supprimer le contenu par défaut et coller ce fichier entier.
  * 3. En haut, exécuter la fonction "setup" (menu déroulant des fonctions) une seule fois.
  *    Autoriser les permissions demandées (accès à la feuille + envoi d'emails).
+ *    (Si vous aviez déjà exécuté "setup" avant cette mise à jour, relancez-la une fois
+ *    pour appliquer les couleurs, les liens et l'onglet "Aperçu".)
  * 4. Déployer > Nouveau déploiement > Type "Application Web".
  *    - Exécuter en tant que : Moi (luzdosol351@gmail.com)
  *    - Qui a accès : Tout le monde
  *    Copier l'URL du déploiement obtenue (se termine par /exec).
  * 5. Coller cette URL dans js/main.js à la constante RESA_TRACKER_URL.
- * 6. Pensez à personnaliser GOOGLE_REVIEW_URL ci-dessous avec le vrai lien d'avis Google.
+ * 6. Pensez à personnaliser GOOGLE_REVIEW_URL ci-dessous avec le vrai lien d'avis Google
+ *    dès que votre fiche Google Business Profile sera créée.
  */
 
 const SHEET_NAME = 'Reservations';
@@ -32,7 +39,10 @@ const COL = {
   horodatage: 1, prenom: 2, nom: 3, email: 4, tel: 5,
   arrivee: 6, depart: 7, arriveeIso: 8, departIso: 9, nuits: 10, voyageurs: 11,
   dayjEnvoye: 12, j1Envoye: 13, j3Envoye: 14, avisEnvoye: 15,
+  statut: 16, whatsapp: 17,
 };
+const NB_COLS = 17;
+const HEADERS = ['Horodatage', 'Prénom', 'Nom', 'Email', 'Téléphone', 'Arrivée', 'Départ', 'Arrivée (ISO)', 'Départ (ISO)', 'Nuits', 'Voyageurs', 'J envoyé', 'J+1 envoyé', 'J+3 envoyé', 'Avis envoyé', 'Statut', 'Contact'];
 
 function doPost(e) {
   const sheet = getSheet();
@@ -43,8 +53,20 @@ function doPost(e) {
     p.arrivee || '', p.depart || '', p.arrivee_iso || '', p.depart_iso || '', p.nuits || '', p.voyageurs || '',
     false, false, false, false,
   ]);
+  const row = sheet.getLastRow();
+  writeRowFormulas(sheet, row);
   if (p.email) sendConfirmationEmail(p);
   return ContentService.createTextOutput('OK');
+}
+
+// Colonnes calculées automatiquement (statut du séjour + lien WhatsApp cliquable)
+function writeRowFormulas(sheet, row) {
+  sheet.getRange(row, COL.statut).setFormula(
+    `=IF($H${row}="","",IF(TODAY()<DATEVALUE($H${row}),"À venir",IF($O${row}=TRUE,"Terminé","En cours")))`
+  );
+  sheet.getRange(row, COL.whatsapp).setFormula(
+    `=IF($E${row}="","",HYPERLINK("https://wa.me/"&REGEXREPLACE($E${row},"[^0-9]",""),"💬 WhatsApp"))`
+  );
 }
 
 function getSheet() {
@@ -52,7 +74,7 @@ function getSheet() {
   let sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);
-    sheet.appendRow(['Horodatage', 'Prénom', 'Nom', 'Email', 'Téléphone', 'Arrivée', 'Départ', 'Arrivée (ISO)', 'Départ (ISO)', 'Nuits', 'Voyageurs', 'J envoyé', 'J+1 envoyé', 'J+3 envoyé', 'Avis envoyé']);
+    sheet.appendRow(HEADERS);
   }
   return sheet;
 }
@@ -182,12 +204,92 @@ function sendScheduledEmails() {
   }
 }
 
+/* ============ MISE EN FORME DE LA FEUILLE (couleurs, liens, lisibilité) ============ */
+function formatSheet() {
+  const sheet = getSheet();
+  const maxRows = Math.max(sheet.getMaxRows(), 300);
+  if (sheet.getMaxRows() < maxRows) sheet.insertRowsAfter(sheet.getMaxRows(), maxRows - sheet.getMaxRows());
+
+  // En-tête figé, stylé
+  sheet.getRange(1, 1, 1, NB_COLS).setValues([HEADERS])
+    .setBackground('#0d2438').setFontColor('#ffffff').setFontWeight('bold').setFontSize(11);
+  sheet.setFrozenRows(1);
+  sheet.setFrozenColumns(3);
+
+  // Largeurs de colonnes lisibles
+  sheet.setColumnWidths(1, NB_COLS, 118);
+  sheet.setColumnWidth(COL.email, 200);
+  sheet.setColumnWidth(COL.statut, 100);
+  sheet.setColumnWidth(COL.whatsapp, 120);
+
+  // Formules (statut + lien WhatsApp) sur toutes les lignes de données existantes
+  const lastRow = sheet.getLastRow();
+  for (let r = 2; r <= Math.max(lastRow, 2); r++) writeRowFormulas(sheet, r);
+
+  const fullRange = sheet.getRange(2, 1, maxRows - 1, NB_COLS);
+  const statutCol = columnLetter(COL.statut);
+
+  const rules = [
+    SpreadsheetApp.newConditionalFormatRule()
+      .whenFormulaSatisfied(`=$${statutCol}2="À venir"`)
+      .setBackground('#eaf6f8').setRanges([fullRange]).build(),
+    SpreadsheetApp.newConditionalFormatRule()
+      .whenFormulaSatisfied(`=$${statutCol}2="En cours"`)
+      .setBackground('#fdf3d6').setRanges([fullRange]).build(),
+    SpreadsheetApp.newConditionalFormatRule()
+      .whenFormulaSatisfied(`=$${statutCol}2="Terminé"`)
+      .setBackground('#e9f9ec').setRanges([fullRange]).build(),
+  ];
+  sheet.setConditionalFormatRules(rules);
+
+  sheet.autoResizeColumns(2, 3); // prénom, nom, email restent lisibles
+}
+
+function columnLetter(n) {
+  let s = '';
+  while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - m) / 26); }
+  return s;
+}
+
+/* ============ ONGLET "Aperçu" — tableau de bord ============ */
+function buildOverviewSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName('Aperçu');
+  if (!sheet) sheet = ss.insertSheet('Aperçu', 0);
+  sheet.clear();
+
+  sheet.getRange('A1').setValue('LUZDOSOL — Aperçu des réservations')
+    .setFontSize(16).setFontWeight('bold').setFontColor('#0d2438');
+  sheet.getRange('A1:D1').merge();
+
+  const rows = [
+    ['Total réservations', '=COUNTA(Reservations!B2:B300)'],
+    ['Arrivées dans les 7 prochains jours', '=COUNTIFS(Reservations!H2:H300,">="&TEXT(TODAY(),"YYYY-MM-DD"),Reservations!H2:H300,"<="&TEXT(TODAY()+7,"YYYY-MM-DD"))'],
+    ['Séjours en cours', '=COUNTIF(Reservations!P2:P300,"En cours")'],
+    ['Séjours à venir', '=COUNTIF(Reservations!P2:P300,"À venir")'],
+    ['Séjours terminés', '=COUNTIF(Reservations!P2:P300,"Terminé")'],
+  ];
+  sheet.getRange(3, 1, rows.length, 2).setValues(rows);
+  sheet.getRange(3, 1, rows.length, 1).setFontWeight('bold');
+  sheet.getRange(3, 2, rows.length, 1).setFontSize(20).setFontColor('#0a5c86').setFontWeight('bold');
+
+  sheet.getRange(3, 1, rows.length, 2).setBorder(true, true, true, true, true, true, '#efe6d6', SpreadsheetApp.BorderStyle.SOLID);
+  sheet.setColumnWidth(1, 280);
+  sheet.setColumnWidth(2, 140);
+
+  sheet.getRange('A10').setValue('→ Voir toutes les réservations dans l\'onglet "Reservations"')
+    .setFontColor('#5a6b78').setFontStyle('italic');
+}
+
 /**
- * À exécuter une seule fois manuellement après le premier collage du script.
- * Crée l'onglet et programme l'envoi quotidien à 10h.
+ * À exécuter une seule fois manuellement après le premier collage du script
+ * (et à nouveau si vous modifiez ce fichier plus tard).
+ * Crée l'onglet, la mise en forme, l'onglet "Aperçu", et programme l'envoi quotidien à 10h.
  */
 function setup() {
   getSheet();
+  formatSheet();
+  buildOverviewSheet();
   ScriptApp.getProjectTriggers().forEach(t => {
     const fn = t.getHandlerFunction();
     if (fn === 'sendReviewEmails' || fn === 'sendScheduledEmails') ScriptApp.deleteTrigger(t);
