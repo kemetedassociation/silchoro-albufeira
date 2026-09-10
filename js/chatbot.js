@@ -32,6 +32,8 @@
     el('img', { src: 'assets/icons/logo-mark.webp', alt: '' })
   );
 
+  const teaser = el('div', { class: 'cb-teaser' }, "Une question ? Je vous réponds en quelques secondes 👋");
+
   const panel = el('div', { class: 'cb-panel' },
     el('div', { class: 'cb-head' },
       el('img', { src: 'assets/icons/logo-mark.webp', alt: '' }),
@@ -49,8 +51,19 @@
     )
   );
 
+  document.body.appendChild(teaser);
   document.body.appendChild(bubble);
   document.body.appendChild(panel);
+
+  const TEASER_KEY = 'luzdosol_cb_teaser_seen';
+  if (!sessionStorage.getItem(TEASER_KEY)) {
+    setTimeout(() => {
+      if (open) return;
+      teaser.classList.add('show');
+      setTimeout(() => teaser.classList.remove('show'), 6000);
+      try { sessionStorage.setItem(TEASER_KEY, '1'); } catch (e) {}
+    }, 2500);
+  }
 
   const msgsEl = panel.querySelector('#cb-msgs');
   const suggEl = panel.querySelector('#cb-suggestions');
@@ -140,8 +153,9 @@
     open = typeof force === 'boolean' ? force : !open;
     panel.classList.toggle('open', open);
     bubble.classList.toggle('open', open);
+    teaser.classList.remove('show');
     if (open && !history.length) {
-      addBubbleMsg('assistant', "Bonjour ! Je suis l'assistant de LUZDOSOL. Posez-moi vos questions sur le logement, les tarifs, les disponibilités ou les activités à Albufeira.");
+      addBubbleMsg('assistant', "Bonjour ! Je suis l'assistant de LUZDOSOL 👋 Posez-moi vos questions sur le logement, les tarifs, les disponibilités, l'arrivée ou les activités à Albufeira — je vous emmène directement à la bonne page si besoin.");
     }
     if (open) setTimeout(() => inputEl.focus(), 300);
   }

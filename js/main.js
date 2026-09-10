@@ -172,11 +172,13 @@ document.addEventListener('DOMContentLoaded', () => {
       mobileMenu.classList.toggle('open');
       document.body.style.overflow = opening ? 'hidden' : '';
     });
-    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    const closeMenu = () => {
       burger.classList.remove('open');
       mobileMenu.classList.remove('open');
       document.body.style.overflow = '';
-    }));
+    };
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+    document.getElementById('mm-close')?.addEventListener('click', closeMenu);
   }
 
   /* --- APARTMENT CAROUSEL --- */
@@ -228,6 +230,29 @@ document.addEventListener('DOMContentLoaded', () => {
     startAuto();
     track.parentElement.addEventListener('mouseenter', stopAuto);
     track.parentElement.addEventListener('mouseleave', startAuto);
+  }
+
+  /* --- BOUTON RETOUR --- */
+  const backBtn = document.getElementById('back-btn');
+  if (backBtn) {
+    if (history.length <= 1) backBtn.style.display = 'none';
+    backBtn.addEventListener('click', () => history.back());
+  }
+
+  /* --- SOMMAIRE DE PAGE (surbrillance de la section active) --- */
+  const tocLinks = document.querySelectorAll('.page-toc a');
+  if (tocLinks.length) {
+    const tocSections = Array.from(tocLinks).map(a => document.querySelector(a.getAttribute('href')));
+    const tocIO = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          tocLinks.forEach(a => a.classList.remove('active'));
+          const idx = tocSections.indexOf(e.target);
+          if (idx > -1) tocLinks[idx].classList.add('active');
+        }
+      });
+    }, { threshold: 0, rootMargin: '-40% 0px -55% 0px' });
+    tocSections.forEach(s => s && tocIO.observe(s));
   }
 
   /* --- NAV SCROLL STYLE --- */
@@ -391,21 +416,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }).catch(() => {});
 
+  const MIN_NIGHTS = 4;
+  let nights = MIN_NIGHTS;
+
   function key(d) { return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; }
   function parseKey(k) { const [y,m,da]=k.split('-').map(Number); return new Date(y,m-1,da); }
+  // Tarifs par mois (index 0 = janvier)
+  const MONTH_PRICE = [43, 43, 43, 59, 74, 99, 224, 224, 74, 59, 43, 43];
+  function nightlyPrice(m) { return MONTH_PRICE[m]; }
   function seasonStatus(d) {
     if (occ.includes(key(d))) return 'occ';
-    const m = d.getMonth();
-    if ([11,2,3].includes(m)) return 'promo';
-    if (m>=5&&m<=8) return 'high';
-    if (m<=1) return 'closed';
+    const pr = MONTH_PRICE[d.getMonth()];
+    if (pr >= 99) return 'high';
+    if (pr >= 55) return 'mid';
     return 'low';
-  }
-  function nightlyPrice(m) {
-    if (m>=5&&m<=8) return 65;
-    if ([11,2,3].includes(m)) return 43;
-    if ([9,10,4].includes(m)) return 50;
-    return null;
   }
   const calLocale = () => (window.LUZDOSOL_LOCALE_MAP && window.LUZDOSOL_LOCALE_MAP[window.LUZDOSOL_LANG]) || 'fr-FR';
   function fmtDate(d) { return d.toLocaleDateString(calLocale(),{day:'numeric',month:'long'}); }
@@ -420,7 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
     months.forEach(({y,m})=>{
       const startDay=(new Date(y,m,1).getDay()+6)%7;
       const total=new Date(y,m+1,0).getDate();
-      const depKey=arrival?(()=>{const a=parseKey(arrival);a.setDate(a.getDate()+6);return key(a);})():null;
+      const depKey=arrival?(()=>{const a=parseKey(arrival);a.setDate(a.getDate()+nights);return key(a);})():null;
       html+=`<div><div style="text-align:center;font-weight:700;font-size:19px;margin-bottom:16px">${monthName(y,m)}</div>
         <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:8px">
           ${['L','M','M','J','V','S','D'].map(d=>`<div style="text-align:center;font-size:11px;font-weight:700;color:#9aa7ad">${d}</div>`).join('')}
@@ -431,7 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let st=seasonStatus(date);
         if(date<today) st='occ';
         let cls='cal-day '+st;
-        if(arrival){const a=parseKey(arrival),dep=new Date(a);dep.setDate(a.getDate()+6);if(date>a&&date<dep)cls+=' range';}
+        if(arrival){const a=parseKey(arrival),dep=new Date(a);dep.setDate(a.getDate()+nights);if(date>a&&date<dep)cls+=' range';}
         if(arrival===k)cls+=' sel';
         if(depKey===k)cls+=' dep';
         html+=`<div class="${cls}" ${(st!=='occ'&&st!=='closed')?`data-pick="${k}"`:''}>${day}</div>`;
@@ -449,23 +473,50 @@ document.addEventListener('DOMContentLoaded', () => {
     if(!l||!p)return;
     if(!arrival){l.textContent=t('stay_default');l.dataset.set='0';p.textContent='—';return;}
     l.dataset.set='1';
-    const a=parseKey(arrival),dep=new Date(a);dep.setDate(a.getDate()+6);
+    const a=parseKey(arrival),dep=new Date(a);dep.setDate(a.getDate()+nights);
     const pr=nightlyPrice(a.getMonth());
-    l.textContent=fmtDate(a)+' → '+fmtDate(dep)+' · 6 '+t('nights_word');
+    l.textContent=fmtDate(a)+' → '+fmtDate(dep)+' · '+nights+' '+t('nights_word');
     p.textContent=pr?pr+t('per_night'):t('on_request');
   }
   function updateDateInput(){const i=document.getElementById('f-date');if(i&&arrival)i.value=fmtDate(parseKey(arrival));}
+
+  /* --- SÉLECTEUR DE NUITS (minimum 4, avec message d'erreur) --- */
+  function setNights(v){
+    const n=parseInt(v,10);
+    const errEl=document.getElementById('nights-error');
+    const input=document.getElementById('nights-input');
+    if(isNaN(n)||n<MIN_NIGHTS){
+      if(errEl){errEl.textContent=t('nights_min_error');errEl.classList.add('show');}
+      nights=MIN_NIGHTS;
+      if(input)input.value=MIN_NIGHTS;
+    }else{
+      if(errEl)errEl.classList.remove('show');
+      nights=n;
+      if(input)input.value=n;
+    }
+    renderCalendar();updateStay();
+  }
+  document.getElementById('nights-input')?.addEventListener('change',e=>setNights(e.target.value));
+  document.getElementById('nights-input')?.addEventListener('input',e=>{
+    const errEl=document.getElementById('nights-error');
+    if(errEl && parseInt(e.target.value,10)>=MIN_NIGHTS) errEl.classList.remove('show');
+  });
+
   document.getElementById('cal-prev')?.addEventListener('click',()=>{calM--;if(calM<0){calM=11;calY--;}renderCalendar();});
   document.getElementById('cal-next')?.addEventListener('click',()=>{calM++;if(calM>11){calM=0;calY++;}renderCalendar();});
   renderCalendar();
 
   /* --- FORM --- */
+  function isoKey(d){const p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;}
   function trackReservation(v){
     if(!RESA_TRACKER_URL)return;
-    const depart=arrival?(()=>{const a=parseKey(arrival);a.setDate(a.getDate()+6);return fmtDate(a);})():'';
+    const a=arrival?parseKey(arrival):null;
+    const dep=a?new Date(a):null; if(dep)dep.setDate(a.getDate()+nights);
     const body=new URLSearchParams({
       prenom:v('f-prenom'),nom:v('f-nom'),email:v('f-email'),tel:v('f-tel'),
-      arrivee:v('f-date')||(arrival?fmtDate(parseKey(arrival)):''),depart,voyageurs:v('f-voyageurs')
+      arrivee:v('f-date')||(a?fmtDate(a):''),depart:dep?fmtDate(dep):'',
+      arrivee_iso:a?isoKey(a):'',depart_iso:dep?isoKey(dep):'',
+      nuits:nights,voyageurs:v('f-voyageurs')
     });
     fetch(RESA_TRACKER_URL,{method:'POST',mode:'no-cors',body}).catch(()=>{});
   }
@@ -477,7 +528,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if(el && !el.checkValidity()){ el.reportValidity(); el.focus(); return; }
     }
     trackReservation(v);
-    window.open(waUrl(`${t('wa_resa_greeting')}\n\n${t('label_name')} : ${v('f-prenom')} ${v('f-nom')}\n${t('label_phone')} : ${v('f-tel')}\n${t('label_email')} : ${v('f-email')}\n${t('label_arrival')} : ${v('f-date')||(arrival?fmtDate(parseKey(arrival)):t('label_tbd'))}\n${t('label_travelers')} : ${v('f-voyageurs')}\n${t('label_message')} : ${v('f-msg')}`),'_blank');
+    window.open(waUrl(`${t('wa_resa_greeting')}\n\n${t('label_name')} : ${v('f-prenom')} ${v('f-nom')}\n${t('label_phone')} : ${v('f-tel')}\n${t('label_email')} : ${v('f-email')}\n${t('label_arrival')} : ${v('f-date')||(arrival?fmtDate(parseKey(arrival)):t('label_tbd'))}\n${t('nights_word')} : ${nights}\n${t('label_travelers')} : ${v('f-voyageurs')}\n${t('label_message')} : ${v('f-msg')}`),'_blank');
   });
   document.getElementById('btn-paypal')?.addEventListener('click',()=>{
     window.open(waUrl(t('wa_paypal_msg')),'_blank');

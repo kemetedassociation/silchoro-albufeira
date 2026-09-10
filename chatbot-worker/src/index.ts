@@ -21,14 +21,14 @@ INFORMATIONS SUR LE LOGEMENT
 - Salle de bain moderne et soignée.
 - Idéal pour couples, familles et petits groupes d'amis.
 
-TARIFS (réservation directe, sans commission)
-- Haute saison (mi-juin → mi-septembre) : à partir de 65€/nuit.
-- Basse saison : Octobre/Novembre/Mai : 50€/nuit. Décembre/Mars/Avril : 43€/nuit (promo). Juin : 65€/nuit.
-- Séjour minimum de 6 nuits.
+TARIFS (par nuit, réservation directe, sans commission)
+- Janvier : 43€ · Février : 43€ · Mars : 43€ · Avril : 59€ · Mai : 74€ · Juin : 99€
+- Juillet : 224€ · Août : 224€ · Septembre : 74€ · Octobre : 59€ · Novembre : 43€ · Décembre : 43€
+- Séjour minimum de 4 nuits (le visiteur choisit librement le nombre de nuits, à partir de 4).
 - Paiement : acompte par virement PayPal (à luzdosol351@gmail.com, option "à un ami/famille" recommandée), solde selon modalités convenues avec l'hôte.
 
 RÉSERVATION (processus en 3 étapes)
-1. Choisir une date d'arrivée dans le calendrier des disponibilités (page Tarifs, onglet "Disponibilités").
+1. Choisir une date d'arrivée et le nombre de nuits (4 minimum) dans le calendrier des disponibilités (page Tarifs, onglet "Disponibilités").
 2. Remplir le formulaire de réservation (page Tarifs, onglet "Réserver").
 3. Confirmer directement avec l'hôte sur WhatsApp, ou régler un acompte PayPal.
 
@@ -36,6 +36,20 @@ ANNULATION
 - Gratuite jusqu'à 30 jours avant l'arrivée (remboursement intégral).
 - Entre 30 et 7 jours avant : 50% remboursé.
 - Moins de 7 jours avant : non remboursable (sauf situation particulière, à voir avec l'hôte).
+
+ARRIVÉE — DEUX SCÉNARIOS POSSIBLES
+- Accueil par l'hôtesse : l'hôtesse vous accueille sur place à votre arrivée et vous remet toutes les consignes (fonctionnement de l'appartement, équipements, recommandations locales).
+- Entrée autonome : un code d'accès et des instructions détaillées vous sont envoyés avant votre arrivée pour une entrée en toute autonomie, à l'heure qui vous convient.
+- Le scénario appliqué dépend de la réservation ; les détails précis sont communiqués par l'hôte après confirmation.
+
+RÈGLEMENT INTÉRIEUR (communiqué le jour de l'arrivée)
+- Interdiction de fumer à l'intérieur de l'appartement.
+- Merci de prendre soin du mobilier et des équipements ; ne pas les endommager.
+- Nous recommandons de prendre des photos de l'appartement à l'arrivée et au départ (état des lieux).
+- Une caution peut être retenue en cas de dommage constaté.
+- En cas de besoin pendant le séjour, contacter directement l'hôte (WhatsApp).
+- L'hôte prend des nouvelles le lendemain de l'arrivée et à mi-séjour pour s'assurer que tout se passe bien.
+- Après le séjour, une invitation à laisser un avis Google et des suggestions est envoyée aux voyageurs.
 
 ALBUFEIRA & ACTIVITÉS
 - Plages dorées à 5 minutes à pied (Praia da Oura, Falésia, Olhos de Água).
@@ -47,7 +61,7 @@ ALBUFEIRA & ACTIVITÉS
 PAGES DU SITE (utilise l'outil "navigate" pour y envoyer le visiteur quand c'est pertinent)
 - index.html : accueil
 - appartement.html : détails de l'appartement, photos, équipements
-- albufeira.html : activités et destination
+- albufeira.html : que faire à Albufeira — plages & activités (#plages), activités familiales (#familial). Chaque carte d'activité mène aussi à une page détaillée (plages, sorties en mer, nature, grottes de Benagil, sports nautiques, vieille ville).
 - tarifs.html : tarifs (ancre #tarifs), disponibilités (#calendrier), réservation (#reservation) — ce sont des onglets sur la même page
 - galerie.html : galerie photos/vidéos
 - guide.html : guide du séjour (restaurants, sorties, villes à visiter)

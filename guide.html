@@ -134,14 +134,6 @@
     <img src="assets/icons/logo-mark.webp" alt="LUZDOSOL" width="36" height="36" style="width:36px;height:36px;border-radius:11px;object-fit:cover">
     <span>UZDOSOL<span style="color:var(--accent)">.</span></span>
   </a>
-  <div class="nav-links">
-    <a href="appartement.html" class="nav-link" data-i18n="nav_appartement">Appartement</a>
-    <a href="albufeira.html" class="nav-link" data-i18n="nav_albufeira">Albufeira</a>
-    <a href="tarifs.html" class="nav-link" data-i18n="nav_tarifs">Tarifs</a>
-    <a href="galerie.html" class="nav-link" data-i18n="nav_galerie">Galerie</a>
-    <a href="guide.html" class="nav-link active" data-i18n="nav_guide">Guide</a>
-    <a href="contact.html" class="nav-link" data-i18n="nav_contact">Contact</a>
-  </div>
   <div class="lang-switch" aria-label="Langue">
     <button data-lang="fr" type="button">FR</button>
     <button data-lang="en" type="button">EN</button>
@@ -152,20 +144,43 @@
   <button class="nav-burger" id="nav-burger" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
 
+<button class="back-btn" id="back-btn">← <span data-i18n="back_btn_label">Retour</span></button>
+
 <div class="mobile-menu" id="mobile-menu">
+  <div class="mm-mosaic" aria-hidden="true">
+    <img src="assets/images/int11.webp" alt="" loading="lazy">
+    <img src="assets/images/ph67.webp" alt="" loading="lazy">
+    <img src="assets/images/ph09.webp" alt="" loading="lazy">
+    <img src="assets/images/int6.webp" alt="" loading="lazy">
+    <img src="assets/images/ph50.webp" alt="" loading="lazy">
+    <img src="assets/images/ph01.webp" alt="" loading="lazy">
+    <img src="assets/images/int4.webp" alt="" loading="lazy">
+    <img src="assets/images/ph45.webp" alt="" loading="lazy">
+    <img src="assets/images/ph15.webp" alt="" loading="lazy">
+    <img src="assets/images/ph35.webp" alt="" loading="lazy">
+  </div>
+  <div class="mm-scrim"></div>
+  <button class="mm-close" id="mm-close" aria-label="Fermer">✕</button>
+  <div class="mm-inner">
   <div class="lang-switch lang-switch-mobile" aria-label="Langue">
     <button data-lang="fr" type="button">FR</button>
     <button data-lang="en" type="button">EN</button>
     <button data-lang="es" type="button">ES</button>
     <button data-lang="pt" type="button">PT</button>
   </div>
-  <a href="appartement.html" class="mob-link" data-i18n="nav_appartement">Appartement</a>
-  <a href="albufeira.html" class="mob-link" data-i18n="nav_albufeira">Albufeira</a>
-  <a href="tarifs.html" class="mob-link" data-i18n="nav_tarifs">Tarifs</a>
-  <a href="galerie.html" class="mob-link" data-i18n="nav_galerie">Galerie</a>
-  <a href="guide.html" class="mob-link" data-i18n="nav_guide">Guide du séjour</a>
-  <a href="contact.html" class="mob-link" data-i18n="nav_contact">Contact</a>
-  <a href="tarifs.html#reservation" class="mob-link mob-cta" data-i18n="mob_reserve_arrow">Réserver →</a>
+    <a href="index.html" class="mob-link" data-i18n="nav_home">Accueil</a>
+    <a href="appartement.html" class="mob-link" data-i18n="nav_appartement">Appartement</a>
+    <a href="albufeira.html" class="mob-link" data-i18n="nav_albufeira">Que faire à Albufeira</a>
+    <a href="albufeira.html#plages" class="mob-link mob-sub" data-i18n="mm_sub_plages">Plages &amp; activités</a>
+    <a href="guide.html#restaurants" class="mob-link mob-sub" data-i18n="mm_sub_manger">Où manger</a>
+    <a href="albufeira.html#familial" class="mob-link mob-sub" data-i18n="mm_sub_familial">Activités familiales</a>
+    <a href="guide.html#nocturne" class="mob-link mob-sub" data-i18n="mm_sub_nocturne">Sorties nocturnes</a>
+    <a href="tarifs.html" class="mob-link" data-i18n="nav_tarifs">Tarifs</a>
+    <a href="galerie.html" class="mob-link" data-i18n="nav_galerie">Galerie</a>
+    <a href="guide.html" class="mob-link active" data-i18n="nav_guide">Guide du séjour</a>
+    <a href="contact.html" class="mob-link" data-i18n="nav_contact">Contact</a>
+    <a href="tarifs.html#reservation" class="mob-link mob-cta" data-i18n="mob_reserve_arrow">Réserver →</a>
+  </div>
 </div>
 
 <div class="guide-hero-wrap">

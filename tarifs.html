@@ -51,14 +51,6 @@
     <img src="assets/icons/logo-mark.webp" alt="LUZDOSOL" width="36" height="36" style="width:36px;height:36px;border-radius:11px;object-fit:cover">
     <span>UZDOSOL<span style="color:var(--accent)">.</span></span>
   </a>
-  <div class="nav-links">
-    <a href="appartement.html" class="nav-link" data-i18n="nav_appartement">Appartement</a>
-    <a href="albufeira.html" class="nav-link" data-i18n="nav_albufeira">Albufeira</a>
-    <a href="tarifs.html" class="nav-link active" data-i18n="nav_tarifs">Tarifs</a>
-    <a href="galerie.html" class="nav-link" data-i18n="nav_galerie">Galerie</a>
-    <a href="guide.html" class="nav-link" data-i18n="nav_guide">Guide</a>
-    <a href="contact.html" class="nav-link" data-i18n="nav_contact">Contact</a>
-  </div>
   <div class="lang-switch" aria-label="Langue">
     <button data-lang="fr" type="button">FR</button>
     <button data-lang="en" type="button">EN</button>
@@ -69,20 +61,43 @@
   <button class="nav-burger" id="nav-burger" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
 
+<button class="back-btn" id="back-btn">← <span data-i18n="back_btn_label">Retour</span></button>
+
 <div class="mobile-menu" id="mobile-menu">
+  <div class="mm-mosaic" aria-hidden="true">
+    <img src="assets/images/int11.webp" alt="" loading="lazy">
+    <img src="assets/images/ph67.webp" alt="" loading="lazy">
+    <img src="assets/images/ph09.webp" alt="" loading="lazy">
+    <img src="assets/images/int6.webp" alt="" loading="lazy">
+    <img src="assets/images/ph50.webp" alt="" loading="lazy">
+    <img src="assets/images/ph01.webp" alt="" loading="lazy">
+    <img src="assets/images/int4.webp" alt="" loading="lazy">
+    <img src="assets/images/ph45.webp" alt="" loading="lazy">
+    <img src="assets/images/ph15.webp" alt="" loading="lazy">
+    <img src="assets/images/ph35.webp" alt="" loading="lazy">
+  </div>
+  <div class="mm-scrim"></div>
+  <button class="mm-close" id="mm-close" aria-label="Fermer">✕</button>
+  <div class="mm-inner">
   <div class="lang-switch lang-switch-mobile" aria-label="Langue">
     <button data-lang="fr" type="button">FR</button>
     <button data-lang="en" type="button">EN</button>
     <button data-lang="es" type="button">ES</button>
     <button data-lang="pt" type="button">PT</button>
   </div>
-  <a href="appartement.html" class="mob-link" data-i18n="nav_appartement">Appartement</a>
-  <a href="albufeira.html" class="mob-link" data-i18n="nav_albufeira">Albufeira</a>
-  <a href="tarifs.html" class="mob-link" data-i18n="nav_tarifs">Tarifs</a>
-  <a href="galerie.html" class="mob-link" data-i18n="nav_galerie">Galerie</a>
-  <a href="guide.html" class="mob-link" data-i18n="nav_guide">Guide du séjour</a>
-  <a href="contact.html" class="mob-link" data-i18n="nav_contact">Contact</a>
-  <a href="#reservation" class="mob-link mob-cta" data-i18n="mob_reserve_arrow">Réserver →</a>
+    <a href="index.html" class="mob-link" data-i18n="nav_home">Accueil</a>
+    <a href="appartement.html" class="mob-link" data-i18n="nav_appartement">Appartement</a>
+    <a href="albufeira.html" class="mob-link" data-i18n="nav_albufeira">Que faire à Albufeira</a>
+    <a href="albufeira.html#plages" class="mob-link mob-sub" data-i18n="mm_sub_plages">Plages &amp; activités</a>
+    <a href="guide.html#restaurants" class="mob-link mob-sub" data-i18n="mm_sub_manger">Où manger</a>
+    <a href="albufeira.html#familial" class="mob-link mob-sub" data-i18n="mm_sub_familial">Activités familiales</a>
+    <a href="guide.html#nocturne" class="mob-link mob-sub" data-i18n="mm_sub_nocturne">Sorties nocturnes</a>
+    <a href="tarifs.html" class="mob-link active" data-i18n="nav_tarifs">Tarifs</a>
+    <a href="galerie.html" class="mob-link" data-i18n="nav_galerie">Galerie</a>
+    <a href="guide.html" class="mob-link" data-i18n="nav_guide">Guide du séjour</a>
+    <a href="contact.html" class="mob-link" data-i18n="nav_contact">Contact</a>
+    <a href="tarifs.html#reservation" class="mob-link mob-cta" data-i18n="mob_reserve_arrow">Réserver →</a>
+  </div>
 </div>
 
 <!-- ============ HERO — tarif direct (ex-Respirez) ============ -->
@@ -115,31 +130,29 @@
 
   <!-- Onglet 1 : TARIFS -->
   <div id="tarifs" class="tab-panel" style="scroll-margin-top:90px">
-    <div class="tarif-grid" style="display:grid;grid-template-columns:1.1fr 1fr;gap:24px;align-items:start">
-      <div class="reveal reveal-l" style="position:relative;background:linear-gradient(160deg,var(--accent),var(--accent-d));color:#fff;border-radius:26px;padding:42px;overflow:hidden;box-shadow:0 26px 60px rgba(10,92,134,.3)">
-        <div style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(245,195,59,.45),transparent 70%);animation:auroraMove 9s ease-in-out infinite"></div>
-        <div style="display:inline-block;background:rgba(245,195,59,.95);color:#5a4500;padding:6px 14px;border-radius:30px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase" data-i18n="season_high_badge">Haute saison</div>
-        <div style="margin-top:22px;font-size:15px;color:rgba(255,255,255,.85)" data-i18n="season_high_dates">Mi-juin → mi-septembre</div>
-        <div style="margin-top:14px;display:flex;align-items:baseline;gap:8px"><span style="font-size:18px;color:rgba(255,255,255,.8)" data-i18n="from_lower">à partir de</span><span style="font-size:62px;font-weight:800;letter-spacing:-.03em"><span data-count="65">0</span>&nbsp;€</span><span style="font-size:17px;color:rgba(255,255,255,.8)" data-i18n="per_night">/ nuit</span></div>
-        <p style="margin-top:20px;font-size:15px;color:rgba(255,255,255,.85);line-height:1.6;max-width:380px" data-i18n="tarifs_note">Les prix peuvent varier selon la période. Contactez directement le propriétaire pour connaître les offres en cours.</p>
-        <a href="#" class="magnetic wa-link" data-magnetic target="_blank" data-i18n="tarifs_quote_cta" style="display:inline-flex;margin-top:26px;background:#fff;color:var(--accent);padding:14px 26px;border-radius:42px;font-weight:700;font-size:15px;align-items:center;gap:9px">Demander un devis →</a>
-      </div>
-      <div class="reveal reveal-r" style="background:#fff;border:1px solid #efe6d6;border-radius:26px;padding:34px;box-shadow:0 18px 44px rgba(13,36,56,.06)">
-        <div style="display:inline-block;background:#eaf6f8;color:#06576b;padding:6px 14px;border-radius:30px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase" data-i18n="season_low_badge">Basse saison</div>
-        <div style="margin-top:24px;display:flex;flex-direction:column;gap:2px">
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #f1ebde"><span style="font-weight:600" data-i18n="month_oct">Octobre</span><span style="font-weight:700;font-size:18px">50&nbsp;€<span style="font-size:13px;color:#9aa7ad;font-weight:500" data-i18n="per_night_short"> /nuit</span></span></div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #f1ebde"><span style="font-weight:600" data-i18n="month_nov">Novembre</span><span style="font-weight:700;font-size:18px">50&nbsp;€<span style="font-size:13px;color:#9aa7ad;font-weight:500" data-i18n="per_night_short"> /nuit</span></span></div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #f1ebde"><span style="font-weight:600" data-i18n="month_dec">Décembre</span><span style="display:flex;align-items:center;gap:8px"><span style="background:#e9f9ec;color:#0f7a3a;font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px" data-i18n="promo_badge">PROMO</span><span style="font-weight:700;font-size:18px">43&nbsp;€<span style="font-size:13px;color:#9aa7ad;font-weight:500" data-i18n="per_night_short"> /nuit</span></span></span></div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #f1ebde"><span style="font-weight:600" data-i18n="month_mar">Mars</span><span style="display:flex;align-items:center;gap:8px"><span style="background:#e9f9ec;color:#0f7a3a;font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px" data-i18n="promo_badge">PROMO</span><span style="font-weight:700;font-size:18px">43&nbsp;€<span style="font-size:13px;color:#9aa7ad;font-weight:500" data-i18n="per_night_short"> /nuit</span></span></span></div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #f1ebde"><span style="font-weight:600" data-i18n="month_apr">Avril</span><span style="display:flex;align-items:center;gap:8px"><span style="background:#e9f9ec;color:#0f7a3a;font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px" data-i18n="promo_badge">PROMO</span><span style="font-weight:700;font-size:18px">43&nbsp;€<span style="font-size:13px;color:#9aa7ad;font-weight:500" data-i18n="per_night_short"> /nuit</span></span></span></div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #f1ebde"><span style="font-weight:600" data-i18n="month_may">Mai</span><span style="font-weight:700;font-size:18px">50&nbsp;€<span style="font-size:13px;color:#9aa7ad;font-weight:500" data-i18n="per_night_short"> /nuit</span></span></div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0"><span style="font-weight:600" data-i18n="month_jun">Juin</span><span style="font-weight:700;font-size:18px">65&nbsp;€<span style="font-size:13px;color:#9aa7ad;font-weight:500" data-i18n="per_night_short"> /nuit</span></span></div>
-        </div>
-      </div>
+    <div class="reveal" style="max-width:700px;margin:0 auto 30px;text-align:center">
+      <p style="color:#5a6b78;font-size:16px;line-height:1.6" data-i18n="tarifs_note">Les prix peuvent varier selon la période. Contactez directement le propriétaire pour connaître les offres en cours.</p>
     </div>
-    <div class="reveal" style="margin-top:26px;background:#fdf3d6;border-radius:18px;padding:22px 28px;display:flex;align-items:center;gap:16px;justify-content:center;text-align:center;flex-wrap:wrap">
+    <div class="tarif-months-grid reveal reveal-sc">
+      <div class="tarif-month-card tier-low"><div class="tmc-name" data-i18n="month_jan">Janvier</div><div class="tmc-price">43&nbsp;€<span data-i18n="per_night_short"> /nuit</span></div></div>
+      <div class="tarif-month-card tier-low"><div class="tmc-name" data-i18n="month_feb">Février</div><div class="tmc-price">43&nbsp;€<span data-i18n="per_night_short"> /nuit</span></div></div>
+      <div class="tarif-month-card tier-low"><div class="tmc-name" data-i18n="month_mar">Mars</div><div class="tmc-price">43&nbsp;€<span data-i18n="per_night_short"> /nuit</span></div></div>
+      <div class="tarif-month-card tier-mid"><div class="tmc-name" data-i18n="month_apr">Avril</div><div class="tmc-price">59&nbsp;€<span data-i18n="per_night_short"> /nuit</span></div></div>
+      <div class="tarif-month-card tier-mid"><div class="tmc-name" data-i18n="month_may">Mai</div><div class="tmc-price">74&nbsp;€<span data-i18n="per_night_short"> /nuit</span></div></div>
+      <div class="tarif-month-card tier-high"><div class="tmc-name" data-i18n="month_jun">Juin</div><div class="tmc-price">99&nbsp;€<span data-i18n="per_night_short"> /nuit</span></div></div>
+      <div class="tarif-month-card tier-high"><div class="tmc-name" data-i18n="month_jul">Juillet</div><div class="tmc-price">224&nbsp;€<span data-i18n="per_night_short"> /nuit</span></div></div>
+      <div class="tarif-month-card tier-high"><div class="tmc-name" data-i18n="month_aug">Août</div><div class="tmc-price">224&nbsp;€<span data-i18n="per_night_short"> /nuit</span></div></div>
+      <div class="tarif-month-card tier-mid"><div class="tmc-name" data-i18n="month_sep">Septembre</div><div class="tmc-price">74&nbsp;€<span data-i18n="per_night_short"> /nuit</span></div></div>
+      <div class="tarif-month-card tier-mid"><div class="tmc-name" data-i18n="month_oct">Octobre</div><div class="tmc-price">59&nbsp;€<span data-i18n="per_night_short"> /nuit</span></div></div>
+      <div class="tarif-month-card tier-low"><div class="tmc-name" data-i18n="month_nov">Novembre</div><div class="tmc-price">43&nbsp;€<span data-i18n="per_night_short"> /nuit</span></div></div>
+      <div class="tarif-month-card tier-low"><div class="tmc-name" data-i18n="month_dec">Décembre</div><div class="tmc-price">43&nbsp;€<span data-i18n="per_night_short"> /nuit</span></div></div>
+    </div>
+    <div class="reveal" style="margin-top:30px;background:#fdf3d6;border-radius:18px;padding:22px 28px;display:flex;align-items:center;gap:16px;justify-content:center;text-align:center;flex-wrap:wrap">
       <span style="width:42px;height:42px;border-radius:50%;background:var(--gold);color:#5a4500;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="2.3"/><circle cx="17" cy="17" r="2.3"/><line x1="18" y1="6" x2="6" y2="18"/></svg></span>
       <span style="font-weight:700;font-size:18px;color:#7a5e10" data-i18n="tarifs_highlight">Réservez en direct et profitez du meilleur tarif, sans commission de plateforme.</span>
+    </div>
+    <div class="reveal" style="text-align:center;margin-top:22px">
+      <a href="#" class="magnetic wa-link" data-magnetic target="_blank" data-i18n="tarifs_quote_cta" style="display:inline-flex;background:var(--accent);color:#fff;padding:15px 30px;border-radius:42px;font-weight:700;font-size:15px;align-items:center;gap:9px;box-shadow:0 14px 34px rgba(10,92,134,.28)">Demander un devis →</a>
     </div>
   </div>
 
@@ -148,20 +161,25 @@
     <div style="max-width:1100px;margin:0 auto">
       <div style="text-align:center;max-width:640px;margin:0 auto 36px">
         <h2 class="reveal reveal-d2" style="font-size:clamp(28px,3.6vw,40px);font-weight:800;letter-spacing:-.025em;line-height:1.06" data-i18n="cal_h2">Choisissez votre date d'arrivée</h2>
-        <p class="reveal reveal-d3" style="margin-top:16px;color:#5a6b78;font-size:17px;line-height:1.6" data-i18n-html="cal_sub_html">Séjour de <b style="color:var(--ink)">6 nuits</b>. Sélectionnez votre arrivée, le départ est calculé automatiquement.</p>
+        <p class="reveal reveal-d3" style="margin-top:16px;color:#5a6b78;font-size:17px;line-height:1.6" data-i18n-html="cal_sub_html">Séjour de <b style="color:var(--ink)">4 nuits minimum</b>. Choisissez votre arrivée et le nombre de nuits.</p>
       </div>
       <div class="reveal reveal-sc" style="background:var(--sand);border:1px solid #efe6d6;border-radius:26px;padding:clamp(20px,3vw,40px);box-shadow:0 24px 60px rgba(13,36,56,.07)">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:26px">
           <button id="cal-prev" class="magnetic" data-magnetic style="width:46px;height:46px;border-radius:50%;border:1px solid #d8e2e6;background:#fff;font-size:18px;cursor:pointer;color:var(--accent);display:flex;align-items:center;justify-content:center">←</button>
           <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
             <span style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#5a6b78"><span style="width:14px;height:14px;border-radius:4px;background:#eaf6f8;border:1px solid #cfe4e8"></span><span data-i18n="legend_low">Basse saison</span></span>
-            <span style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#5a6b78"><span style="width:14px;height:14px;border-radius:4px;background:#fdf3d6"></span><span data-i18n="legend_high">Haute saison</span></span>
-            <span style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#5a6b78"><span style="width:14px;height:14px;border-radius:4px;background:#e9f9ec"></span><span data-i18n="legend_promo">Promotion</span></span>
+            <span style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#5a6b78"><span style="width:14px;height:14px;border-radius:4px;background:#fdf3d6"></span><span data-i18n="legend_mid">Moyenne saison</span></span>
+            <span style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#5a6b78"><span style="width:14px;height:14px;border-radius:4px;background:var(--accent)"></span><span data-i18n="legend_high">Haute saison</span></span>
             <span style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#5a6b78"><span style="width:14px;height:14px;border-radius:4px;background:#fff;border:1px solid #ddd"></span><span data-i18n="legend_occ">Occupé</span></span>
           </div>
           <button id="cal-next" class="magnetic" data-magnetic style="width:46px;height:46px;border-radius:50%;border:1px solid #d8e2e6;background:#fff;font-size:18px;cursor:pointer;color:var(--accent);display:flex;align-items:center;justify-content:center">→</button>
         </div>
         <div id="cal-container" class="cal-months" style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,4vw,52px)"></div>
+        <div class="nights-picker">
+          <label for="nights-input" data-i18n="nights_label">Nombre de nuits</label>
+          <input type="number" id="nights-input" min="4" value="4" inputmode="numeric">
+        </div>
+        <div id="nights-error" class="nights-error"></div>
         <div style="margin-top:30px;border-top:1px solid #e6ddcd;padding-top:24px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
           <div><div style="font-size:13px;color:#9aa7ad;font-weight:600;text-transform:uppercase;letter-spacing:.1em" data-i18n="stay_title">Votre séjour</div><div id="stay-label" style="font-size:20px;font-weight:700;margin-top:6px">Sélectionnez une date d'arrivée</div></div>
           <div style="text-align:right"><div style="font-size:13px;color:#9aa7ad;font-weight:600;text-transform:uppercase;letter-spacing:.1em" data-i18n="price_title">À partir de</div><div id="stay-price" style="font-size:28px;font-weight:800;color:var(--accent);margin-top:4px;letter-spacing:-.02em">—</div></div>
