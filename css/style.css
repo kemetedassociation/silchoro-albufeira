@@ -268,11 +268,11 @@ video{
 @media(max-width:900px){.back-btn{top:calc(68px + var(--safe-t));left:14px;padding:9px 15px 9px 11px;font-size:12.5px}}
 
 /* ===== SOMMAIRE DE PAGE (TOC) ===== */
-.page-toc{position:sticky;top:0;z-index:60;background:rgba(250,246,239,.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid #efe6d6;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;padding:12px 16px}
+.page-toc{position:sticky;top:calc(70px + var(--safe-t));z-index:60;background:rgba(250,246,239,.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid #efe6d6;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;padding:12px 16px}
 .page-toc a{color:#5a6b78;font-weight:600;font-size:13.5px;text-decoration:none;padding:9px 15px;border-radius:30px;transition:background .2s,color .2s;white-space:nowrap}
 .page-toc a:hover{background:#eef6f8;color:var(--accent)}
 .page-toc a.active{background:var(--accent);color:#fff}
-@media(max-width:700px){.page-toc{overflow-x:auto;justify-content:flex-start;-webkit-overflow-scrolling:touch}}
+@media(max-width:700px){.page-toc{overflow-x:auto;justify-content:flex-start;-webkit-overflow-scrolling:touch;top:calc(60px + var(--safe-t))}}
 
 /* ===== GRILLE TARIFS 12 MOIS ===== */
 .tarif-months-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:1000px;margin:0 auto}

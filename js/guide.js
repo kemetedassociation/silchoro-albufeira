@@ -64,15 +64,16 @@ class AutoCarousel {
   }
   build() {
     const slides = this.items.map((it, i) => `
-      <div class="ac-slide" data-i="${i}">
+      <button class="ac-slide" data-i="${i}" type="button" aria-label="${it.name} — ${it.desc}">
         <img src="assets/guide/${it.img}.webp" alt="${it.name}" loading="${i === 0 ? 'eager' : 'lazy'}">
         <div class="ac-scrim"></div>
         <div class="ac-caption">
           <div class="ac-tag">${it.tag}</div>
           <div class="ac-name">${it.name}</div>
           <div class="ac-desc">${it.desc}</div>
+          <div class="ac-hint">${this.duration ? 'Cliquez pour figer cette adresse' : ''}</div>
         </div>
-      </div>`).join('');
+      </button>`).join('');
     const dots = this.items.map((_, i) => `<div class="ac-dot" data-i="${i}"><b></b></div>`).join('');
     this.el.innerHTML = `
       ${slides}
@@ -86,6 +87,10 @@ class AutoCarousel {
     this.el.querySelector('.ac-prev').addEventListener('click', () => { this.go(this.i - 1); this.restart(); });
     this.el.querySelector('.ac-next').addEventListener('click', () => { this.go(this.i + 1); this.restart(); });
     this.dotEls.forEach(d => d.addEventListener('click', () => { this.go(+d.dataset.i); this.restart(); }));
+    this.slideEls.forEach(s => s.addEventListener('click', () => {
+      this.el.classList.toggle('paused');
+      if (this.el.classList.contains('paused')) this.stop(); else this.restart();
+    }));
   }
   show(i) {
     this.i = (i + this.items.length) % this.items.length;
