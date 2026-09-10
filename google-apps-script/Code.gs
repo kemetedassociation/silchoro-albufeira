@@ -11,6 +11,9 @@
  * La feuille "Reservations" est mise en forme automatiquement : lignes colorées
  * selon le statut du séjour (à venir / en cours / terminé), lien WhatsApp cliquable
  * par ligne, en-tête figé. Un onglet "Aperçu" résume les chiffres clés.
+ * (Les statuts, couleurs et liens sont calculés directement en code, pas via des
+ * formules de feuille de calcul — ceci évite les erreurs liées à la langue/locale
+ * du compte Google, qui change le séparateur des formules selon les pays.)
  *
  * Mise en place (à faire une seule fois, depuis le compte luzdosol351@gmail.com) :
  * 1. Aller sur sheets.google.com → créer une feuille vide, la nommer "LUZDOSOL - Réservations".
@@ -43,6 +46,7 @@ const COL = {
 };
 const NB_COLS = 17;
 const HEADERS = ['Horodatage', 'Prénom', 'Nom', 'Email', 'Téléphone', 'Arrivée', 'Départ', 'Arrivée (ISO)', 'Départ (ISO)', 'Nuits', 'Voyageurs', 'J envoyé', 'J+1 envoyé', 'J+3 envoyé', 'Avis envoyé', 'Statut', 'Contact'];
+const STATUT_COLORS = { 'À venir': '#eaf6f8', 'En cours': '#fdf3d6', 'Terminé': '#e9f9ec' };
 
 function doPost(e) {
   const sheet = getSheet();
@@ -53,20 +57,9 @@ function doPost(e) {
     p.arrivee || '', p.depart || '', p.arrivee_iso || '', p.depart_iso || '', p.nuits || '', p.voyageurs || '',
     false, false, false, false,
   ]);
-  const row = sheet.getLastRow();
-  writeRowFormulas(sheet, row);
+  updateRowComputedCells(sheet, sheet.getLastRow());
   if (p.email) sendConfirmationEmail(p);
   return ContentService.createTextOutput('OK');
-}
-
-// Colonnes calculées automatiquement (statut du séjour + lien WhatsApp cliquable)
-function writeRowFormulas(sheet, row) {
-  sheet.getRange(row, COL.statut).setFormula(
-    `=IF($H${row}="","",IF(TODAY()<DATEVALUE($H${row}),"À venir",IF($O${row}=TRUE,"Terminé","En cours")))`
-  );
-  sheet.getRange(row, COL.whatsapp).setFormula(
-    `=IF($E${row}="","",HYPERLINK("https://wa.me/"&REGEXREPLACE($E${row},"[^0-9]",""),"💬 WhatsApp"))`
-  );
 }
 
 function getSheet() {
@@ -94,6 +87,44 @@ function parseIsoLocal(s) {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s).trim());
   if (!m) return null;
   return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+}
+
+function computeStatut(arriveeIso, avisEnvoye) {
+  const arrivee = parseIsoLocal(arriveeIso);
+  if (!arrivee) return '';
+  const today = daysAgo(0);
+  if (today < arrivee) return 'À venir';
+  return avisEnvoye ? 'Terminé' : 'En cours';
+}
+
+/**
+ * Calcule et écrit, pour une ligne donnée : le statut du séjour, le lien
+ * WhatsApp cliquable, et la couleur de fond de toute la ligne — sans aucune
+ * formule (pour éviter les erreurs de locale). `rowValues` est optionnel :
+ * passez-le si vous l'avez déjà en mémoire pour éviter une lecture inutile.
+ */
+function updateRowComputedCells(sheet, row, rowValues) {
+  const vals = rowValues || sheet.getRange(row, 1, 1, COL.avisEnvoye).getValues()[0];
+  const tel = vals[COL.tel - 1];
+  const arriveeIso = vals[COL.arriveeIso - 1];
+  const avisEnvoye = vals[COL.avisEnvoye - 1] === true;
+
+  const statut = computeStatut(arriveeIso, avisEnvoye);
+  sheet.getRange(row, COL.statut).setValue(statut);
+
+  const digits = String(tel || '').replace(/[^0-9]/g, '');
+  const waCell = sheet.getRange(row, COL.whatsapp);
+  if (digits) {
+    const rich = SpreadsheetApp.newRichTextValue()
+      .setText('💬 WhatsApp')
+      .setLinkUrl('https://wa.me/' + digits)
+      .build();
+    waCell.setRichTextValue(rich);
+  } else {
+    waCell.setValue('');
+  }
+
+  sheet.getRange(row, 1, 1, NB_COLS).setBackground(STATUT_COLORS[statut] || '#ffffff');
 }
 
 /* ============ 1. EMAIL DE CONFIRMATION (immédiat) ============ */
@@ -160,7 +191,8 @@ function sendReviewEmail(prenom, email) {
 
 /**
  * Exécutée automatiquement une fois par jour (voir setup()).
- * Parcourt les réservations et envoie l'email correspondant à chaque étape du séjour.
+ * Parcourt les réservations, envoie l'email correspondant à chaque étape du
+ * séjour, et rafraîchit le statut/couleur/lien de chaque ligne.
  */
 function sendScheduledEmails() {
   const sheet = getSheet();
@@ -173,14 +205,14 @@ function sendScheduledEmails() {
     const row = data[i];
     const prenom = row[COL.prenom - 1];
     const email = row[COL.email - 1];
+    if (!prenom && !email) continue; // ligne vide
+
     const arriveeRaw = row[COL.arriveeIso - 1];
     const departRaw = row[COL.departIso - 1];
-    if (!email) continue;
-
     const arrivee = parseIsoLocal(arriveeRaw);
     const depart = parseIsoLocal(departRaw);
 
-    if (arrivee && !isNaN(arrivee.getTime())) {
+    if (email && arrivee && !isNaN(arrivee.getTime())) {
       if (!row[COL.dayjEnvoye - 1] && sameDay(arrivee, today)) {
         sendDayJEmail(prenom, email);
         sheet.getRange(i + 1, COL.dayjEnvoye).setValue(true);
@@ -195,60 +227,42 @@ function sendScheduledEmails() {
       }
     }
 
-    if (depart && !isNaN(depart.getTime())) {
+    if (email && depart && !isNaN(depart.getTime())) {
       if (!row[COL.avisEnvoye - 1] && sameDay(depart, oneDayAgo)) {
         sendReviewEmail(prenom, email);
         sheet.getRange(i + 1, COL.avisEnvoye).setValue(true);
+        row[COL.avisEnvoye - 1] = true; // pour que le statut recalculé ci-dessous soit à jour
       }
     }
+
+    updateRowComputedCells(sheet, i + 1, row);
   }
+
+  buildOverviewSheet();
 }
 
-/* ============ MISE EN FORME DE LA FEUILLE (couleurs, liens, lisibilité) ============ */
+/* ============ MISE EN FORME DE LA FEUILLE (en-tête, largeurs) ============ */
 function formatSheet() {
   const sheet = getSheet();
-  const maxRows = Math.max(sheet.getMaxRows(), 300);
-  if (sheet.getMaxRows() < maxRows) sheet.insertRowsAfter(sheet.getMaxRows(), maxRows - sheet.getMaxRows());
 
-  // En-tête figé, stylé
   sheet.getRange(1, 1, 1, NB_COLS).setValues([HEADERS])
     .setBackground('#0d2438').setFontColor('#ffffff').setFontWeight('bold').setFontSize(11);
   sheet.setFrozenRows(1);
   sheet.setFrozenColumns(3);
 
-  // Largeurs de colonnes lisibles
   sheet.setColumnWidths(1, NB_COLS, 118);
   sheet.setColumnWidth(COL.email, 200);
   sheet.setColumnWidth(COL.statut, 100);
   sheet.setColumnWidth(COL.whatsapp, 120);
 
-  // Formules (statut + lien WhatsApp) sur toutes les lignes de données existantes
+  // Recalcule statut/couleur/lien pour toutes les lignes déjà présentes
   const lastRow = sheet.getLastRow();
-  for (let r = 2; r <= Math.max(lastRow, 2); r++) writeRowFormulas(sheet, r);
-
-  const fullRange = sheet.getRange(2, 1, maxRows - 1, NB_COLS);
-  const statutCol = columnLetter(COL.statut);
-
-  const rules = [
-    SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied(`=$${statutCol}2="À venir"`)
-      .setBackground('#eaf6f8').setRanges([fullRange]).build(),
-    SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied(`=$${statutCol}2="En cours"`)
-      .setBackground('#fdf3d6').setRanges([fullRange]).build(),
-    SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied(`=$${statutCol}2="Terminé"`)
-      .setBackground('#e9f9ec').setRanges([fullRange]).build(),
-  ];
-  sheet.setConditionalFormatRules(rules);
+  if (lastRow >= 2) {
+    const data = sheet.getRange(2, 1, lastRow - 1, COL.avisEnvoye).getValues();
+    data.forEach((row, idx) => updateRowComputedCells(sheet, idx + 2, row));
+  }
 
   sheet.autoResizeColumns(2, 3); // prénom, nom, email restent lisibles
-}
-
-function columnLetter(n) {
-  let s = '';
-  while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - m) / 26); }
-  return s;
 }
 
 /* ============ ONGLET "Aperçu" — tableau de bord ============ */
@@ -256,29 +270,49 @@ function buildOverviewSheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sheet = ss.getSheetByName('Aperçu');
   if (!sheet) sheet = ss.insertSheet('Aperçu', 0);
-  sheet.clear();
 
+  const resa = getSheet();
+  const lastRow = resa.getLastRow();
+  const data = lastRow >= 2 ? resa.getRange(2, 1, lastRow - 1, COL.statut).getValues() : [];
+
+  const today = daysAgo(0);
+  const sevenFromNow = new Date(today); sevenFromNow.setDate(today.getDate() + 7);
+
+  let total = 0, arriving7 = 0, enCours = 0, aVenir = 0, termine = 0;
+  data.forEach(row => {
+    if (!row[COL.prenom - 1] && !row[COL.email - 1]) return;
+    total++;
+    const arrivee = parseIsoLocal(row[COL.arriveeIso - 1]);
+    if (arrivee && arrivee >= today && arrivee <= sevenFromNow) arriving7++;
+    const statut = row[COL.statut - 1];
+    if (statut === 'En cours') enCours++;
+    else if (statut === 'À venir') aVenir++;
+    else if (statut === 'Terminé') termine++;
+  });
+
+  sheet.clear();
   sheet.getRange('A1').setValue('LUZDOSOL — Aperçu des réservations')
     .setFontSize(16).setFontWeight('bold').setFontColor('#0d2438');
   sheet.getRange('A1:D1').merge();
 
   const rows = [
-    ['Total réservations', '=COUNTA(Reservations!B2:B300)'],
-    ['Arrivées dans les 7 prochains jours', '=COUNTIFS(Reservations!H2:H300,">="&TEXT(TODAY(),"YYYY-MM-DD"),Reservations!H2:H300,"<="&TEXT(TODAY()+7,"YYYY-MM-DD"))'],
-    ['Séjours en cours', '=COUNTIF(Reservations!P2:P300,"En cours")'],
-    ['Séjours à venir', '=COUNTIF(Reservations!P2:P300,"À venir")'],
-    ['Séjours terminés', '=COUNTIF(Reservations!P2:P300,"Terminé")'],
+    ['Total réservations', total],
+    ['Arrivées dans les 7 prochains jours', arriving7],
+    ['Séjours en cours', enCours],
+    ['Séjours à venir', aVenir],
+    ['Séjours terminés', termine],
   ];
   sheet.getRange(3, 1, rows.length, 2).setValues(rows);
   sheet.getRange(3, 1, rows.length, 1).setFontWeight('bold');
   sheet.getRange(3, 2, rows.length, 1).setFontSize(20).setFontColor('#0a5c86').setFontWeight('bold');
-
   sheet.getRange(3, 1, rows.length, 2).setBorder(true, true, true, true, true, true, '#efe6d6', SpreadsheetApp.BorderStyle.SOLID);
   sheet.setColumnWidth(1, 280);
   sheet.setColumnWidth(2, 140);
 
   sheet.getRange('A10').setValue('→ Voir toutes les réservations dans l\'onglet "Reservations"')
     .setFontColor('#5a6b78').setFontStyle('italic');
+  sheet.getRange('A11').setValue('Mis à jour automatiquement chaque jour à 10h.')
+    .setFontColor('#9aa7ad').setFontStyle('italic').setFontSize(10);
 }
 
 /**
