@@ -4,7 +4,7 @@
  * (voir chatbot-worker/README — à déployer séparément).
  */
 (function () {
-  const CHATBOT_ENDPOINT = ''; // TODO: coller ici l'URL du Worker déployé (ex: https://luzdosol-chatbot.<compte>.workers.dev)
+  const CHATBOT_ENDPOINT = 'https://luzdosol-chatbot.kemeted-association.workers.dev';
   if (!CHATBOT_ENDPOINT) return;
 
   const SUGGESTIONS = [
@@ -74,7 +74,10 @@
   }
 
   function escapeHtml(s) {
-    return (s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    return (s || '')
+      .replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
   }
 
   function showTyping() {
