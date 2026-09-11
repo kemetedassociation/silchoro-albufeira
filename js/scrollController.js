@@ -247,6 +247,16 @@ class ScrollController {
 
     setTimeout(() => ScrollTrigger.refresh(), 500);
 
+    // Filet de sécurité : si des images (ex. galerie sticky, logo) ou des
+    // polices finissent de charger après ce premier refresh, la mise en
+    // page peut légèrement bouger et désynchroniser les positions de pin
+    // déjà calculées (symptôme : grand espace vide avant une scène). On
+    // recalcule donc une dernière fois une fois TOUT le contenu chargé.
+    window.addEventListener('load', () => ScrollTrigger.refresh());
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => ScrollTrigger.refresh());
+    }
+
     window.addEventListener('orientationchange', () => {
       setTimeout(() => ScrollTrigger.refresh(), 400);
     });

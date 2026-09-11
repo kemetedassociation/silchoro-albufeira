@@ -483,17 +483,25 @@ details.faq .ans{padding:0 4px 28px;max-width:760px;color:#5a6b78;font-size:17px
 .lang-switch-mobile button{border:1px solid #d8e2e6;background:#fff;padding:8px 16px;border-radius:24px;font-size:13px;font-weight:700;color:#5a6b78;cursor:pointer;font-family:inherit}
 .lang-switch-mobile button.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
-/* Mobile menu */
-.mobile-menu{position:fixed;inset:0;z-index:901;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .45s cubic-bezier(.16,1,.3,1);overflow:hidden}
+/* Mobile menu — ouverture "kinétique" : panneaux qui glissent, liens qui
+   rebondissent en tournant légèrement, façon menu plein écran animé.
+   Tout en CSS (pas de GSAP ici : il n'est chargé que sur l'accueil pour le
+   scrollytelling, on ne veut pas alourdir les autres pages). */
+.mobile-menu{position:fixed;inset:0;z-index:901;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s cubic-bezier(.16,1,.3,1);overflow:hidden}
 .mobile-menu.open{opacity:1;pointer-events:auto}
-.mm-mosaic{position:absolute;inset:0;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(2,1fr);gap:2px;z-index:0}
+.mm-panel{position:absolute;inset:0;z-index:0;background:linear-gradient(135deg,var(--accent),var(--ink) 70%);transform:translateX(101%);transition:transform .6s cubic-bezier(.65,.05,0,1)}
+.mobile-menu.open .mm-panel{transform:translateX(0)}
+.mm-panel.mm-panel-2{background:var(--ink);transition-delay:.06s}
+.mm-mosaic{position:absolute;inset:0;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(2,1fr);gap:2px;z-index:0;transform:translateX(101%);transition:transform .6s cubic-bezier(.65,.05,0,1) .1s}
+.mobile-menu.open .mm-mosaic{transform:translateX(0)}
 .mm-mosaic img{width:100%;height:100%;object-fit:cover;transform:scale(1.12);transition:transform 12s cubic-bezier(.16,1,.3,1)}
 .mobile-menu.open .mm-mosaic img{transform:scale(1)}
 .mm-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,24,38,.86) 0%,rgba(8,24,38,.9) 60%,rgba(8,24,38,.95) 100%);z-index:1}
-.mm-close{position:absolute;top:calc(22px + var(--safe-t,0px));right:26px;z-index:3;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.12);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .25s}
+.mm-close{position:absolute;top:calc(22px + var(--safe-t,0px));right:26px;z-index:3;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.12);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .25s;transform:rotate(-90deg);opacity:0}
 .mm-close:hover{background:rgba(255,255,255,.22)}
+.mobile-menu.open .mm-close{transform:rotate(0);opacity:1;transition:transform .5s cubic-bezier(.34,1.56,.64,1) .25s,opacity .3s ease .25s,background .25s}
 .mm-inner{position:relative;z-index:2;width:100%;max-width:520px;max-height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:calc(92px + var(--safe-t)) 24px calc(40px + var(--safe-b));display:flex;flex-direction:column;align-items:center;gap:0}
-.mobile-menu a{display:block;font-size:27px;font-weight:800;color:#fff;letter-spacing:-.02em;padding:12px 0;opacity:0;transform:translateY(20px);transition:opacity .4s,transform .5s cubic-bezier(.16,1,.3,1),color .2s;text-align:center}
+.mobile-menu a{display:block;font-size:27px;font-weight:800;color:#fff;letter-spacing:-.02em;padding:12px 0;opacity:0;transform:translateY(30px) rotate(6deg);transition:opacity .45s,transform .65s cubic-bezier(.34,1.56,.64,1),color .2s;text-align:center}
 .mobile-menu.open a{opacity:1;transform:none}
 .mobile-menu.open a:nth-child(2){transition-delay:.04s}
 .mobile-menu.open a:nth-child(3){transition-delay:.08s}
@@ -657,7 +665,7 @@ details.faq .ans{padding:0 4px 28px;max-width:760px;color:#5a6b78;font-size:17px
 
 /* ===== GALERIE DÉFILANTE (accueil) — aperçu avant le scrollytelling ===== */
 .sg-intro{height:100vh;height:100svh;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:0 24px;text-align:center}
-.sg-intro-logo{width:min(58vw,300px);height:auto;border-radius:24px;box-shadow:0 30px 70px rgba(0,0,0,.45)}
+.sg-intro-logo{width:min(58vw,300px);aspect-ratio:1/1;height:auto;border-radius:24px;box-shadow:0 30px 70px rgba(0,0,0,.45)}
 .sg-intro-sub{color:rgba(255,255,255,.6);font-size:15px;font-weight:600;letter-spacing:.04em}
 .sg-intro-cue{width:1px;height:40px;background:linear-gradient(180deg,rgba(255,255,255,.7),transparent);animation:guideScrollCue 1.8s ease-in-out infinite}
 @keyframes guideScrollCue{0%,100%{transform:scaleY(.6);opacity:.5}50%{transform:scaleY(1);opacity:1}}
