@@ -24,7 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.title = item.name + ' · Guide du séjour · LUZDOSOL';
 
   const heroImg = document.getElementById('est-hero-img');
-  if (heroImg) { heroImg.src = 'assets/guide/' + item.img + '.webp'; heroImg.alt = item.name; }
+  if (heroImg) {
+    heroImg.src = 'assets/guide/' + item.img + '.webp';
+    heroImg.alt = item.name;
+    heroImg.style.objectPosition = item.heroPos || 'center 30%';
+  }
 
   const tagEl = document.getElementById('est-tag');
   if (tagEl) tagEl.textContent = item.tag || list.tagFallback;
@@ -49,4 +53,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const backLink = document.getElementById('est-back-link');
   if (backLink) backLink.href = 'guide.html#' + list.anchor;
+
+  // Galerie des spécialités portugaises (photos déjà showcasées dans le
+  // carrousel restaurants) — affichée uniquement sur les fiches restaurant,
+  // pour illustrer concrètement les plats évoqués dans le texte.
+  if (cat === 'restaurants') {
+    const dishes = GUIDE_RESTAURANTS.filter(r => !r.venue);
+    const dishesEl = document.getElementById('est-dishes');
+    const dishesSection = document.getElementById('est-dishes-section');
+    if (dishesEl && dishes.length) {
+      dishesEl.innerHTML = dishes.map(d => `
+        <div class="reveal reveal-sc lift" style="border-radius:18px;overflow:hidden;box-shadow:0 14px 34px rgba(13,36,56,.1);background:#fff">
+          <div style="aspect-ratio:4/3;overflow:hidden"><img src="assets/guide/${d.img}.webp" alt="${d.name}" loading="lazy" style="width:100%;height:100%;object-fit:cover"></div>
+          <div style="padding:14px 16px">
+            <div style="font-weight:700;font-size:14.5px">${d.name}</div>
+            <div style="font-size:13px;color:#5a6b78;margin-top:3px">${d.desc}</div>
+          </div>
+        </div>`).join('');
+      if (dishesSection) dishesSection.hidden = false;
+    }
+  }
 });
