@@ -46,11 +46,26 @@ const GUIDE_RESTAURANTS = [
     mapsQuery: 'Stews and More Albufeira, Portugal',
     why: "Bonne humeur garantie : une adresse simple, sans prétention, où on partage volontiers plusieurs plats en grande tablée.",
     highlights: ['Formule tapas conviviale', 'Ambiance chaleureuse, service souriant', 'Pratique pour un groupe'] },
-  { img: 'a-010', tag: 'Spécialité', name: 'Cataplana', desc: 'Ragoût de fruits de mer', venue: false },
-  { img: 'a-011', tag: 'Spécialité', name: 'Polvo à Lagareiro', desc: "Poulpe grillé à l'huile d'olive", venue: false },
-  { img: 'a-012', tag: 'Spécialité', name: 'Bacalhau à Brás', desc: 'Morue effilochée', venue: false },
-  { img: 'a-013', tag: 'Spécialité', name: 'Picanha · Arroz de Marisco · Pastel de Nata', desc: 'Les incontournables à goûter', venue: false },
+  { img: 'a-042', tag: 'Spécialité', name: 'Cataplana', desc: 'Ragoût de fruits de mer', venue: false },
+  { img: 'a-043', tag: 'Spécialité', name: 'Polvo à Lagareiro', desc: "Poulpe grillé à l'huile d'olive", venue: false },
+  { img: 'a-044', tag: 'Spécialité', name: 'Bacalhau à Brás', desc: 'Morue effilochée', venue: false },
+  { img: 'a-045', tag: 'Spécialité', name: 'Pastel de Nata', desc: "Le célèbre flan pâtissier portugais", venue: false },
 ];
+
+// Crédits photo (licence Creative Commons — Wikimedia Commons), requis par la
+// licence pour les photos CC BY / CC BY-SA. Affichés en petit sous la galerie
+// de spécialités et, quand pertinent, sous la fiche d'une adresse.
+const GUIDE_DISH_CREDITS = [
+  { file: 'a-042', credit: 'Cataplana — photo © Wikimedia Commons contributor, CC BY-SA 4.0' },
+  { file: 'a-043', credit: 'Grilled octopus — photo © Iannis Karakatsanes, CC BY-SA 2.0' },
+  { file: 'a-044', credit: 'Bacalhau à Brás — photo © Fpenteado, CC BY-SA 3.0' },
+  { file: 'a-045', credit: 'Pastéis de Nata — photo © helmut.weigel, CC BY-SA 4.0' },
+];
+const GUIDE_PHOTO_CREDITS = {
+  'a-046': 'Praia dos Pescadores, Albufeira — photo © Planax (domaine public)',
+  'a-047': 'Ponta da Piedade, Lagos — photo © Jose A., CC BY 2.0',
+  'a-048': 'Praia da Rocha, Portimão — photo © Jose A., CC BY 2.0',
+};
 
 const GUIDE_SUPER = ['a-014a', 'a-014b', 'a-014c', 'a-014d'];
 
@@ -126,7 +141,7 @@ const GUIDE_VILLES = [
     mapsQuery: 'Aeroporto de Faro, Portugal',
     why: "Votre point d'arrivée en Algarve. Pour la suite du séjour, une voiture de location facilite grandement les déplacements.",
     highlights: ['Location de voiture fortement recommandée', 'Taxi : environ 45-60 €', 'Uber/Bolt : environ 25-40 €'] },
-  { img: 'a-034', tag: '3 km · 8-10 min', name: 'Albufeira', desc: 'Vieille ville, marina, plages, excursions en bateau, restaurants et vie nocturne.', venue: true,
+  { img: 'a-046', tag: '3 km · 8-10 min', name: 'Albufeira', desc: 'Vieille ville, marina, plages, excursions en bateau, restaurants et vie nocturne.', venue: true,
     mapsQuery: 'Albufeira, Portugal',
     why: "Le cœur de votre séjour : à quelques minutes de l'appartement, entre vieille ville, marina et plages.",
     highlights: ['Vieille ville pittoresque', 'Marina et excursions en bateau', 'Plages, restaurants et vie nocturne'] },
@@ -134,11 +149,11 @@ const GUIDE_VILLES = [
     mapsQuery: 'Vilamoura, Portugal',
     why: "Une ambiance plus chic, à 20 minutes de l'appartement : idéale pour une soirée ou une journée différente.",
     highlights: ['Marina de luxe', 'Casino et golf', 'Restaurants gastronomiques et bars lounge'] },
-  { img: 'a-036', tag: '60 km · 50-55 min', name: 'Lagos', desc: 'Ponta da Piedade, plages spectaculaires, grottes, kayak et centre historique.', venue: true,
+  { img: 'a-047', tag: '60 km · 50-55 min', name: 'Lagos', desc: 'Ponta da Piedade, plages spectaculaires, grottes, kayak et centre historique.', venue: true,
     mapsQuery: 'Lagos, Algarve, Portugal',
     why: "Une excursion d'une journée qui vaut vraiment le détour : falaises, grottes et plages parmi les plus belles de l'Algarve.",
     highlights: ['Ponta da Piedade et ses falaises', 'Grottes accessibles en kayak ou bateau', 'Centre historique agréable à visiter'] },
-  { img: 'a-037', tag: '40 km · 35-40 min', name: 'Portimão', desc: 'Praia da Rocha, promenade maritime, restaurants de fruits de mer et shopping.', venue: true,
+  { img: 'a-048', tag: '40 km · 35-40 min', name: 'Portimão', desc: 'Praia da Rocha, promenade maritime, restaurants de fruits de mer et shopping.', venue: true,
     mapsQuery: 'Portimao, Algarve, Portugal',
     why: "Entre plage et vie urbaine : la Praia da Rocha et sa promenade sont idéales pour une journée complète.",
     highlights: ['Praia da Rocha', 'Promenade maritime animée', 'Bons restaurants de fruits de mer'] },

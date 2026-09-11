@@ -54,6 +54,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const backLink = document.getElementById('est-back-link');
   if (backLink) backLink.href = 'guide.html#' + list.anchor;
 
+  // Crédit photo (licence Creative Commons) quand la photo hero vient d'une
+  // source externe (Wikimedia Commons) plutôt que de la banque d'images du site.
+  const heroCreditEl = document.getElementById('est-hero-credit');
+  if (heroCreditEl && typeof GUIDE_PHOTO_CREDITS !== 'undefined' && GUIDE_PHOTO_CREDITS[item.img]) {
+    heroCreditEl.textContent = GUIDE_PHOTO_CREDITS[item.img];
+    heroCreditEl.hidden = false;
+  }
+
   // Galerie des spécialités portugaises (photos déjà showcasées dans le
   // carrousel restaurants) — affichée uniquement sur les fiches restaurant,
   // pour illustrer concrètement les plats évoqués dans le texte.
@@ -71,6 +79,11 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>`).join('');
       if (dishesSection) dishesSection.hidden = false;
+
+      const creditsEl = document.getElementById('est-dishes-credits');
+      if (creditsEl && typeof GUIDE_DISH_CREDITS !== 'undefined') {
+        creditsEl.textContent = 'Crédits photos : ' + GUIDE_DISH_CREDITS.map(c => c.credit).join(' · ');
+      }
     }
   }
 });
