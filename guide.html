@@ -41,9 +41,7 @@
     .city-card .city-name{font-weight:700;font-size:17px;display:flex;align-items:center;gap:9px}
     .city-card .city-dist{font-size:13px;color:var(--accent);font-weight:700}
     .city-card p{font-size:14px;color:#5a6b78;line-height:1.5;margin-top:4px}
-    .tip-box{margin-top:32px;background:#fdf3d6;border-radius:18px;padding:24px 28px;display:flex;gap:16px;align-items:flex-start}
     .tip-box .ic{font-size:26px;flex-shrink:0}
-    .tip-box p{font-size:15px;color:#7a5e10;line-height:1.6}
     .night-plan{background:linear-gradient(160deg,var(--accent),var(--accent-d));color:#fff;border-radius:22px;padding:30px 32px;margin-top:20px}
     .night-plan h3{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:9px}
     .night-plan-steps{display:flex;flex-direction:column;gap:10px}
@@ -103,13 +101,16 @@
     .svc-card span{position:absolute;left:14px;bottom:12px;color:#fff;font-weight:700;font-size:14px;z-index:1}
     @media(max-width:560px){.svc-row{grid-template-columns:1fr 1fr 1fr;gap:10px}.svc-card span{font-size:11.5px;left:8px;bottom:8px}}
 
-    /* ===== Tip box (outro) ===== */
-    .tip-box{position:relative;overflow:hidden;background:linear-gradient(150deg,var(--gold),#e8a93c);border-radius:22px;padding:clamp(26px,4vw,38px)}
-    .tip-box-inner{display:flex;gap:20px;align-items:flex-start;position:relative;z-index:1}
-    .tip-ic{font-size:30px;flex-shrink:0;animation:tipPulse 2.2s ease-in-out infinite}
-    @keyframes tipPulse{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.15) rotate(-6deg)}}
-    .tip-box p{font-size:15.5px;color:#5a4500;line-height:1.65}
-    .tip-box::after{content:'';position:absolute;top:-60%;right:-20%;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.35),transparent 70%)}
+    /* ===== Tip box (outro) — photo d'ambiance + texte ===== */
+    .tip-box{position:relative;overflow:hidden;border-radius:22px;min-height:300px;display:flex;align-items:flex-end}
+    .tip-box-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.05)}
+    .tip-box-scrim{position:absolute;inset:0;background:linear-gradient(100deg,rgba(9,22,34,.94) 0%,rgba(9,22,34,.82) 42%,rgba(122,94,16,.5) 100%)}
+    .tip-box-inner{display:flex;gap:20px;align-items:flex-start;position:relative;z-index:1;padding:clamp(26px,4vw,38px)}
+    .tip-ic{font-size:26px;flex-shrink:0;width:52px;height:52px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;animation:tipPulse 2.2s ease-in-out infinite}
+    @keyframes tipPulse{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.1) rotate(-6deg)}}
+    .tip-box p{font-size:15.5px;color:rgba(255,255,255,.92);line-height:1.65}
+    .tip-box p strong{color:var(--gold)}
+    @media(max-width:600px){.tip-box{min-height:0}.tip-box-inner{flex-direction:column}}
   </style>
 </head>
 <body>
@@ -270,13 +271,15 @@
   <div class="ac reveal reveal-sc" id="ac-villes"></div>
 
   <div class="tip-box reveal">
+    <img class="tip-box-bg" src="assets/guide/a-033.webp" alt="" loading="lazy">
+    <div class="tip-box-scrim"></div>
     <div class="tip-box-inner">
       <span class="tip-ic">🚗</span>
       <div>
-        <p><strong>Notre conseil :</strong> pour un séjour de plus de trois jours, nous recommandons vivement la location d'un véhicule afin de profiter pleinement des plus belles plages et des villages de l'Algarve. Pour les trajets ponctuels, Uber et Bolt sont très pratiques.</p>
+        <p><strong>Notre conseil :</strong> pour un séjour de plus de trois jours, nous recommandons vivement la location d'un véhicule dès votre arrivée à l'aéroport de Faro, afin de profiter pleinement des plus belles plages et des villages de l'Algarve. Pour les trajets ponctuels, Uber et Bolt sont très pratiques.</p>
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
-          <a href="https://www.rentalcars.com/" target="_blank" rel="noopener" class="magnetic" data-magnetic style="background:#fff;color:#5a4500;padding:11px 20px;border-radius:40px;font-weight:700;font-size:13.5px;display:inline-flex;align-items:center;gap:8px;box-shadow:0 8px 20px rgba(0,0,0,.1)">Comparer les prix (rentalcars.com) →</a>
-          <a href="https://www.google.com/maps/search/location+de+voiture+a%C3%A9roport+de+Faro" target="_blank" rel="noopener" class="magnetic" data-magnetic style="background:rgba(255,255,255,.35);color:#5a4500;padding:11px 20px;border-radius:40px;font-weight:700;font-size:13.5px;display:inline-flex;align-items:center;gap:8px">Voir les agences sur la carte →</a>
+          <a href="https://www.rentalcars.com/" target="_blank" rel="noopener" class="magnetic" data-magnetic style="background:var(--gold);color:#3a2c00;padding:11px 20px;border-radius:40px;font-weight:700;font-size:13.5px;display:inline-flex;align-items:center;gap:8px;box-shadow:0 8px 20px rgba(0,0,0,.25)">Comparer les prix (rentalcars.com) →</a>
+          <a href="https://www.google.com/maps/search/location+de+voiture+a%C3%A9roport+de+Faro" target="_blank" rel="noopener" class="magnetic" data-magnetic style="background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);color:#fff;padding:11px 20px;border-radius:40px;font-weight:700;font-size:13.5px;display:inline-flex;align-items:center;gap:8px">Voir les agences sur la carte →</a>
         </div>
       </div>
     </div>
@@ -308,6 +311,7 @@
 <script src="js/main.js" defer></script>
 <script src="js/pageTransition.js" defer></script>
 <script src="js/chatbot.js" defer></script>
+<script src="js/guide-data.js"></script>
 <script src="js/guide.js"></script>
 </body>
 </html>
