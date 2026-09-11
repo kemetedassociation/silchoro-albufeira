@@ -234,11 +234,28 @@ document.addEventListener('DOMContentLoaded', () => {
     track.parentElement.addEventListener('mouseleave', startAuto);
   }
 
-  /* --- BOUTON RETOUR --- */
+  /* --- BOUTON RETOUR (discret : apparaît en scrollant vers le haut, disparaît vers le bas) --- */
   const backBtn = document.getElementById('back-btn');
   if (backBtn) {
-    if (history.length <= 1) backBtn.style.display = 'none';
-    backBtn.addEventListener('click', () => history.back());
+    if (history.length <= 1) {
+      backBtn.style.display = 'none';
+    } else {
+      backBtn.addEventListener('click', () => history.back());
+      backBtn.classList.add('bb-hidden');
+      let lastY = window.scrollY;
+      let bbTicking = false;
+      function updateBackBtn() {
+        const y = Math.max(window.scrollY, 0);
+        const delta = y - lastY;
+        if (delta > 4) backBtn.classList.add('bb-hidden');
+        else if (delta < -4) backBtn.classList.remove('bb-hidden');
+        lastY = y;
+        bbTicking = false;
+      }
+      window.addEventListener('scroll', () => {
+        if (!bbTicking) { requestAnimationFrame(updateBackBtn); bbTicking = true; }
+      }, { passive: true });
+    }
   }
 
   /* --- SOMMAIRE DE PAGE (surbrillance de la section active) --- */
