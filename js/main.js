@@ -9,8 +9,8 @@
 // Standard single-sequence scenes — allégé : 2 séquences courtes (au lieu de 7)
 // servant uniquement de hero sur la page d'accueil.
 const STANDARD_SCENES = [
-  { id: 'hero-a', basePath: 'assets/frames/hero-a', count: 84, scrollHeight: 1800 },
-  { id: 'hero-b', basePath: 'assets/frames/hero-b', count: 84, scrollHeight: 1500 },
+  { id: 'hero-a', basePath: 'assets/frames/hero-a', count: 84, scrollHeight: 2000 },
+  { id: 'hero-b', basePath: 'assets/frames/hero-b', count: 84, scrollHeight: 1650 },
 ];
 
 const SCENE_CONFIG = [
@@ -20,7 +20,9 @@ const SCENE_CONFIG = [
 const PHONE = '33610418154'; // Numéro WhatsApp de LUZDOSOL
 const EMAIL = 'luzdosol351@gmail.com';
 const PRICE_FROM = 43;
-const RESA_TRACKER_URL = 'https://script.google.com/macros/s/AKfycbyHowI4AtFBh-jnZXlfA3_YoU3i9TBmur-LDlGXnDQsen8N3AIh17BKJj1-E7o_Hgd5Lw/exec';
+const RESA_TRACKER_URL = 'https://script.google.com/macros/s/AKfycbwaVW12-qfPApeJ4oUuOVvV2r3TKQnUjeIGQgV0YqTYumgmD8eh5B8hz9t6KJ6UhdgEjg/exec';
+const BOOKING_WORKER_URL = 'https://luzdosol-chatbot.kemeted-association.workers.dev';
+const DEPOSIT_RATE = 0.3; // doit rester identique à DEPOSIT_RATE dans chatbot-worker/src/index.ts
 const isMobile = /Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent) || window.innerWidth <= 900;
 
 // Perf constants
@@ -470,6 +472,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   function updateStay(){
     const l=document.getElementById('stay-label'),p=document.getElementById('stay-price');
+    updatePaymentAmounts();
     if(!l||!p)return;
     if(!arrival){l.textContent=t('stay_default');l.dataset.set='0';p.textContent='—';return;}
     l.dataset.set='1';
@@ -477,6 +480,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const pr=nightlyPrice(a.getMonth());
     l.textContent=fmtDate(a)+' → '+fmtDate(dep)+' · '+nights+' '+t('nights_word');
     p.textContent=pr?pr+t('per_night'):t('on_request');
+  }
+
+  /* --- MONTANTS DE PAIEMENT (acompte 30% / total) --- */
+  function computeAmounts(){
+    if(!arrival)return null;
+    const a=parseKey(arrival);
+    const nightly=nightlyPrice(a.getMonth());
+    const totalCents=Math.round(nights*nightly*100);
+    return { totalCents, acompteCents: Math.round(totalCents*DEPOSIT_RATE) };
+  }
+  function fmtEuros(cents){ return (cents/100).toLocaleString(calLocale(),{minimumFractionDigits:2,maximumFractionDigits:2})+' €'; }
+  function updatePaymentAmounts(){
+    const amt=computeAmounts();
+    const elA=document.getElementById('amt-acompte'),elT=document.getElementById('amt-total');
+    if(elA)elA.textContent=amt?fmtEuros(amt.acompteCents):'—';
+    if(elT)elT.textContent=amt?fmtEuros(amt.totalCents):'—';
   }
   function updateDateInput(){const i=document.getElementById('f-date');if(i&&arrival)i.value=fmtDate(parseKey(arrival));}
 
@@ -530,8 +549,49 @@ document.addEventListener('DOMContentLoaded', () => {
     trackReservation(v);
     window.open(waUrl(`${t('wa_resa_greeting')}\n\n${t('label_name')} : ${v('f-prenom')} ${v('f-nom')}\n${t('label_phone')} : ${v('f-tel')}\n${t('label_email')} : ${v('f-email')}\n${t('label_arrival')} : ${v('f-date')||(arrival?fmtDate(parseKey(arrival)):t('label_tbd'))}\n${t('nights_word')} : ${nights}\n${t('label_travelers')} : ${v('f-voyageurs')}\n${t('label_message')} : ${v('f-msg')}`),'_blank');
   });
-  document.getElementById('btn-paypal')?.addEventListener('click',()=>{
-    window.open(waUrl(t('wa_paypal_msg')),'_blank');
-  });
   document.getElementById('f-date')?.addEventListener('focus',function(){if(arrival)this.value=fmtDate(parseKey(arrival));});
+
+  /* --- PAIEMENT EN LIGNE (Stripe : carte, Google Pay, Apple Pay, Klarna) --- */
+  document.getElementById('btn-stripe-pay')?.addEventListener('click', async ()=>{
+    const v=id=>document.getElementById(id)?.value||'';
+    const statusEl=document.getElementById('stripe-status');
+    const btn=document.getElementById('btn-stripe-pay');
+    const label=btn?.querySelector('span');
+    const showStatus=msg=>{ if(statusEl){statusEl.textContent=msg;statusEl.classList.add('show');} };
+
+    const requiredIds=['f-prenom','f-nom','f-tel','f-email','f-voyageurs'];
+    for(const id of requiredIds){
+      const el=document.getElementById(id);
+      if(el && !el.checkValidity()){ el.reportValidity(); el.focus(); return; }
+    }
+    if(!arrival){ showStatus(t('err_pick_date_first')); return; }
+
+    if(statusEl){statusEl.classList.remove('show');statusEl.textContent='';}
+    const amountType=document.querySelector('input[name="payment-type"]:checked')?.value||'acompte';
+    const a=parseKey(arrival),dep=new Date(a);dep.setDate(a.getDate()+nights);
+
+    if(btn){ btn.disabled=true; if(label){ label.dataset.orig=label.dataset.orig||label.textContent; label.textContent=t('checking_availability'); } }
+    try{
+      const res=await fetch(BOOKING_WORKER_URL+'/checkout',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          prenom:v('f-prenom'),nom:v('f-nom'),email:v('f-email'),tel:v('f-tel'),
+          arrivee:fmtDate(a),depart:fmtDate(dep),
+          arrivee_iso:isoKey(a),depart_iso:isoKey(dep),
+          nuits:nights,voyageurs:v('f-voyageurs'),amountType
+        })
+      });
+      const data=await res.json().catch(()=>({}));
+      if(data.ok && data.url){ window.location.href=data.url; return; }
+      showStatus(data.error==='unavailable' ? t('err_dates_unavailable') : t('err_payment_generic'));
+    }catch(err){
+      showStatus(t('err_payment_generic'));
+    }finally{
+      if(btn){ btn.disabled=false; if(label && label.dataset.orig) label.textContent=label.dataset.orig; }
+    }
+  });
+  if(new URLSearchParams(location.search).get('paiement')==='annule'){
+    const statusEl=document.getElementById('stripe-status');
+    if(statusEl){ statusEl.textContent=t('payment_canceled_msg'); statusEl.classList.add('show'); }
+  }
 });

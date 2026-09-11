@@ -84,8 +84,8 @@ class ScrollController {
     if (!n) return;
     panels.forEach((el, i) => {
       const center   = (i + 0.5) / n;
-      const halfWin  = 0.38 / n;
-      const fadeZone = 0.14 / n;
+      const halfWin  = 0.46 / n; // plateau de pleine opacité plus long → le texte reste lisible plus longtemps
+      const fadeZone = 0.12 / n;
       const dist     = Math.abs(progress - center);
       let opacity, ty;
 
