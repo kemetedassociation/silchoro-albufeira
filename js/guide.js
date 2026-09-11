@@ -41,6 +41,7 @@ class AutoCarousel {
     this.el.querySelector('.ac-next').addEventListener('click', () => { this.go(this.i + 1); this.restart(); });
     this.dotEls.forEach(d => d.addEventListener('click', () => { this.go(+d.dataset.i); this.restart(); }));
     this.slideEls.forEach((s, i) => s.addEventListener('click', () => {
+      if (this.swiped) { this.swiped = false; return; } // un swipe ne doit pas aussi déclencher le clic
       const it = this.items[i];
       if (it.venue && this.catKey) {
         window.location.href = `etablissement.html?cat=${this.catKey}&i=${i}`;
@@ -49,6 +50,19 @@ class AutoCarousel {
       this.el.classList.toggle('paused');
       if (this.el.classList.contains('paused')) this.stop(); else this.restart();
     }));
+
+    /* Défilement latéral au doigt (mobile) pour changer d'image */
+    let tx = 0;
+    this.el.addEventListener('touchstart', e => { tx = e.touches[0].clientX; this.stop(); }, { passive: true });
+    this.el.addEventListener('touchend', e => {
+      const dx = tx - e.changedTouches[0].clientX;
+      if (Math.abs(dx) > 40) {
+        this.swiped = true;
+        setTimeout(() => { this.swiped = false; }, 300); // filet de sécurité si le clic fantôme ne survient pas
+        this.go(this.i + (dx > 0 ? 1 : -1));
+      }
+      if (!this.el.classList.contains('paused')) this.restart();
+    }, { passive: true });
   }
   show(i) {
     this.i = (i + this.items.length) % this.items.length;
