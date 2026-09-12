@@ -6,7 +6,7 @@ compatibility_flags = ["nodejs_compat"]
 # Valeurs non sensibles (visibles dans ce fichier, pas besoin de secret) :
 [vars]
 SITE_URL = "https://kemetedassociation.github.io/silchoro-albufeira"
-APPS_SCRIPT_URL = "https://script.google.com/macros/s/REMPLACER_PAR_LURL_ACTUELLE/exec"
+APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4e6klDol6ik6-DXkhlrHS3P-FNEp5PAWyB_3DlbQ6nO4QsxAyUHvTSQswgQerR5louw/exec"
 
 # Les clés secrètes ne vont JAMAIS ici — elles se configurent avec :
 #   wrangler secret put ANTHROPIC_API_KEY

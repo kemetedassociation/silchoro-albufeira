@@ -20,7 +20,7 @@ const SCENE_CONFIG = [
 const PHONE = '33610418154'; // Numéro WhatsApp de LUZDOSOL
 const EMAIL = 'luzdosol351@gmail.com';
 const PRICE_FROM = 43;
-const RESA_TRACKER_URL = 'https://script.google.com/macros/s/AKfycbwaVW12-qfPApeJ4oUuOVvV2r3TKQnUjeIGQgV0YqTYumgmD8eh5B8hz9t6KJ6UhdgEjg/exec';
+const RESA_TRACKER_URL = 'https://script.google.com/macros/s/AKfycby4e6klDol6ik6-DXkhlrHS3P-FNEp5PAWyB_3DlbQ6nO4QsxAyUHvTSQswgQerR5louw/exec';
 const BOOKING_WORKER_URL = 'https://luzdosol-chatbot.kemeted-association.workers.dev';
 const DEPOSIT_RATE = 0.3; // doit rester identique à DEPOSIT_RATE dans chatbot-worker/src/index.ts
 const isMobile = /Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent) || window.innerWidth <= 900;
