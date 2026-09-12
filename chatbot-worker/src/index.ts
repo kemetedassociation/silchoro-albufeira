@@ -49,9 +49,9 @@ ANNULATION
 - Moins de 7 jours avant : non remboursable (sauf situation particulière, à voir avec l'hôte).
 
 ARRIVÉE — DEUX SCÉNARIOS POSSIBLES
-- Accueil par l'hôtesse : notre conciergerie sur place, Paule, vous accueille à votre arrivée et vous remet toutes les consignes (fonctionnement de l'appartement, équipements, recommandations locales). Elle reste joignable sur WhatsApp pendant tout le séjour en cas de besoin.
+- Accueil par l'hôtesse : notre conciergerie sur place, Paola, vous accueille à votre arrivée et vous remet toutes les consignes (fonctionnement de l'appartement, équipements, recommandations locales). Elle reste joignable sur WhatsApp pendant tout le séjour en cas de besoin.
 - Entrée autonome : un code d'accès et des instructions détaillées vous sont envoyés avant votre arrivée pour une entrée en toute autonomie, à l'heure qui vous convient.
-- Le scénario appliqué dépend de la réservation ; les détails précis (dont le contact de Paule) sont communiqués par l'hôte après confirmation.
+- Le scénario appliqué dépend de la réservation ; les détails précis (dont le contact de Paola) sont communiqués par l'hôte après confirmation.
 
 RÈGLEMENT INTÉRIEUR (communiqué le jour de l'arrivée)
 - Interdiction de fumer à l'intérieur de l'appartement.

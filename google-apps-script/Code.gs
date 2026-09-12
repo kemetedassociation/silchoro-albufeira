@@ -50,7 +50,7 @@ const SHEET_NAME = 'Reservations';
 const HOST_EMAIL = 'luzdosol351@gmail.com';
 const HOST_NAME = 'Bienvenu Fortuné';
 // Conciergerie sur place — accueille les voyageurs à leur arrivée (scénario "hôtesse").
-const CONCIERGE_NAME = 'Paule';
+const CONCIERGE_NAME = 'Paola';
 const CONCIERGE_PHONE = '+33 6 78 97 89 80';
 // TODO: remplacer par le vrai lien "laisser un avis" de la fiche Google Business LUZDOSOL
 const GOOGLE_REVIEW_URL = 'https://g.page/r/REMPLACER_PAR_VOTRE_LIEN/review';
