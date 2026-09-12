@@ -26,16 +26,39 @@
  *    - Exécuter en tant que : Moi (luzdosol351@gmail.com)
  *    - Qui a accès : Tout le monde
  *    Copier l'URL du déploiement obtenue (se termine par /exec).
- * 5. Coller cette URL dans js/main.js à la constante RESA_TRACKER_URL.
+ * 5. Coller cette URL dans js/main.js à la constante RESA_TRACKER_URL, ET dans le secret
+ *    Worker Cloudflare APPS_SCRIPT_URL (voir chatbot-worker/wrangler.toml).
  * 6. Pensez à personnaliser GOOGLE_REVIEW_URL ci-dessous avec le vrai lien d'avis Google
  *    dès que votre fiche Google Business Profile sera créée.
+ * 7. Remplacez SHARED_SECRET ci-dessous par une longue chaîne aléatoire, et collez la
+ *    MÊME valeur dans le secret Worker APPS_SCRIPT_SECRET (wrangler secret put).
+ *    Cette clé empêche que n'importe qui sur Internet pose des "retenues" de dates
+ *    bidon directement sur cet endpoint public, sans passer par Stripe.
+ *
+ * Paiement en ligne (Stripe) — actions supplémentaires de cet endpoint :
+ * - GET  ?action=availability&from=YYYY-MM-DD&to=YYYY-MM-DD → { ok, available }
+ * - POST action=hold    (+ secret, prenom, nom, email, tel, arrivee, depart,
+ *                         arrivee_iso, depart_iso, nuits, voyageurs, type, montant_cents)
+ *   → pose une retenue de 15 min sur les dates si elles sont libres, avant paiement Stripe.
+ * - POST action=confirm (+ secret, hold_id, session_id, montant_cents)
+ *   → appelé par le webhook Stripe (via le Worker) une fois le paiement confirmé.
+ * Ces trois routes sont appelées par chatbot-worker/src/index.ts, jamais directement
+ * par le navigateur du visiteur (le Worker protège la clé Stripe et cette clé secrète).
  */
 
 const SHEET_NAME = 'Reservations';
 const HOST_EMAIL = 'luzdosol351@gmail.com';
 const HOST_NAME = 'Bienvenu Fortuné';
+// Conciergerie sur place — accueille les voyageurs à leur arrivée (scénario "hôtesse").
+const CONCIERGE_NAME = 'Paule';
+const CONCIERGE_PHONE = '+33 6 78 97 89 80';
 // TODO: remplacer par le vrai lien "laisser un avis" de la fiche Google Business LUZDOSOL
 const GOOGLE_REVIEW_URL = 'https://g.page/r/REMPLACER_PAR_VOTRE_LIEN/review';
+const MIN_NIGHTS = 4;
+const HOLD_MINUTES = 15;
+// Clé secrète partagée avec le Worker Cloudflare (jamais exposée au navigateur).
+// Remplacez cette valeur, puis collez la MÊME valeur dans le secret Worker APPS_SCRIPT_SECRET.
+const SHARED_SECRET = 'REMPLACER_PAR_UNE_CLE_SECRETE_LONGUE_ET_ALEATOIRE';
 
 // Colonnes de la feuille (1-indexé)
 const COL = {
@@ -43,23 +66,166 @@ const COL = {
   arrivee: 6, depart: 7, arriveeIso: 8, departIso: 9, nuits: 10, voyageurs: 11,
   dayjEnvoye: 12, j1Envoye: 13, j3Envoye: 14, avisEnvoye: 15,
   statut: 16, whatsapp: 17,
+  holdId: 18, statutPaiement: 19, typeMontant: 20, montantCents: 21, stripeSessionId: 22, holdExpire: 23,
+  ref: 24,
 };
-const NB_COLS = 17;
-const HEADERS = ['Horodatage', 'Prénom', 'Nom', 'Email', 'Téléphone', 'Arrivée', 'Départ', 'Arrivée (ISO)', 'Départ (ISO)', 'Nuits', 'Voyageurs', 'J envoyé', 'J+1 envoyé', 'J+3 envoyé', 'Avis envoyé', 'Statut', 'Contact'];
+const NB_COLS = 24;
+const HEADERS = ['Horodatage', 'Prénom', 'Nom', 'Email', 'Téléphone', 'Arrivée', 'Départ', 'Arrivée (ISO)', 'Départ (ISO)', 'Nuits', 'Voyageurs', 'J envoyé', 'J+1 envoyé', 'J+3 envoyé', 'Avis envoyé', 'Statut', 'Contact', 'ID retenue', 'Statut paiement', 'Type paiement', 'Montant (centimes)', 'ID session Stripe', 'Expiration retenue', 'Référence'];
+
+/**
+ * Numéro de référence "ticket" envoyé au client par email — sert à retrouver
+ * facilement sa ligne dans la feuille en cas de litige ou de question
+ * (ex. LUZ-20260915-A3F9). Pas besoin d'unicité stricte garantie : la date
+ * d'arrivée + 4 caractères aléatoires suffisent largement à ce volume.
+ */
+function generateRef(arriveeIso) {
+  const datePart = (arriveeIso || '').replace(/-/g, '') ||
+    Utilities.formatDate(new Date(), Session.getScriptTimeZone() || 'Europe/Lisbon', 'yyyyMMdd');
+  const rand = Utilities.getUuid().replace(/-/g, '').slice(0, 4).toUpperCase();
+  return 'LUZ-' + datePart + '-' + rand;
+}
 const STATUT_COLORS = { 'À venir': '#eaf6f8', 'En cours': '#fdf3d6', 'Terminé': '#e9f9ec' };
 
+function jsonOut(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet(e) {
+  const action = e.parameter.action;
+  if (action === 'availability') {
+    releaseExpiredHolds();
+    const available = isRangeAvailable(e.parameter.from, e.parameter.to);
+    return jsonOut({ ok: true, available });
+  }
+  return ContentService.createTextOutput('LUZDOSOL — endpoint réservations');
+}
+
 function doPost(e) {
-  const sheet = getSheet();
   const p = e.parameter;
+
+  if (p.action === 'hold' || p.action === 'confirm') {
+    if (p.secret !== SHARED_SECRET) return jsonOut({ ok: false, error: 'unauthorized' });
+    if (p.action === 'hold') return handleHold(p);
+    return handleConfirm(p);
+  }
+
+  // Comportement par défaut (inchangé) : simple demande/lead, sans paiement.
+  const sheet = getSheet();
+  const ref = generateRef(p.arrivee_iso);
   sheet.appendRow([
     new Date(),
     p.prenom || '', p.nom || '', p.email || '', p.tel || '',
     p.arrivee || '', p.depart || '', p.arrivee_iso || '', p.depart_iso || '', p.nuits || '', p.voyageurs || '',
     false, false, false, false,
+    '', '',
+    '', '', '', '', '', '',
+    ref,
   ]);
   updateRowComputedCells(sheet, sheet.getLastRow());
-  if (p.email) sendConfirmationEmail(p);
+  if (p.email) sendConfirmationEmail(Object.assign({}, p, { ref }));
   return ContentService.createTextOutput('OK');
+}
+
+/**
+ * Pose une "retenue" temporaire (HOLD_MINUTES) sur des dates après avoir
+ * revérifié la disponibilité côté serveur (source de vérité). Appelée par
+ * le Worker Cloudflare juste avant de créer la session de paiement Stripe.
+ */
+function handleHold(p) {
+  releaseExpiredHolds();
+  const nuits = parseInt(p.nuits, 10) || 0;
+  if (nuits < MIN_NIGHTS) return jsonOut({ ok: false, error: 'nuits_min' });
+  if (!isRangeAvailable(p.arrivee_iso, p.depart_iso)) return jsonOut({ ok: false, error: 'unavailable' });
+
+  const holdId = Utilities.getUuid();
+  const expire = new Date(Date.now() + HOLD_MINUTES * 60 * 1000);
+  const ref = generateRef(p.arrivee_iso);
+  const sheet = getSheet();
+  sheet.appendRow([
+    new Date(),
+    p.prenom || '', p.nom || '', p.email || '', p.tel || '',
+    p.arrivee || '', p.depart || '', p.arrivee_iso || '', p.depart_iso || '', nuits, p.voyageurs || '',
+    false, false, false, false,
+    '', '',
+    holdId, 'En attente de paiement', p.type || '', p.montant_cents || '', '', expire.toISOString(),
+    ref,
+  ]);
+  updateRowComputedCells(sheet, sheet.getLastRow());
+  return jsonOut({ ok: true, holdId, ref });
+}
+
+/**
+ * Confirme une retenue après paiement Stripe réussi (appelée par le webhook
+ * Stripe, relayé par le Worker). Idempotent : un second appel avec le même
+ * holdId ne renvoie pas un second email.
+ */
+function handleConfirm(p) {
+  const sheet = getSheet();
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return jsonOut({ ok: false, error: 'not_found' });
+  const data = sheet.getRange(2, 1, lastRow - 1, NB_COLS).getValues();
+  for (let i = 0; i < data.length; i++) {
+    if (data[i][COL.holdId - 1] !== p.hold_id) continue;
+    const row = i + 2;
+    if (data[i][COL.statutPaiement - 1] === 'Payé') return jsonOut({ ok: true, already: true });
+
+    sheet.getRange(row, COL.statutPaiement).setValue('Payé');
+    if (p.montant_cents) sheet.getRange(row, COL.montantCents).setValue(p.montant_cents);
+    sheet.getRange(row, COL.stripeSessionId).setValue(p.session_id || '');
+    updateRowComputedCells(sheet, row);
+
+    const email = data[i][COL.email - 1];
+    if (email) {
+      sendPaymentConfirmedEmail({
+        prenom: data[i][COL.prenom - 1],
+        email: email,
+        arrivee: data[i][COL.arrivee - 1],
+        nuits: data[i][COL.nuits - 1],
+        montant_cents: p.montant_cents || data[i][COL.montantCents - 1],
+        type: data[i][COL.typeMontant - 1],
+        ref: data[i][COL.ref - 1],
+      });
+    }
+    return jsonOut({ ok: true });
+  }
+  return jsonOut({ ok: false, error: 'not_found' });
+}
+
+/** true si [fromIso, toIso) ne chevauche aucune réservation payée ou en attente de paiement. */
+function isRangeAvailable(fromIso, toIso) {
+  const from = parseIsoLocal(fromIso), to = parseIsoLocal(toIso);
+  if (!from || !to || to <= from) return false;
+  const sheet = getSheet();
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return true;
+  const data = sheet.getRange(2, 1, lastRow - 1, NB_COLS).getValues();
+  for (const row of data) {
+    const statutPaiement = row[COL.statutPaiement - 1];
+    if (statutPaiement !== 'Payé' && statutPaiement !== 'En attente de paiement') continue;
+    const rArr = parseIsoLocal(row[COL.arriveeIso - 1]);
+    const rDep = parseIsoLocal(row[COL.departIso - 1]);
+    if (!rArr || !rDep) continue;
+    if (from < rDep && rArr < to) return false; // chevauchement
+  }
+  return true;
+}
+
+/** Passe en "Expirée" les retenues non payées dont le délai est dépassé (libère les dates). */
+function releaseExpiredHolds() {
+  const sheet = getSheet();
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return;
+  const now = Date.now();
+  const data = sheet.getRange(2, 1, lastRow - 1, NB_COLS).getValues();
+  data.forEach((row, idx) => {
+    if (row[COL.statutPaiement - 1] !== 'En attente de paiement') return;
+    const exp = row[COL.holdExpire - 1] ? new Date(row[COL.holdExpire - 1]) : null;
+    if (exp && exp.getTime() < now) {
+      const r = idx + 2;
+      sheet.getRange(r, COL.statutPaiement).setValue('Expirée');
+      updateRowComputedCells(sheet, r);
+    }
+  });
 }
 
 function getSheet() {
@@ -104,10 +270,11 @@ function computeStatut(arriveeIso, avisEnvoye) {
  * passez-le si vous l'avez déjà en mémoire pour éviter une lecture inutile.
  */
 function updateRowComputedCells(sheet, row, rowValues) {
-  const vals = rowValues || sheet.getRange(row, 1, 1, COL.avisEnvoye).getValues()[0];
+  const vals = rowValues || sheet.getRange(row, 1, 1, NB_COLS).getValues()[0];
   const tel = vals[COL.tel - 1];
   const arriveeIso = vals[COL.arriveeIso - 1];
   const avisEnvoye = vals[COL.avisEnvoye - 1] === true;
+  const statutPaiement = vals[COL.statutPaiement - 1];
 
   const statut = computeStatut(arriveeIso, avisEnvoye);
   sheet.getRange(row, COL.statut).setValue(statut);
@@ -124,7 +291,10 @@ function updateRowComputedCells(sheet, row, rowValues) {
     waCell.setValue('');
   }
 
-  sheet.getRange(row, 1, 1, NB_COLS).setBackground(STATUT_COLORS[statut] || '#ffffff');
+  let bg = STATUT_COLORS[statut] || '#ffffff';
+  if (statutPaiement === 'En attente de paiement') bg = '#f3e8ff';
+  else if (statutPaiement === 'Expirée' || statutPaiement === 'Annulée') bg = '#f4f4f4';
+  sheet.getRange(row, 1, 1, NB_COLS).setBackground(bg);
 }
 
 /* ============ 1. EMAIL DE CONFIRMATION (immédiat) ============ */
@@ -134,11 +304,31 @@ function sendConfirmationEmail(p) {
     `Bonjour ${p.prenom || ''},\n\n` +
     `Merci pour votre demande de réservation à l'appartement LUZDOSOL à Albufeira ` +
     `(arrivée le ${p.arrivee || '—'}, ${p.nuits || ''} nuits) !\n\n` +
+    `Votre numéro de référence : ${p.ref || '—'}\n` +
+    `(conservez-le, il permet de retrouver facilement votre dossier en cas de question)\n\n` +
     `Prochaines étapes :\n` +
     `1. Nous confirmons votre réservation par WhatsApp ou email dans les plus brefs délais.\n` +
     `2. Un acompte par virement PayPal vous sera demandé pour valider définitivement votre séjour.\n` +
-    `3. Vous recevrez, avant votre arrivée, toutes les consignes pratiques (accueil par l'hôtesse ` +
-    `ou entrée autonome avec code d'accès, selon les disponibilités).\n\n` +
+    `3. Vous recevrez, avant votre arrivée, toutes les consignes pratiques (accueil par notre ` +
+    `conciergerie ${CONCIERGE_NAME} sur place, ou entrée autonome avec code d'accès, selon les disponibilités).\n\n` +
+    `Pour toute question, répondez simplement à cet email ou écrivez-nous sur WhatsApp.\n\n` +
+    `À très vite en Algarve !\n\n${HOST_NAME}\nLUZDOSOL`;
+  MailApp.sendEmail({ to: p.email, replyTo: HOST_EMAIL, subject, body });
+}
+
+/* ============ 1b. EMAIL DE CONFIRMATION DE PAIEMENT (immédiat, après Stripe) ============ */
+function sendPaymentConfirmedEmail(p) {
+  const subject = 'Réservation confirmée — paiement reçu (LUZDOSOL)';
+  const montant = p.montant_cents ? (Number(p.montant_cents) / 100).toFixed(2) + ' €' : '';
+  const typeLabel = p.type === 'total' ? 'paiement total' : 'acompte';
+  const body =
+    `Bonjour ${p.prenom || ''},\n\n` +
+    `Votre paiement de ${montant} (${typeLabel}) a bien été reçu — votre réservation à l'appartement LUZDOSOL ` +
+    `à Albufeira (arrivée le ${p.arrivee || '—'}, ${p.nuits || ''} nuits) est confirmée !\n\n` +
+    `Votre numéro de référence : ${p.ref || '—'}\n` +
+    `(conservez-le, il permet de retrouver facilement votre dossier en cas de question)\n\n` +
+    `Vous recevrez, avant votre arrivée, toutes les consignes pratiques (accueil par notre conciergerie ` +
+    `${CONCIERGE_NAME} sur place, ou entrée autonome avec code d'accès, selon les disponibilités).\n\n` +
     `Pour toute question, répondez simplement à cet email ou écrivez-nous sur WhatsApp.\n\n` +
     `À très vite en Algarve !\n\n${HOST_NAME}\nLUZDOSOL`;
   MailApp.sendEmail({ to: p.email, replyTo: HOST_EMAIL, subject, body });
@@ -155,8 +345,8 @@ function sendDayJEmail(prenom, email) {
     `• Merci de prendre soin du mobilier et des équipements.\n` +
     `• Nous vous invitons à prendre quelques photos de l'appartement à votre arrivée et à votre départ.\n` +
     `• Une caution peut être retenue en cas de dommage constaté à l'état des lieux.\n\n` +
-    `Besoin de quoi que ce soit pendant votre séjour ? Contactez-nous directement sur WhatsApp — ` +
-    `nous restons disponibles.\n\n` +
+    `Besoin de quoi que ce soit pendant votre séjour ? Notre conciergerie sur place, ${CONCIERGE_NAME}, ` +
+    `est joignable directement sur WhatsApp au ${CONCIERGE_PHONE} — n'hésitez pas.\n\n` +
     `Excellent séjour !\n\n${HOST_NAME}\nLUZDOSOL`;
   MailApp.sendEmail({ to: email, replyTo: HOST_EMAIL, subject, body });
 }
@@ -258,7 +448,7 @@ function formatSheet() {
   // Recalcule statut/couleur/lien pour toutes les lignes déjà présentes
   const lastRow = sheet.getLastRow();
   if (lastRow >= 2) {
-    const data = sheet.getRange(2, 1, lastRow - 1, COL.avisEnvoye).getValues();
+    const data = sheet.getRange(2, 1, lastRow - 1, NB_COLS).getValues();
     data.forEach((row, idx) => updateRowComputedCells(sheet, idx + 2, row));
   }
 
@@ -326,7 +516,11 @@ function setup() {
   buildOverviewSheet();
   ScriptApp.getProjectTriggers().forEach(t => {
     const fn = t.getHandlerFunction();
-    if (fn === 'sendReviewEmails' || fn === 'sendScheduledEmails') ScriptApp.deleteTrigger(t);
+    if (fn === 'sendReviewEmails' || fn === 'sendScheduledEmails' || fn === 'releaseExpiredHolds') {
+      ScriptApp.deleteTrigger(t);
+    }
   });
   ScriptApp.newTrigger('sendScheduledEmails').timeBased().everyDays(1).atHour(10).create();
+  // Libère automatiquement les dates d'une retenue non payée après HOLD_MINUTES.
+  ScriptApp.newTrigger('releaseExpiredHolds').timeBased().everyMinutes(10).create();
 }

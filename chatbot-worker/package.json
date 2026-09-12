@@ -7,12 +7,13 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "*"
+    "@anthropic-ai/sdk": "*",
+    "stripe": "^22.6.2"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "*",
     "typescript": "*",
-    "wrangler": "*",
-    "@cloudflare/workers-types": "*"
+    "wrangler": "*"
   },
   "allowScripts": {
     "esbuild@0.28.1": true,

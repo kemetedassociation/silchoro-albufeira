@@ -3,5 +3,13 @@ main = "src/index.ts"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
-# La clé API Anthropic ne va JAMAIS ici — elle se configure en secret :
+# Valeurs non sensibles (visibles dans ce fichier, pas besoin de secret) :
+[vars]
+SITE_URL = "https://kemetedassociation.github.io/silchoro-albufeira"
+APPS_SCRIPT_URL = "https://script.google.com/macros/s/REMPLACER_PAR_LURL_ACTUELLE/exec"
+
+# Les clés secrètes ne vont JAMAIS ici — elles se configurent avec :
 #   wrangler secret put ANTHROPIC_API_KEY
+#   wrangler secret put STRIPE_SECRET_KEY        (clé secrète Stripe, sk_test_... puis sk_live_...)
+#   wrangler secret put STRIPE_WEBHOOK_SECRET    (signature du webhook Stripe, whsec_...)
+#   wrangler secret put APPS_SCRIPT_SECRET       (même valeur que SHARED_SECRET dans Code.gs)
