@@ -313,7 +313,7 @@ function sendConfirmationEmail(p) {
     `conciergerie ${CONCIERGE_NAME} sur place, ou entrée autonome avec code d'accès, selon les disponibilités).\n\n` +
     `Pour toute question, répondez simplement à cet email ou écrivez-nous sur WhatsApp.\n\n` +
     `À très vite en Algarve !\n\n${HOST_NAME}\nLUZDOSOL`;
-  MailApp.sendEmail({ to: p.email, replyTo: HOST_EMAIL, subject, body });
+  MailApp.sendEmail({ to: p.email, cc: HOST_EMAIL, replyTo: HOST_EMAIL, subject, body });
 }
 
 /* ============ 1b. EMAIL DE CONFIRMATION DE PAIEMENT (immédiat, après Stripe) ============ */
@@ -331,7 +331,7 @@ function sendPaymentConfirmedEmail(p) {
     `${CONCIERGE_NAME} sur place, ou entrée autonome avec code d'accès, selon les disponibilités).\n\n` +
     `Pour toute question, répondez simplement à cet email ou écrivez-nous sur WhatsApp.\n\n` +
     `À très vite en Algarve !\n\n${HOST_NAME}\nLUZDOSOL`;
-  MailApp.sendEmail({ to: p.email, replyTo: HOST_EMAIL, subject, body });
+  MailApp.sendEmail({ to: p.email, cc: HOST_EMAIL, replyTo: HOST_EMAIL, subject, body });
 }
 
 /* ============ 2. EMAIL JOUR J — règlement intérieur ============ */
