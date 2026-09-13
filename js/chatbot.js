@@ -7,11 +7,16 @@
   const CHATBOT_ENDPOINT = 'https://luzdosol-chatbot.kemeted-association.workers.dev';
   if (!CHATBOT_ENDPOINT) return;
 
-  const SUGGESTIONS = [
-    { label: 'Quels sont vos tarifs ?', text: 'Quels sont vos tarifs ?' },
-    { label: 'Comment réserver ?', text: 'Comment réserver ?' },
-    { label: 'Que faire à Albufeira ?', text: 'Que faire à Albufeira ?' },
-  ];
+  // t() : traduit si js/i18n.js est chargé (toujours le cas en pratique), sinon replie sur le français.
+  const t = (key, fallback) => (window.luzdosolT ? window.luzdosolT(key) : fallback);
+
+  function suggestions() {
+    return [
+      { label: t('cb_suggestion1', 'Quels sont vos tarifs ?'), text: t('cb_suggestion1', 'Quels sont vos tarifs ?') },
+      { label: t('cb_suggestion2', 'Comment réserver ?'), text: t('cb_suggestion2', 'Comment réserver ?') },
+      { label: t('cb_suggestion3', 'Que faire à Albufeira ?'), text: t('cb_suggestion3', 'Que faire à Albufeira ?') },
+    ];
+  }
 
   const history = [];
   let open = false;
@@ -28,26 +33,28 @@
     return e;
   }
 
-  const bubble = el('button', { class: 'cb-bubble', 'aria-label': 'Ouvrir le chat' },
+  const bubble = el('button', { class: 'cb-bubble', 'aria-label': t('cb_aria_open', 'Ouvrir le chat') },
     el('img', { src: 'assets/icons/logo-mark.webp', alt: '' })
   );
 
-  const teaser = el('div', { class: 'cb-teaser' }, "Une question ? Je vous réponds en quelques secondes 👋");
+  const teaser = el('div', { class: 'cb-teaser' }, t('cb_teaser', "Une question ? Je vous réponds en quelques secondes 👋"));
+
+  const titleEl = el('div', { class: 'cb-title' }, t('cb_title', 'Assistant LUZDOSOL'));
+  const subEl = el('div', { class: 'cb-sub' }, t('cb_subtitle', 'Répond en quelques secondes'));
+  const closeBtn = el('button', { class: 'cb-close', 'aria-label': t('cb_aria_close', 'Fermer') }, '✕');
+  const sendBtn = el('button', { class: 'cb-send', type: 'submit', 'aria-label': t('cb_aria_send', 'Envoyer') }, '→');
 
   const panel = el('div', { class: 'cb-panel' },
     el('div', { class: 'cb-head' },
       el('img', { src: 'assets/icons/logo-mark.webp', alt: '' }),
-      el('div', { class: 'cb-head-txt' },
-        el('div', { class: 'cb-title' }, 'Assistant LUZDOSOL'),
-        el('div', { class: 'cb-sub' }, 'Répond en quelques secondes')
-      ),
-      el('button', { class: 'cb-close', 'aria-label': 'Fermer' }, '✕')
+      el('div', { class: 'cb-head-txt' }, titleEl, subEl),
+      closeBtn
     ),
     el('div', { class: 'cb-msgs', id: 'cb-msgs' }),
     el('div', { class: 'cb-suggestions', id: 'cb-suggestions' }),
     el('form', { class: 'cb-form', id: 'cb-form' },
-      el('input', { class: 'cb-input', id: 'cb-input', placeholder: 'Posez votre question…', autocomplete: 'off' }),
-      el('button', { class: 'cb-send', type: 'submit', 'aria-label': 'Envoyer' }, '→')
+      el('input', { class: 'cb-input', id: 'cb-input', placeholder: t('cb_placeholder', 'Posez votre question…'), autocomplete: 'off' }),
+      sendBtn
     )
   );
 
@@ -75,7 +82,7 @@
     row.appendChild(el('div', { class: 'cb-bubble-msg cb-bubble-' + role, html: escapeHtml(text) }));
     if (navigate && navigate.page) {
       const href = navigate.page + (navigate.anchor ? '#' + navigate.anchor : '');
-      const btn = el('button', { class: 'cb-navlink' }, 'Voir la page →');
+      const btn = el('button', { class: 'cb-navlink' }, t('cb_navlink', 'Voir la page →'));
       btn.addEventListener('click', () => {
         if (window.luzdosolNavigate) window.luzdosolNavigate(href);
         else location.href = href;
@@ -123,23 +130,27 @@
       const data = await res.json();
       hideTyping();
       if (data.error) {
-        addBubbleMsg('assistant', "Désolé, je rencontre un souci technique. Contactez-nous directement via la page Contact.");
+        addBubbleMsg('assistant', t('cb_error_technical', "Désolé, je rencontre un souci technique. Contactez-nous directement via la page Contact."));
       } else {
         addBubbleMsg('assistant', data.text || '…', data.navigate);
         history.push({ role: 'assistant', content: data.text || '' });
       }
     } catch (err) {
       hideTyping();
-      addBubbleMsg('assistant', "Connexion impossible pour le moment. Contactez-nous via WhatsApp ou la page Contact.");
+      addBubbleMsg('assistant', t('cb_error_connection', "Connexion impossible pour le moment. Contactez-nous via WhatsApp ou la page Contact."));
     }
     sending = false;
   }
 
-  SUGGESTIONS.forEach((s) => {
-    const chip = el('button', { class: 'cb-chip' }, s.label);
-    chip.addEventListener('click', () => send(s.text));
-    suggEl.appendChild(chip);
-  });
+  function renderSuggestions() {
+    suggEl.innerHTML = '';
+    suggestions().forEach((s) => {
+      const chip = el('button', { class: 'cb-chip' }, s.label);
+      chip.addEventListener('click', () => send(s.text));
+      suggEl.appendChild(chip);
+    });
+  }
+  renderSuggestions();
 
   formEl.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -155,11 +166,24 @@
     bubble.classList.toggle('open', open);
     teaser.classList.remove('show');
     if (open && !history.length) {
-      addBubbleMsg('assistant', "Bonjour ! Je suis l'assistant de LUZDOSOL 👋 Posez-moi vos questions sur le logement, les tarifs, les disponibilités, l'arrivée ou les activités à Albufeira — je vous emmène directement à la bonne page si besoin.");
+      addBubbleMsg('assistant', t('cb_welcome', "Bonjour ! Je suis l'assistant de LUZDOSOL 👋 Posez-moi vos questions sur le logement, les tarifs, les disponibilités, l'arrivée ou les activités à Albufeira — je vous emmène directement à la bonne page si besoin."));
     }
     if (open) setTimeout(() => inputEl.focus(), 300);
   }
 
   bubble.addEventListener('click', () => togglePanel());
   panel.querySelector('.cb-close').addEventListener('click', () => togglePanel(false));
+
+  // Rafraîchit le texte statique (bulle, en-tête, placeholder, suggestions) si la
+  // langue change en cours de session — les messages déjà échangés ne sont pas retraduits.
+  window.addEventListener('luzdosol-lang-change', () => {
+    teaser.textContent = t('cb_teaser', "Une question ? Je vous réponds en quelques secondes 👋");
+    bubble.setAttribute('aria-label', t('cb_aria_open', 'Ouvrir le chat'));
+    closeBtn.setAttribute('aria-label', t('cb_aria_close', 'Fermer'));
+    sendBtn.setAttribute('aria-label', t('cb_aria_send', 'Envoyer'));
+    titleEl.textContent = t('cb_title', 'Assistant LUZDOSOL');
+    subEl.textContent = t('cb_subtitle', 'Répond en quelques secondes');
+    inputEl.setAttribute('placeholder', t('cb_placeholder', 'Posez votre question…'));
+    if (!history.length) renderSuggestions();
+  });
 })();

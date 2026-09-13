@@ -14,25 +14,34 @@ class AutoCarousel {
     this.start();
     this.el.addEventListener('mouseenter', () => this.stop());
     this.el.addEventListener('mouseleave', () => this.start());
+    // Retraduit les légendes (tag/description/indices) si la langue change en cours de visite.
+    window.addEventListener('luzdosol-lang-change', () => {
+      const wasPaused = this.el.classList.contains('paused');
+      const cur = this.i;
+      this.build();
+      if (wasPaused) this.el.classList.add('paused');
+      this.show(cur);
+    });
   }
   build() {
+    const t = (key, fallback) => (window.luzdosolT ? window.luzdosolT(key) : fallback);
     const slides = this.items.map((it, i) => `
-      <button class="ac-slide" data-i="${i}" type="button" aria-label="${it.name} — ${it.desc}">
+      <button class="ac-slide" data-i="${i}" type="button" aria-label="${it.name} — ${L(it.desc)}">
         <img src="assets/guide/${it.img}.webp" alt="${it.name}" loading="${i === 0 ? 'eager' : 'lazy'}">
         <div class="ac-scrim"></div>
         <div class="ac-caption">
-          <div class="ac-tag">${it.tag}</div>
+          <div class="ac-tag">${L(it.tag)}</div>
           <div class="ac-name">${it.name}</div>
-          <div class="ac-desc">${it.desc}</div>
-          <div class="ac-hint">${it.venue ? 'Cliquez pour voir la fiche et l\'itinéraire →' : 'Cliquez pour figer cette photo'}</div>
+          <div class="ac-desc">${L(it.desc)}</div>
+          <div class="ac-hint">${it.venue ? t('ac_hint_venue', "Cliquez pour voir la fiche et l'itinéraire →") : t('ac_hint_freeze', 'Cliquez pour figer cette photo')}</div>
         </div>
       </button>`).join('');
     const dots = this.items.map((_, i) => `<div class="ac-dot" data-i="${i}"><b></b></div>`).join('');
     this.el.innerHTML = `
       ${slides}
       <div class="ac-dots">${dots}</div>
-      <button class="ac-arrow ac-prev" aria-label="Précédent" type="button">&lsaquo;</button>
-      <button class="ac-arrow ac-next" aria-label="Suivant" type="button">&rsaquo;</button>
+      <button class="ac-arrow ac-prev" aria-label="${t('ac_prev', 'Précédent')}" type="button">&lsaquo;</button>
+      <button class="ac-arrow ac-next" aria-label="${t('ac_next', 'Suivant')}" type="button">&rsaquo;</button>
     `;
     this.el.style.setProperty('--ac-dur', (this.duration / 1000) + 's');
     this.slideEls = Array.from(this.el.querySelectorAll('.ac-slide'));
