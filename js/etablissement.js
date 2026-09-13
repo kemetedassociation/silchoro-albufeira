@@ -1,12 +1,14 @@
 /**
  * etablissement.js — Fiche détaillée d'une adresse du guide
- * (?cat=restaurants|nocturne|villes&i=<index dans le tableau correspondant>)
+ * (?cat=restaurants|nocturne|villes|services|supermarches&i=<index>)
  * Les données viennent de js/guide-data.js, chargé juste avant ce fichier.
  */
 const ESTABLISSEMENT_LISTS = {
   restaurants: { data: () => GUIDE_RESTAURANTS, tagFallbackKey: 'est_fallback_restaurant', anchor: 'restaurants' },
   nocturne: { data: () => GUIDE_NOCTURNE, tagFallbackKey: 'est_fallback_night', anchor: 'nocturne' },
   villes: { data: () => GUIDE_VILLES, tagFallbackKey: 'est_fallback_city', anchor: 'villes' },
+  services: { data: () => GUIDE_SERVICES, tagFallbackKey: 'est_fallback_service', anchor: 'decouvrir' },
+  supermarches: { data: () => GUIDE_SUPER_DETAIL, tagFallbackKey: 'est_fallback_service', anchor: 'decouvrir' },
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -22,27 +24,65 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  // --- Carrousel hero (plusieurs photos, ex. Supermarchés) ---------------
+  let heroCarouselTimer = null;
+  function startHeroCarousel(images) {
+    const heroImg = document.getElementById('est-hero-img');
+    const dotsEl = document.getElementById('est-hero-dots');
+    if (!heroImg) return;
+    let idx = 0;
+    const show = n => {
+      idx = (n + images.length) % images.length;
+      heroImg.src = 'assets/guide/' + images[idx] + '.webp';
+      if (dotsEl) Array.from(dotsEl.children).forEach((d, di) => d.classList.toggle('active', di === idx));
+    };
+    if (dotsEl) {
+      dotsEl.innerHTML = images.map((_, di) => `<span class="est-hero-dot" data-i="${di}"></span>`).join('');
+      dotsEl.hidden = false;
+      Array.from(dotsEl.children).forEach(d => d.addEventListener('click', () => { show(+d.dataset.i); restart(); }));
+    }
+    function restart() {
+      if (heroCarouselTimer) clearInterval(heroCarouselTimer);
+      heroCarouselTimer = setInterval(() => show(idx + 1), 3200);
+    }
+    show(0);
+    restart();
+  }
+
   function render() {
-    document.title = item.name + ' · ' + t('nav_guide', 'Guide du séjour') + ' · LUZDOSOL';
+    if (heroCarouselTimer) { clearInterval(heroCarouselTimer); heroCarouselTimer = null; }
+    const name = L(item.name);
+    document.title = name + ' · ' + t('nav_guide', 'Guide du séjour') + ' · LUZDOSOL';
 
     const heroImg = document.getElementById('est-hero-img');
     if (heroImg) {
-      heroImg.src = 'assets/guide/' + item.img + '.webp';
-      heroImg.alt = item.name;
+      heroImg.alt = name;
       heroImg.style.objectPosition = item.heroPos || 'center 30%';
+      if (item.images && item.images.length > 1) {
+        startHeroCarousel(item.images);
+      } else {
+        const dotsEl = document.getElementById('est-hero-dots');
+        if (dotsEl) dotsEl.hidden = true;
+        heroImg.src = 'assets/guide/' + item.img + '.webp';
+      }
     }
 
     const tagEl = document.getElementById('est-tag');
     if (tagEl) tagEl.textContent = L(item.tag) || t(list.tagFallbackKey, 'Adresse');
 
     const titleEl = document.getElementById('est-title');
-    if (titleEl) titleEl.textContent = item.name;
+    if (titleEl) titleEl.textContent = name;
 
     const whyEl = document.getElementById('est-why');
     if (whyEl) whyEl.textContent = L(item.why) || L(item.desc);
 
+    const mapsQuery = item.mapsQuery || (name + ', Albufeira, Portugal');
     const mapsBtn = document.getElementById('est-maps-btn');
-    if (mapsBtn) mapsBtn.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(item.mapsQuery || (item.name + ', Albufeira, Portugal'));
+    if (mapsBtn) mapsBtn.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(mapsQuery);
+
+    // Carte intégrée (pas besoin de clé API pour ce format d'URL "embed").
+    const mapFrame = document.getElementById('est-map-frame');
+    if (mapFrame) mapFrame.src = 'https://www.google.com/maps?q=' + encodeURIComponent(mapsQuery) + '&output=embed';
 
     const highlightsEl = document.getElementById('est-highlights');
     if (highlightsEl && item.highlights) {
@@ -61,9 +101,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Crédit photo (licence Creative Commons) quand la photo hero vient d'une
     // source externe (Wikimedia Commons) plutôt que de la banque d'images du site.
     const heroCreditEl = document.getElementById('est-hero-credit');
-    if (heroCreditEl && typeof GUIDE_PHOTO_CREDITS !== 'undefined' && GUIDE_PHOTO_CREDITS[item.img]) {
-      heroCreditEl.textContent = GUIDE_PHOTO_CREDITS[item.img];
-      heroCreditEl.hidden = false;
+    if (heroCreditEl) {
+      const credit = typeof GUIDE_PHOTO_CREDITS !== 'undefined' && GUIDE_PHOTO_CREDITS[item.img];
+      heroCreditEl.textContent = credit || '';
+      heroCreditEl.hidden = !credit;
     }
 
     // Galerie des spécialités portugaises (photos déjà showcasées dans le
@@ -95,4 +136,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   render();
   window.addEventListener('luzdosol-lang-change', render);
+
+  // --- Zoom (lightbox) sur la photo hero ----------------------------------
+  const zoomBtn = document.getElementById('est-hero-zoom');
+  const lb = document.querySelector('.lb');
+  const lbImg = document.getElementById('lb-img');
+  zoomBtn?.addEventListener('click', () => {
+    const heroImg = document.getElementById('est-hero-img');
+    if (heroImg && lb && lbImg) { lbImg.src = heroImg.src; lb.classList.add('on'); }
+  });
+  document.querySelector('.lb-x')?.addEventListener('click', () => lb?.classList.remove('on'));
+  lb?.addEventListener('click', e => { if (e.target === lb) lb.classList.remove('on'); });
 });

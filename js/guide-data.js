@@ -173,6 +173,68 @@ const GUIDE_PHOTO_CREDITS = {
 
 const GUIDE_SUPER = ['a-014a', 'a-014b', 'a-014c', 'a-014d'];
 
+// Fiche détail "Supermarchés" (une seule fiche, plusieurs photos en carrousel).
+// Enveloppée dans un tableau d'un élément pour rester compatible avec le
+// même mécanisme de fiche que restaurants/nocturne/villes/services.
+const GUIDE_SUPER_DETAIL = [
+  { images: GUIDE_SUPER, venue: true,
+    name: { fr: 'Supermarchés', en: 'Supermarkets', es: 'Supermercados', pt: 'Supermercados' },
+    tag: { fr: 'Pratique', en: 'Handy', es: 'Práctico', pt: 'Prático' },
+    mapsQuery: 'supermercado, Albufeira, Portugal',
+    why: { fr: "Aldi, Lidl, Continente et Pingo Doce se trouvent tous à quelques minutes en voiture de l'appartement — de quoi faire des courses complètes dès votre arrivée, sans vous compliquer la vie.",
+      en: "Aldi, Lidl, Continente and Pingo Doce are all just a few minutes' drive from the apartment — everything you need for a full shop as soon as you arrive.",
+      es: "Aldi, Lidl, Continente y Pingo Doce están todos a pocos minutos en coche del apartamento: todo lo necesario para hacer una compra completa nada más llegar.",
+      pt: "Aldi, Lidl, Continente e Pingo Doce ficam todos a poucos minutos de carro do apartamento — tudo o que precisa para fazer compras completas assim que chegar." },
+    highlights: {
+      fr: ['Aldi · Lidl · Continente · Pingo Doce', 'Toutes à quelques minutes en voiture', "Pratique pour faire le plein dès l'arrivée"],
+      en: ['Aldi · Lidl · Continente · Pingo Doce', "All a few minutes' drive away", 'Handy for stocking up on arrival'],
+      es: ['Aldi · Lidl · Continente · Pingo Doce', 'Todas a pocos minutos en coche', 'Prácticas para abastecerte a tu llegada'],
+      pt: ['Aldi · Lidl · Continente · Pingo Doce', 'Todos a poucos minutos de carro', 'Práticos para abastecer à chegada'] } },
+];
+
+// Fiches détail "Services utiles" (taxi, pharmacie, hôpital).
+const GUIDE_SERVICES = [
+  { img: 'a-015', venue: true,
+    name: { fr: 'Taxi', en: 'Taxi', es: 'Taxi', pt: 'Táxi' },
+    tag: { fr: 'Service', en: 'Service', es: 'Servicio', pt: 'Serviço' },
+    mapsQuery: 'taxi, Albufeira, Portugal',
+    why: { fr: "Des taxis sont disponibles dans tout Albufeira, en station ou via appel. Pratique pour les trajets ponctuels si vous n'avez pas de voiture de location.",
+      en: "Taxis are available throughout Albufeira, at ranks or by phone. Handy for one-off trips if you don't have a rental car.",
+      es: "Hay taxis disponibles en toda Albufeira, en parada o por teléfono. Prácticos para trayectos puntuales si no tienes coche de alquiler.",
+      pt: "Há táxis disponíveis em toda a Albufeira, em praça ou por telefone. Práticos para deslocações pontuais se não tiver carro alugado." },
+    highlights: {
+      fr: ['Stations dans le centre-ville', 'Applications Uber et Bolt également disponibles', 'Pratique pour les trajets vers l\'aéroport'],
+      en: ['Ranks in the town centre', 'Uber and Bolt also available', 'Handy for airport transfers'],
+      es: ['Paradas en el centro de la ciudad', 'Uber y Bolt también disponibles', 'Prácticos para trayectos al aeropuerto'],
+      pt: ['Praças no centro da cidade', 'Uber e Bolt também disponíveis', 'Práticos para deslocações ao aeroporto'] } },
+  { img: 'a-016', venue: true,
+    name: { fr: 'Pharmacie', en: 'Pharmacy', es: 'Farmacia', pt: 'Farmácia' },
+    tag: { fr: 'Service', en: 'Service', es: 'Servicio', pt: 'Serviço' },
+    mapsQuery: 'farmácia, Albufeira, Portugal',
+    why: { fr: "Plusieurs pharmacies se trouvent à quelques minutes de l'appartement, pour tout besoin pendant votre séjour. Une pharmacie de garde est toujours assurée en dehors des heures d'ouverture.",
+      en: "Several pharmacies are just a few minutes from the apartment for anything you might need during your stay. An on-duty pharmacy is always available outside opening hours.",
+      es: "Hay varias farmacias a pocos minutos del apartamento para cualquier necesidad durante tu estancia. Siempre hay una farmacia de guardia fuera del horario habitual.",
+      pt: "Há várias farmácias a poucos minutos do apartamento para qualquer necessidade durante a sua estadia. Há sempre uma farmácia de serviço fora do horário habitual." },
+    highlights: {
+      fr: ['Plusieurs pharmacies à proximité', 'Service de garde en dehors des heures d\'ouverture', 'Personnel généralement anglophone'],
+      en: ['Several pharmacies nearby', 'On-duty service outside opening hours', 'Staff usually speak English'],
+      es: ['Varias farmacias cerca', 'Servicio de guardia fuera de horario', 'Personal que suele hablar inglés'],
+      pt: ['Várias farmácias nas proximidades', 'Serviço de urgência fora de horas', 'Pessoal que geralmente fala inglês'] } },
+  { img: 'a-017', venue: true,
+    name: { fr: 'Hôpital', en: 'Hospital', es: 'Hospital', pt: 'Hospital' },
+    tag: { fr: 'Service', en: 'Service', es: 'Servicio', pt: 'Serviço' },
+    mapsQuery: 'hospital, Albufeira, Portugal',
+    why: { fr: "En cas de besoin médical pendant votre séjour, l'hôpital le plus proche est facilement accessible en voiture ou en taxi depuis l'appartement.",
+      en: "If you need medical care during your stay, the nearest hospital is easily reached by car or taxi from the apartment.",
+      es: "En caso de necesidad médica durante tu estancia, el hospital más cercano es fácilmente accesible en coche o taxi desde el apartamento.",
+      pt: "Em caso de necessidade médica durante a sua estadia, o hospital mais próximo é facilmente acessível de carro ou táxi a partir do apartamento." },
+    highlights: {
+      fr: ['Accessible en quelques minutes en voiture', 'Service d\'urgences ouvert 24h/24', 'N\'hésitez pas à nous contacter en cas de besoin'],
+      en: ['A few minutes away by car', '24-hour emergency service', 'Feel free to contact us if you need help'],
+      es: ['A pocos minutos en coche', 'Servicio de urgencias abierto 24 horas', 'No dudes en contactarnos si lo necesitas'],
+      pt: ['A poucos minutos de carro', 'Serviço de urgências aberto 24 horas', 'Não hesite em contactar-nos se precisar'] } },
+];
+
 const GUIDE_NOCTURNE = [
   { img: 'a-018', name: 'Sal Rosa', venue: true,
     tag: { fr: 'Bar à cocktails', en: 'Cocktail bar', es: 'Bar de cócteles', pt: 'Bar de cocktails' },
