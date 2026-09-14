@@ -424,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* --- CALENDAR --- */
   const today = new Date(); today.setHours(0, 0, 0, 0);
-  let calY = today.getFullYear(), calM = today.getMonth(), arrival = null, departure = null;
+  let calY = today.getFullYear(), calM = today.getMonth(), arrival = null, departure = null, rangeChosen = false;
   const occ = [];
   // Dates réellement occupées, synchronisées depuis Booking.com (voir .github/workflows/sync-booking-calendar.yml)
   fetch('data/booked-dates.json').then(r => r.ok ? r.json() : null).then(d => {
@@ -441,10 +441,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function key(d) { return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; }
   function parseKey(k) { const [y,m,da]=k.split('-').map(Number); return new Date(y,m-1,da); }
   // Date de départ affichée : celle choisie explicitement en 2e clic sur le calendrier,
-  // sinon dérivée de arrivée + nombre de nuits (champ manuel).
+  // ou saisie via le champ "nombre de nuits". Tant qu'aucune des deux n'a eu lieu
+  // (juste après le 1er clic d'arrivée), on n'affiche aucun départ/plage pré-rempli —
+  // comportement Booking.com : on choisit ses dates une à une.
   function currentDeparture() {
     if (departure) return parseKey(departure);
-    if (!arrival) return null;
+    if (!arrival || !rangeChosen) return null;
     const a = parseKey(arrival), dep = new Date(a); dep.setDate(a.getDate() + nights);
     return dep;
   }
@@ -506,26 +508,47 @@ document.addEventListener('DOMContentLoaded', () => {
     cont.querySelectorAll('[data-pick]').forEach(el=>{
       el.addEventListener('click',()=>pickDate(el.dataset.pick));
     });
+    // Aperçu au survol (desktop) entre l'arrivée déjà choisie et la date sous la souris —
+    // comme sur Booking.com, avant que le départ ne soit réellement cliqué.
+    if (!isMobile && arrival && !departure) {
+      cont.querySelectorAll('[data-pick]').forEach(el=>{
+        el.addEventListener('mouseenter',()=>previewRange(el.dataset.pick));
+        el.addEventListener('mouseleave',clearRangePreview);
+      });
+    }
     updateStay();
   }
-  // Sélection manuelle arrivée/départ en 2 clics sur le calendrier.
+  function previewRange(k) {
+    if (!arrival || departure) return;
+    const a=parseKey(arrival), h=parseKey(k);
+    if (h<=a) return;
+    document.querySelectorAll('#cal-container [data-pick]').forEach(el=>{
+      const d=parseKey(el.dataset.pick);
+      el.classList.toggle('range-preview', d>a && d<h);
+    });
+  }
+  function clearRangePreview() {
+    document.querySelectorAll('#cal-container .range-preview').forEach(el=>el.classList.remove('range-preview'));
+  }
+  // Sélection manuelle arrivée/départ en 2 clics sur le calendrier, une date à la fois
+  // (comme Booking.com) : le 1er clic ne présélectionne aucune durée par défaut.
   // 1er clic (ou clic après une sélection déjà complète) = nouvelle arrivée.
   // 2e clic = tentative de départ : accepté si ≥ MIN_NIGHTS nuits après l'arrivée,
   // sinon message d'erreur animé et l'arrivée reste sélectionnée pour un nouvel essai.
   function pickDate(k) {
     const clicked = parseKey(k);
     if (!arrival || departure) {
-      arrival = k; departure = null; hideNightsError();
+      arrival = k; departure = null; rangeChosen = false; hideNightsError();
     } else {
       const a = parseKey(arrival);
       if (clicked <= a) {
-        arrival = k; departure = null; hideNightsError();
+        arrival = k; departure = null; rangeChosen = false; hideNightsError();
       } else {
         const diffNights = Math.round((clicked - a) / 86400000);
         if (diffNights < MIN_NIGHTS) {
           showNightsError();
         } else {
-          departure = k; nights = diffNights;
+          departure = k; nights = diffNights; rangeChosen = true;
           const input = document.getElementById('nights-input');
           if (input) input.value = nights;
           hideNightsError();
@@ -539,9 +562,15 @@ document.addEventListener('DOMContentLoaded', () => {
     updatePaymentAmounts();
     if(!l||!p)return;
     if(!arrival){l.textContent=t('stay_default');l.dataset.set='0';p.textContent='—';return;}
-    l.dataset.set='1';
     const a=parseKey(arrival),dep=currentDeparture();
     const pr=nightlyPrice(a.getMonth());
+    if(!dep){
+      l.dataset.set='0';
+      l.textContent=fmtDate(a)+' → '+t('cal_choose_departure');
+      p.textContent=pr?pr+t('per_night'):t('on_request');
+      return;
+    }
+    l.dataset.set='1';
     l.textContent=fmtDate(a)+' → '+fmtDate(dep)+' · '+nights+' '+t('nights_word');
     p.textContent=pr?pr+t('per_night'):t('on_request');
   }
@@ -577,6 +606,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if(input)input.value=n;
     }
     departure=null; // le champ "nuits" reprend la main sur la date de départ
+    rangeChosen=!!arrival;
     renderCalendar();updateStay();
   }
   document.getElementById('nights-input')?.addEventListener('change',e=>setNights(e.target.value));

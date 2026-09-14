@@ -384,6 +384,7 @@ video{
 .cal-day.occ{background:transparent;color:#c0c8cc;cursor:not-allowed;text-decoration:line-through}
 .cal-day.closed{background:transparent;color:#d6dbde;cursor:not-allowed}
 .cal-day.range{background:#cdeef2;color:#06576b}
+.cal-day.range-preview{background:#eaf6f8}
 .cal-day.sel{background:var(--accent)!important;color:#fff!important;transform:scale(1.06);box-shadow:0 8px 20px rgba(10,92,134,.35);z-index:3}
 .cal-day.dep{background:var(--accent)!important;color:#fff!important;box-shadow:0 8px 20px rgba(10,92,134,.3);z-index:3}
 
