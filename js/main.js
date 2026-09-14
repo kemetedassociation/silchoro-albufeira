@@ -424,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* --- CALENDAR --- */
   const today = new Date(); today.setHours(0, 0, 0, 0);
-  let calY = today.getFullYear(), calM = today.getMonth(), arrival = null;
+  let calY = today.getFullYear(), calM = today.getMonth(), arrival = null, departure = null;
   const occ = [];
   // Dates réellement occupées, synchronisées depuis Booking.com (voir .github/workflows/sync-booking-calendar.yml)
   fetch('data/booked-dates.json').then(r => r.ok ? r.json() : null).then(d => {
@@ -440,6 +440,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function key(d) { return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; }
   function parseKey(k) { const [y,m,da]=k.split('-').map(Number); return new Date(y,m-1,da); }
+  // Date de départ affichée : celle choisie explicitement en 2e clic sur le calendrier,
+  // sinon dérivée de arrivée + nombre de nuits (champ manuel).
+  function currentDeparture() {
+    if (departure) return parseKey(departure);
+    if (!arrival) return null;
+    const a = parseKey(arrival), dep = new Date(a); dep.setDate(a.getDate() + nights);
+    return dep;
+  }
+  function showNightsError() {
+    const errEl = document.getElementById('nights-error');
+    if (!errEl) return;
+    errEl.textContent = t('nights_min_error');
+    errEl.classList.add('show');
+    errEl.classList.remove('shake');
+    void errEl.offsetWidth; // relance l'animation même si le message était déjà affiché
+    errEl.classList.add('shake');
+  }
+  function hideNightsError() {
+    document.getElementById('nights-error')?.classList.remove('show');
+  }
   // Tarifs par mois (index 0 = janvier)
   const MONTH_PRICE = [43, 43, 43, 59, 74, 99, 224, 224, 74, 59, 43, 43];
   function nightlyPrice(m) { return MONTH_PRICE[m]; }
@@ -459,11 +479,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!cont) return;
     const months=[{y:calY,m:calM}];
     let nm=calM+1,ny=calY; if(nm>11){nm=0;ny++;} months.push({y:ny,m:nm});
+    const depDate=currentDeparture();
+    const depKey=depDate?key(depDate):null;
     let html='';
     months.forEach(({y,m})=>{
       const startDay=(new Date(y,m,1).getDay()+6)%7;
       const total=new Date(y,m+1,0).getDate();
-      const depKey=arrival?(()=>{const a=parseKey(arrival);a.setDate(a.getDate()+nights);return key(a);})():null;
       html+=`<div><div style="text-align:center;font-weight:700;font-size:19px;margin-bottom:16px">${monthName(y,m)}</div>
         <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:8px">
           ${['L','M','M','J','V','S','D'].map(d=>`<div style="text-align:center;font-size:11px;font-weight:700;color:#9aa7ad">${d}</div>`).join('')}
@@ -474,7 +495,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let st=seasonStatus(date);
         if(date<today) st='occ';
         let cls='cal-day '+st;
-        if(arrival){const a=parseKey(arrival),dep=new Date(a);dep.setDate(a.getDate()+nights);if(date>a&&date<dep)cls+=' range';}
+        if(arrival){const a=parseKey(arrival);if(depDate&&date>a&&date<depDate)cls+=' range';}
         if(arrival===k)cls+=' sel';
         if(depKey===k)cls+=' dep';
         html+=`<div class="${cls}" ${(st!=='occ'&&st!=='closed')?`data-pick="${k}"`:''}>${day}</div>`;
@@ -483,9 +504,35 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     cont.innerHTML=html;
     cont.querySelectorAll('[data-pick]').forEach(el=>{
-      el.addEventListener('click',()=>{arrival=el.dataset.pick;renderCalendar();updateStay();updateDateInput();});
+      el.addEventListener('click',()=>pickDate(el.dataset.pick));
     });
     updateStay();
+  }
+  // Sélection manuelle arrivée/départ en 2 clics sur le calendrier.
+  // 1er clic (ou clic après une sélection déjà complète) = nouvelle arrivée.
+  // 2e clic = tentative de départ : accepté si ≥ MIN_NIGHTS nuits après l'arrivée,
+  // sinon message d'erreur animé et l'arrivée reste sélectionnée pour un nouvel essai.
+  function pickDate(k) {
+    const clicked = parseKey(k);
+    if (!arrival || departure) {
+      arrival = k; departure = null; hideNightsError();
+    } else {
+      const a = parseKey(arrival);
+      if (clicked <= a) {
+        arrival = k; departure = null; hideNightsError();
+      } else {
+        const diffNights = Math.round((clicked - a) / 86400000);
+        if (diffNights < MIN_NIGHTS) {
+          showNightsError();
+        } else {
+          departure = k; nights = diffNights;
+          const input = document.getElementById('nights-input');
+          if (input) input.value = nights;
+          hideNightsError();
+        }
+      }
+    }
+    renderCalendar(); updateStay(); updateDateInput();
   }
   function updateStay(){
     const l=document.getElementById('stay-label'),p=document.getElementById('stay-price');
@@ -493,7 +540,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(!l||!p)return;
     if(!arrival){l.textContent=t('stay_default');l.dataset.set='0';p.textContent='—';return;}
     l.dataset.set='1';
-    const a=parseKey(arrival),dep=new Date(a);dep.setDate(a.getDate()+nights);
+    const a=parseKey(arrival),dep=currentDeparture();
     const pr=nightlyPrice(a.getMonth());
     l.textContent=fmtDate(a)+' → '+fmtDate(dep)+' · '+nights+' '+t('nights_word');
     p.textContent=pr?pr+t('per_night'):t('on_request');
@@ -519,28 +566,40 @@ document.addEventListener('DOMContentLoaded', () => {
   /* --- SÉLECTEUR DE NUITS (minimum 4, avec message d'erreur) --- */
   function setNights(v){
     const n=parseInt(v,10);
-    const errEl=document.getElementById('nights-error');
     const input=document.getElementById('nights-input');
     if(isNaN(n)||n<MIN_NIGHTS){
-      if(errEl){errEl.textContent=t('nights_min_error');errEl.classList.add('show');}
+      showNightsError();
       nights=MIN_NIGHTS;
       if(input)input.value=MIN_NIGHTS;
     }else{
-      if(errEl)errEl.classList.remove('show');
+      hideNightsError();
       nights=n;
       if(input)input.value=n;
     }
+    departure=null; // le champ "nuits" reprend la main sur la date de départ
     renderCalendar();updateStay();
   }
   document.getElementById('nights-input')?.addEventListener('change',e=>setNights(e.target.value));
   document.getElementById('nights-input')?.addEventListener('input',e=>{
-    const errEl=document.getElementById('nights-error');
-    if(errEl && parseInt(e.target.value,10)>=MIN_NIGHTS) errEl.classList.remove('show');
+    if(parseInt(e.target.value,10)>=MIN_NIGHTS) hideNightsError();
   });
 
   document.getElementById('cal-prev')?.addEventListener('click',()=>{calM--;if(calM<0){calM=11;calY--;}renderCalendar();});
   document.getElementById('cal-next')?.addEventListener('click',()=>{calM++;if(calM>11){calM=0;calY++;}renderCalendar();});
   renderCalendar();
+
+  /* --- ENCADRÉS TARIFS (janvier→décembre) → clic direct vers le calendrier --- */
+  document.querySelectorAll('.tarif-month-card[data-month]').forEach(card=>{
+    const goToMonth=()=>{
+      calM=parseInt(card.dataset.month,10);
+      calY=(calM<today.getMonth())?today.getFullYear()+1:today.getFullYear();
+      renderCalendar();
+      document.querySelector('.tab-btn[data-tab="calendrier"]')?.click();
+      document.getElementById('calendrier')?.scrollIntoView({behavior:'smooth',block:'start'});
+    };
+    card.addEventListener('click',goToMonth);
+    card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();goToMonth();}});
+  });
 
   /* --- FORM --- */
   function isoKey(d){const p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;}

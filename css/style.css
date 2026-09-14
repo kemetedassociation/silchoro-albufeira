@@ -290,7 +290,8 @@ video{
 
 /* ===== GRILLE TARIFS 12 MOIS ===== */
 .tarif-months-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:1000px;margin:0 auto}
-.tarif-month-card{border-radius:20px;padding:22px 20px;text-align:center;border:1px solid transparent}
+.tarif-month-card{border-radius:20px;padding:22px 20px;text-align:center;border:1px solid transparent;cursor:pointer;transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s}
+.tarif-month-card:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(13,36,56,.14)}
 .tmc-name{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
 .tmc-price{margin-top:10px;font-size:26px;font-weight:800;letter-spacing:-.02em}
 .tmc-price span{font-size:13px;font-weight:500;opacity:.65;margin-left:2px}
@@ -308,6 +309,8 @@ video{
 .nights-picker input:focus{outline:none;border-color:var(--accent)}
 .nights-error{margin-top:10px;text-align:center;font-size:13.5px;font-weight:600;color:#c0392b;max-height:0;overflow:hidden;opacity:0;transition:opacity .25s,max-height .25s}
 .nights-error.show{max-height:40px;opacity:1}
+.nights-error.shake{animation:nightsErrorShake .5s cubic-bezier(.36,.07,.19,.97)}
+@keyframes nightsErrorShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
 
 /* ===== ONGLETS FLUIDES (tarifs.html) ===== */
 .tabs-nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:44px}
