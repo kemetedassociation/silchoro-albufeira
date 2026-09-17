@@ -62,6 +62,14 @@ function startLoaderMsgs() {
 }
 
 /* ─────────────────────────────────────────────
+   PWA — rend le site installable (mobile "Ajouter à l'écran d'accueil",
+   PC "Installer l'application" dans la barre d'adresse Chrome/Edge).
+   ───────────────────────────────────────────── */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+}
+
+/* ─────────────────────────────────────────────
    BOOT
    ───────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
