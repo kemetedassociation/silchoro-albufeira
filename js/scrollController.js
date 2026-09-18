@@ -67,31 +67,13 @@ class ScrollController {
     const ch = canvas.offsetHeight || window.innerHeight;
     if (cw <= 0 || ch <= 0) return;
 
-    ctx.clearRect(0, 0, cw, ch); // évite les artefacts fantômes si l'image ne remplit pas tout
+    // Cover-fit: preserve aspect ratio, center the image
+    const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
+    const sw    = img.naturalWidth  * scale;
+    const sh    = img.naturalHeight * scale;
 
-    const coverScale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
-
-    if (ch > cw) {
-      // Écran portrait étroit (mobile) : ces images larges (16:9, plan large du
-      // bâtiment + piscine, cadrage "PC") forcées en cover-fit pur ne montreraient
-      // plus qu'une bande verticale zoomée à l'extrême (~25% de la largeur d'origine).
-      // On affiche l'image ENTIÈRE à l'échelle — même cadrage large que sur PC —
-      // avec en fond la même image floutée/assombrie (cover) pour éviter des
-      // bandes noires vides en haut/bas.
-      const bgSw = img.naturalWidth * coverScale, bgSh = img.naturalHeight * coverScale;
-      ctx.filter = 'blur(26px) brightness(.55)';
-      ctx.drawImage(img, (cw - bgSw) / 2, (ch - bgSh) / 2, bgSw, bgSh);
-      ctx.filter = 'none';
-
-      const fitScale = cw / img.naturalWidth;
-      const sw = img.naturalWidth * fitScale, sh = img.naturalHeight * fitScale;
-      ctx.drawImage(img, (cw - sw) / 2, (ch - sh) / 2, sw, sh);
-      return;
-    }
-
-    // Desktop / paysage : cover-fit classique, inchangé.
-    const sw = img.naturalWidth  * coverScale;
-    const sh = img.naturalHeight * coverScale;
+    // Clear before draw — avoids ghost artifacts if image didn't fill last time
+    ctx.clearRect(0, 0, cw, ch);
     ctx.drawImage(img, (cw - sw) / 2, (ch - sh) / 2, sw, sh);
   }
 
