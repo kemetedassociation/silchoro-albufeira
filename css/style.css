@@ -722,7 +722,11 @@ details.faq .ans{padding:0 4px 28px;max-width:760px;color:#5a6b78;font-size:17px
 
 @media(max-width:768px){
   .sg-intro-logo{width:min(68vw,220px)}
-  .sg-gallery{grid-template-columns:1fr;padding-bottom:40px}
-  .sg-col-c-inner{position:static;height:auto}
-  .sg-col-c-inner img{height:clamp(220px,42vh,380px)}
+  /* Garde les 3 colonnes + l'animation (colonne centrale fixée pendant le
+     défilement des colonnes latérales) sur mobile — juste à une échelle réduite. */
+  .sg-gallery{gap:6px;padding:0 8px clamp(40px,8vw,60px)}
+  .sg-col{gap:6px}
+  .sg-col img{height:clamp(240px,58vh,420px);border-radius:12px}
+  .sg-col-c-inner{gap:6px}
+  .sg-col-c-inner img{height:clamp(120px,22vh,190px);border-radius:12px}
 }
