@@ -283,7 +283,7 @@ function updateRowComputedCells(sheet, row, rowValues) {
   const waCell = sheet.getRange(row, COL.whatsapp);
   if (digits) {
     const rich = SpreadsheetApp.newRichTextValue()
-      .setText('💬 WhatsApp')
+      .setText('WhatsApp')
       .setLinkUrl('https://wa.me/' + digits)
       .build();
     waCell.setRichTextValue(rich);

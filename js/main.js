@@ -37,9 +37,9 @@ const MOB_SCROLL   = 0.5;   // scroll-height multiplier for mobile only
    ───────────────────────────────────────────── */
 const LOADER_MSGS = [
   `Préparation de votre séjour à Albufeira…`,
-  `Saviez-vous ? « Albufeira » vient de l’arabe — cela signifie « le lagon ».`,
+  `Saviez-vous ? « Albufeira » vient de l’arabe, cela signifie « le lagon ».`,
   `Devinette : on ne m’admire qu’en kayak. Je suis percée de lumière comme une cathédrale. Qui suis-je ?`,
-  `La grotte de Benagil — à 20 minutes de l’appartement.`,
+  `La grotte de Benagil, à 20 minutes de l’appartement.`,
   `L’Algarve est la région la plus ensoleilée d’Europe : 300 jours de soleil par an.`,
   `Devinette : dorée à l’aube, turquoise à midi, rose au coucher du soleil…`,
   `C’est la mer d’Algarve. Elle vous attend.`,

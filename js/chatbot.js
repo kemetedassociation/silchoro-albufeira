@@ -1,7 +1,7 @@
 /**
  * chatbot.js — Assistant de conciergerie LUZDOSOL (Claude Haiku 4.5 via Cloudflare Worker).
  * Le widget ne s'affiche que si CHATBOT_ENDPOINT est configuré ci-dessous
- * (voir chatbot-worker/README — à déployer séparément).
+ * (voir chatbot-worker/README, à déployer séparément).
  */
 (function () {
   const CHATBOT_ENDPOINT = 'https://luzdosol-chatbot.kemeted-association.workers.dev';
@@ -37,7 +37,7 @@
     el('img', { src: 'assets/icons/logo-mark.webp', alt: '' })
   );
 
-  const teaser = el('div', { class: 'cb-teaser' }, t('cb_teaser', "Une question ? Je vous réponds en quelques secondes 👋"));
+  const teaser = el('div', { class: 'cb-teaser' }, t('cb_teaser', "Une question ? Je vous réponds en quelques secondes."));
 
   const titleEl = el('div', { class: 'cb-title' }, t('cb_title', 'Assistant LUZDOSOL'));
   const subEl = el('div', { class: 'cb-sub' }, t('cb_subtitle', 'Répond en quelques secondes'));
@@ -166,7 +166,7 @@
     bubble.classList.toggle('open', open);
     teaser.classList.remove('show');
     if (open && !history.length) {
-      addBubbleMsg('assistant', t('cb_welcome', "Bonjour ! Je suis l'assistant de LUZDOSOL 👋 Posez-moi vos questions sur le logement, les tarifs, les disponibilités, l'arrivée ou les activités à Albufeira — je vous emmène directement à la bonne page si besoin."));
+      addBubbleMsg('assistant', t('cb_welcome', "Bonjour ! Je suis l'assistant de LUZDOSOL. Posez-moi vos questions sur le logement, les tarifs, les disponibilités, l'arrivée ou les activités à Albufeira, je vous emmène directement à la bonne page si besoin."));
     }
     if (open) setTimeout(() => inputEl.focus(), 300);
   }
@@ -175,9 +175,9 @@
   panel.querySelector('.cb-close').addEventListener('click', () => togglePanel(false));
 
   // Rafraîchit le texte statique (bulle, en-tête, placeholder, suggestions) si la
-  // langue change en cours de session — les messages déjà échangés ne sont pas retraduits.
+  // langue change en cours de session : les messages déjà échangés ne sont pas retraduits.
   window.addEventListener('luzdosol-lang-change', () => {
-    teaser.textContent = t('cb_teaser', "Une question ? Je vous réponds en quelques secondes 👋");
+    teaser.textContent = t('cb_teaser', "Une question ? Je vous réponds en quelques secondes.");
     bubble.setAttribute('aria-label', t('cb_aria_open', 'Ouvrir le chat'));
     closeBtn.setAttribute('aria-label', t('cb_aria_close', 'Fermer'));
     sendBtn.setAttribute('aria-label', t('cb_aria_send', 'Envoyer'));

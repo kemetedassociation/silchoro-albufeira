@@ -202,7 +202,7 @@ video{
 .pwa-install-actions{flex-shrink:0}
 .pwa-install-btn{background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:30px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:background .2s}
 .pwa-install-btn:hover{background:var(--accent-d)}
-.pwa-install-close{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:#f3ece0;border:none;color:#5a6b78;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pwa-install-close{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:#f3ece0;border:none;color:#5a6b78;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 @media(max-width:480px){.pwa-install-banner{flex-wrap:wrap;padding:14px 30px 14px 14px}.pwa-install-actions{width:100%}.pwa-install-btn{width:100%}}
 .cb-bubble{
   position:fixed;right:20px;bottom:90px;z-index:940;
@@ -235,7 +235,7 @@ video{
 .cb-head-txt{flex:1;min-width:0}
 .cb-title{font-weight:800;font-size:15px}
 .cb-sub{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px}
-.cb-close{background:rgba(255,255,255,.12);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:13px;flex-shrink:0}
+.cb-close{background:rgba(255,255,255,.12);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:13px;flex-shrink:0}
 
 .cb-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
 .cb-row{display:flex;flex-direction:column}
@@ -251,7 +251,7 @@ video{
 .cb-typing span:nth-child(3){animation-delay:.4s}
 
 .cb-suggestions{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 12px;flex-shrink:0}
-.cb-chip{background:#fff;border:1px solid #efe6d6;color:var(--ink);font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:30px;cursor:pointer;transition:background .2s,border-color .2s}
+.cb-chip{background:#fff;border:1px solid #efe6d6;color:var(--ink);font-size:12.5px;font-weight:600;padding:10px 14px;border-radius:30px;cursor:pointer;transition:background .2s,border-color .2s}
 .cb-chip:hover{background:#eef6f8;border-color:var(--accent)}
 
 .cb-form{display:flex;gap:8px;padding:12px;border-top:1px solid #efe6d6;flex-shrink:0;background:#fff}
@@ -308,7 +308,7 @@ video{
 .page-toc a{color:#5a6b78;font-weight:600;font-size:13.5px;text-decoration:none;padding:9px 15px;border-radius:30px;transition:background .2s,color .2s;white-space:nowrap}
 .page-toc a:hover{background:#eef6f8;color:var(--accent)}
 .page-toc a.active{background:var(--accent);color:#fff}
-@media(max-width:700px){.page-toc{overflow-x:auto;justify-content:flex-start;-webkit-overflow-scrolling:touch;top:calc(60px + var(--safe-t))}}
+@media(max-width:700px){.page-toc{overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start;-webkit-overflow-scrolling:touch;top:calc(60px + var(--safe-t));scrollbar-width:none}.page-toc::-webkit-scrollbar{display:none}}
 
 /* ===== GRILLE TARIFS 12 MOIS ===== */
 .tarif-months-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:1000px;margin:0 auto}

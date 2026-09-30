@@ -26,7 +26,7 @@ class AutoCarousel {
   build() {
     const t = (key, fallback) => (window.luzdosolT ? window.luzdosolT(key) : fallback);
     const slides = this.items.map((it, i) => `
-      <button class="ac-slide" data-i="${i}" type="button" aria-label="${it.name} — ${L(it.desc)}">
+      <button class="ac-slide" data-i="${i}" type="button" aria-label="${it.name}, ${L(it.desc)}">
         <img src="assets/guide/${it.img}.webp" alt="${it.name}" loading="${i === 0 ? 'eager' : 'lazy'}">
         <div class="ac-scrim"></div>
         <div class="ac-caption">

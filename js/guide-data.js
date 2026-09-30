@@ -1,10 +1,10 @@
 /**
- * guide-data.js — données partagées entre js/guide.js (diaporamas) et
+ * guide-data.js : données partagées entre js/guide.js (diaporamas) et
  * js/etablissement.js (page de détail par adresse). Un seul endroit à
  * modifier pour ajouter/changer une adresse du guide.
  *
  * Les champs traduisibles (tag, desc, why, highlights) sont des objets
- * {fr, en, es, pt} — utiliser la fonction L() ci-dessous pour lire la
+ * {fr, en, es, pt} : utiliser la fonction L() ci-dessous pour lire la
  * valeur dans la langue actuelle (repli sur le français si absente).
  * `highlights` est aussi un objet {fr,en,es,pt}, mais dont chaque valeur
  * est un tableau : L(item.highlights) renvoie directement ce tableau.
@@ -81,10 +81,10 @@ const GUIDE_RESTAURANTS = [
     tag: { fr: 'En couple', en: 'For couples', es: 'En pareja', pt: 'A dois' },
     desc: { fr: 'Cuisine raffinée', en: 'Refined cuisine', es: 'Cocina refinada', pt: 'Cozinha refinada' },
     mapsQuery: 'Olive Bistro Albufeira, Portugal',
-    why: { fr: "Une cuisine plus raffinée, dans un cadre agréable — une belle option pour une soirée en couple loin de l'agitation de la vieille ville.",
-      en: "More refined cuisine in a pleasant setting — a lovely option for an evening as a couple away from the old town's bustle.",
+    why: { fr: "Une cuisine plus raffinée, dans un cadre agréable : une belle option pour une soirée en couple loin de l'agitation de la vieille ville.",
+      en: "More refined cuisine in a pleasant setting: a lovely option for an evening as a couple away from the old town's bustle.",
       es: "Una cocina más refinada, en un entorno agradable: una bonita opción para una velada en pareja lejos del bullicio del casco antiguo.",
-      pt: "Uma cozinha mais refinada, num ambiente agradável — uma bela opção para uma noite a dois longe da agitação da zona histórica." },
+      pt: "Uma cozinha mais refinada, num ambiente agradável: uma bela opção para uma noite a dois longe da agitação da zona histórica." },
     highlights: {
       fr: ['Cuisine travaillée, cadre élégant', 'Bon choix pour une occasion particulière', 'Ambiance calme, service attentionné'],
       en: ['Elaborate cuisine, elegant setting', 'A good choice for a special occasion', 'Calm atmosphere, attentive service'],
@@ -156,19 +156,19 @@ const GUIDE_RESTAURANTS = [
     desc: { fr: 'Le célèbre flan pâtissier portugais', en: 'The famous Portuguese custard tart', es: 'El famoso pastel de nata portugués', pt: 'O famoso pastel de nata português' } },
 ];
 
-// Crédits photo (licence Creative Commons — Wikimedia Commons), requis par la
+// Crédits photo (licence Creative Commons, Wikimedia Commons), requis par la
 // licence pour les photos CC BY / CC BY-SA. Affichés en petit sous la galerie
 // de spécialités et, quand pertinent, sous la fiche d'une adresse.
 const GUIDE_DISH_CREDITS = [
-  { file: 'a-042', credit: 'Cataplana — photo © Wikimedia Commons contributor, CC BY-SA 4.0' },
-  { file: 'a-043', credit: 'Grilled octopus — photo © Iannis Karakatsanes, CC BY-SA 2.0' },
-  { file: 'a-044', credit: 'Bacalhau à Brás — photo © Fpenteado, CC BY-SA 3.0' },
-  { file: 'a-045', credit: 'Pastéis de Nata — photo © helmut.weigel, CC BY-SA 4.0' },
+  { file: 'a-042', credit: 'Cataplana, photo © Wikimedia Commons contributor, CC BY-SA 4.0' },
+  { file: 'a-043', credit: 'Grilled octopus, photo © Iannis Karakatsanes, CC BY-SA 2.0' },
+  { file: 'a-044', credit: 'Bacalhau à Brás, photo © Fpenteado, CC BY-SA 3.0' },
+  { file: 'a-045', credit: 'Pastéis de Nata, photo © helmut.weigel, CC BY-SA 4.0' },
 ];
 const GUIDE_PHOTO_CREDITS = {
-  'a-046': 'Praia dos Pescadores, Albufeira — photo © Planax (domaine public)',
-  'a-047': 'Ponta da Piedade, Lagos — photo © Jose A., CC BY 2.0',
-  'a-048': 'Praia da Rocha, Portimão — photo © Jose A., CC BY 2.0',
+  'a-046': 'Praia dos Pescadores, Albufeira, photo © Planax (domaine public)',
+  'a-047': 'Ponta da Piedade, Lagos, photo © Jose A., CC BY 2.0',
+  'a-048': 'Praia da Rocha, Portimão, photo © Jose A., CC BY 2.0',
 };
 
 const GUIDE_SUPER = ['a-014a', 'a-014b', 'a-014c', 'a-014d'];
@@ -181,10 +181,10 @@ const GUIDE_SUPER_DETAIL = [
     name: { fr: 'Supermarchés', en: 'Supermarkets', es: 'Supermercados', pt: 'Supermercados' },
     tag: { fr: 'Pratique', en: 'Handy', es: 'Práctico', pt: 'Prático' },
     mapsQuery: 'supermercado, Albufeira, Portugal',
-    why: { fr: "Aldi, Lidl, Continente et Pingo Doce se trouvent tous à quelques minutes en voiture de l'appartement — de quoi faire des courses complètes dès votre arrivée, sans vous compliquer la vie.",
-      en: "Aldi, Lidl, Continente and Pingo Doce are all just a few minutes' drive from the apartment — everything you need for a full shop as soon as you arrive.",
+    why: { fr: "Aldi, Lidl, Continente et Pingo Doce se trouvent tous à quelques minutes en voiture de l'appartement : de quoi faire des courses complètes dès votre arrivée, sans vous compliquer la vie.",
+      en: "Aldi, Lidl, Continente and Pingo Doce are all just a few minutes' drive from the apartment: everything you need for a full shop as soon as you arrive.",
       es: "Aldi, Lidl, Continente y Pingo Doce están todos a pocos minutos en coche del apartamento: todo lo necesario para hacer una compra completa nada más llegar.",
-      pt: "Aldi, Lidl, Continente e Pingo Doce ficam todos a poucos minutos de carro do apartamento — tudo o que precisa para fazer compras completas assim que chegar." },
+      pt: "Aldi, Lidl, Continente e Pingo Doce ficam todos a poucos minutos de carro do apartamento: tudo o que precisa para fazer compras completas assim que chegar." },
     highlights: {
       fr: ['Aldi · Lidl · Continente · Pingo Doce', 'Toutes à quelques minutes en voiture', "Pratique pour faire le plein dès l'arrivée"],
       en: ['Aldi · Lidl · Continente · Pingo Doce', "All a few minutes' drive away", 'Handy for stocking up on arrival'],
@@ -252,10 +252,10 @@ const GUIDE_NOCTURNE = [
     tag: { fr: 'Bar à cocktails', en: 'Cocktail bar', es: 'Bar de cócteles', pt: 'Bar de cocktails' },
     desc: { fr: 'Cocktails artisanaux', en: 'Craft cocktails', es: 'Cócteles artesanales', pt: 'Cocktails artesanais' },
     mapsQuery: 'Tonic Bar Albufeira, Portugal',
-    why: { fr: "Des cocktails soignés dans une ambiance plus intimiste — une bonne option pour démarrer la soirée entre amis ou en couple.",
-      en: "Well-crafted cocktails in a more intimate setting — a good option to kick off the evening with friends or as a couple.",
+    why: { fr: "Des cocktails soignés dans une ambiance plus intimiste : une bonne option pour démarrer la soirée entre amis ou en couple.",
+      en: "Well-crafted cocktails in a more intimate setting: a good option to kick off the evening with friends or as a couple.",
       es: "Cócteles cuidados en un ambiente más íntimo: una buena opción para empezar la noche entre amigos o en pareja.",
-      pt: "Cocktails cuidados num ambiente mais íntimo — uma boa opção para começar a noite entre amigos ou a dois." },
+      pt: "Cocktails cuidados num ambiente mais íntimo: uma boa opção para começar a noite entre amigos ou a dois." },
     highlights: { fr: ['Cocktails artisanaux', 'Ambiance cosy', 'Idéal en petit groupe'],
       en: ['Craft cocktails', 'Cosy atmosphere', 'Great for a small group'],
       es: ['Cócteles artesanales', 'Ambiente acogedor', 'Ideal en grupo reducido'],
@@ -276,10 +276,10 @@ const GUIDE_NOCTURNE = [
     tag: { fr: 'Bar animé', en: 'Lively bar', es: 'Bar animado', pt: 'Bar animado' },
     desc: { fr: 'Musique live', en: 'Live music', es: 'Música en vivo', pt: 'Música ao vivo' },
     mapsQuery: 'Paulos Bar Albufeira, Portugal',
-    why: { fr: "De la musique live et une ambiance animée — une bonne adresse pour une soirée festive dans la vieille ville.",
-      en: "Live music and a lively atmosphere — a good spot for a festive evening in the old town.",
+    why: { fr: "De la musique live et une ambiance animée : une bonne adresse pour une soirée festive dans la vieille ville.",
+      en: "Live music and a lively atmosphere: a good spot for a festive evening in the old town.",
       es: "Música en vivo y ambiente animado: una buena dirección para una noche festiva en el casco antiguo.",
-      pt: "Música ao vivo e ambiente animado — um bom local para uma noite festiva na zona histórica." },
+      pt: "Música ao vivo e ambiente animado: um bom local para uma noite festiva na zona histórica." },
     highlights: { fr: ['Musique live régulière', 'Ambiance animée', 'Au cœur de la vieille ville'],
       en: ['Regular live music', 'Lively atmosphere', 'In the heart of the old town'],
       es: ['Música en vivo habitual', 'Ambiente animado', 'En pleno casco antiguo'],
@@ -370,12 +370,12 @@ const GUIDE_NOCTURNE = [
       pt: ['Passeio à beira-mar', 'Restaurantes e bares lounge', 'Ambiente chique, perfeito para um copo'] } },
   { img: 'a-029', name: 'Casino Vilamoura', venue: true,
     tag: { fr: 'Casino', en: 'Casino', es: 'Casino', pt: 'Casino' },
-    desc: { fr: 'Machines à sous, roulette, blackjack, poker — tenue correcte recommandée', en: 'Slot machines, roulette, blackjack, poker — smart dress recommended', es: 'Tragaperras, ruleta, blackjack, póker — se recomienda vestimenta adecuada', pt: 'Slots, roleta, blackjack, póquer — recomenda-se traje adequado' },
+    desc: { fr: 'Machines à sous, roulette, blackjack, poker : tenue correcte recommandée', en: 'Slot machines, roulette, blackjack, poker: smart dress recommended', es: 'Tragaperras, ruleta, blackjack, póker: se recomienda vestimenta adecuada', pt: 'Slots, roleta, blackjack, póquer: recomenda-se traje adequado' },
     mapsQuery: 'Casino Vilamoura, Portugal',
-    why: { fr: "Pour une soirée différente : machines à sous, tables de jeu et parfois des spectacles — tenue correcte recommandée.",
-      en: "For a different kind of evening: slot machines, gaming tables and sometimes shows — smart dress recommended.",
-      es: "Para una noche diferente: tragaperras, mesas de juego y a veces espectáculos — se recomienda vestimenta adecuada.",
-      pt: "Para uma noite diferente: slots, mesas de jogo e por vezes espetáculos — recomenda-se traje adequado." },
+    why: { fr: "Pour une soirée différente : machines à sous, tables de jeu et parfois des spectacles, tenue correcte recommandée.",
+      en: "For a different kind of evening: slot machines, gaming tables and sometimes shows, smart dress recommended.",
+      es: "Para una noche diferente: tragaperras, mesas de juego y a veces espectáculos, se recomienda vestimenta adecuada.",
+      pt: "Para uma noite diferente: slots, mesas de jogo e por vezes espetáculos, recomenda-se traje adequado." },
     highlights: { fr: ['Roulette, blackjack, poker, machines à sous', 'Tenue correcte recommandée', 'Souvent des spectacles ou concerts'],
       en: ['Roulette, blackjack, poker, slot machines', 'Smart dress recommended', 'Often live shows or concerts'],
       es: ['Ruleta, blackjack, póker, tragaperras', 'Se recomienda vestimenta adecuada', 'A menudo espectáculos o conciertos'],
@@ -420,10 +420,10 @@ const GUIDE_NOCTURNE = [
     tag: { fr: 'Beach club', en: 'Beach club', es: 'Beach club', pt: 'Beach club' },
     desc: { fr: 'Ambiance premium, jour et soir', en: 'Premium vibe, day and night', es: 'Ambiente premium, día y noche', pt: 'Ambiente premium, dia e noite' },
     mapsQuery: 'Heaven Beach Club Albufeira, Portugal',
-    why: { fr: "Une ambiance premium toute la journée, qui se prolonge agréablement en soirée — une de nos adresses préférées près des plages.",
-      en: "A premium vibe all day long that extends nicely into the evening — one of our favourite spots near the beaches.",
+    why: { fr: "Une ambiance premium toute la journée, qui se prolonge agréablement en soirée : une de nos adresses préférées près des plages.",
+      en: "A premium vibe all day long that extends nicely into the evening: one of our favourite spots near the beaches.",
       es: "Un ambiente premium durante todo el día, que se prolonga agradablemente por la noche: una de nuestras direcciones favoritas cerca de las playas.",
-      pt: "Um ambiente premium durante todo o dia, que se prolonga agradavelmente pela noite — um dos nossos locais preferidos perto das praias." },
+      pt: "Um ambiente premium durante todo o dia, que se prolonga agradavelmente pela noite: um dos nossos locais preferidos perto das praias." },
     highlights: { fr: ['Ambiance premium', 'Agréable de jour comme en soirée', "Proche des plages d'Albufeira"],
       en: ['Premium atmosphere', 'Great by day or evening', "Close to Albufeira's beaches"],
       es: ['Ambiente premium', 'Agradable de día y de noche', 'Cerca de las playas de Albufeira'],
@@ -543,10 +543,10 @@ const GUIDE_VILLES = [
       es: 'Puente romano, salinas, isla de Tavira y ambiente auténtico.',
       pt: 'Ponte romana, salinas, ilha de Tavira e ambiente autêntico.' },
     mapsQuery: 'Tavira, Algarve, Portugal',
-    why: { fr: "Une des villes les plus authentiques de l'Algarve — un peu plus loin, mais qui mérite une journée complète.",
-      en: "One of the most authentic towns in the Algarve — a bit further, but worth a full day.",
+    why: { fr: "Une des villes les plus authentiques de l'Algarve, un peu plus loin, mais qui mérite une journée complète.",
+      en: "One of the most authentic towns in the Algarve, a bit further, but worth a full day.",
       es: "Una de las ciudades más auténticas del Algarve, algo más lejos, pero que merece un día completo.",
-      pt: "Uma das cidades mais autênticas do Algarve — um pouco mais longe, mas que merece um dia inteiro." },
+      pt: "Uma das cidades mais autênticas do Algarve, um pouco mais longe, mas que merece um dia inteiro." },
     highlights: { fr: ['Pont romain et centre historique', 'Salines et île de Tavira', 'Ambiance plus calme et authentique'],
       en: ['Roman bridge and historic centre', 'Salt pans and Tavira Island', 'Calmer, more authentic atmosphere'],
       es: ['Puente romano y centro histórico', 'Salinas e isla de Tavira', 'Ambiente más tranquilo y auténtico'],
