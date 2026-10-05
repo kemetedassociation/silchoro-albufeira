@@ -526,6 +526,11 @@ details.faq .ans{padding:0 4px 28px;max-width:760px;color:#5a6b78;font-size:17px
    scrollytelling, on ne veut pas alourdir les autres pages). */
 .mobile-menu{position:fixed;inset:0;z-index:901;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s cubic-bezier(.16,1,.3,1);overflow:hidden}
 .mobile-menu.open{opacity:1;pointer-events:auto}
+/* Évite que le bandeau PWA et la bulle du chatbot recouvrent le menu mobile ouvert. */
+#mobile-menu.open ~ .pwa-install-banner,
+#mobile-menu.open ~ .cb-teaser,
+#mobile-menu.open ~ .cb-bubble,
+#mobile-menu.open ~ .cb-panel{display:none!important}
 .mm-panel{position:absolute;inset:0;z-index:0;background:linear-gradient(135deg,var(--accent),var(--ink) 70%);transform:translateX(101%);transition:transform .6s cubic-bezier(.65,.05,0,1)}
 .mobile-menu.open .mm-panel{transform:translateX(0)}
 .mm-panel.mm-panel-2{background:var(--ink);transition-delay:.06s}
@@ -592,6 +597,12 @@ details.faq .ans{padding:0 4px 28px;max-width:760px;color:#5a6b78;font-size:17px
 /* ==========================================================================
    RESPONSIVE — MOBILE FIRST OVERRIDES
    ========================================================================== */
+
+/* Empêche les cartes de la grille d'équipements de forcer leurs colonnes
+   ("1fr") plus larges que l'espace disponible à cause d'un texte non
+   compressible (ex. "Entièrement meublé") — sans ça, la carte de droite
+   peut déborder hors de l'écran sur mobile. */
+.equip-grid>div{min-width:0}
 
 /* ===== TABLET (≤900px) ===== */
 @media(max-width:900px){
