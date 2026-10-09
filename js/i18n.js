@@ -197,6 +197,8 @@ const LUZDOSOL_I18N = {
     pay_deposit_label: "Acompte 30%", pay_total_label: "Total",
     btn_stripe_pay: "Payer et confirmer ma réservation",
     stripe_secure_note: "Paiement sécurisé par Stripe : carte bancaire, Google Pay, Apple Pay ou Klarna (paiement en plusieurs fois).",
+    btn_paypal: "Payer un acompte par PayPal",
+    paypal_note_html: "Acompte réglé par virement PayPal à <strong>emouenguebienvenu@yahoo.fr</strong>.",
     checking_availability: "Vérification des disponibilités…",
     err_pick_date_first: "Choisissez une date d'arrivée dans le calendrier ci-dessus.",
     err_dates_unavailable: "Ces dates viennent d'être réservées par quelqu'un d'autre. Merci d'en choisir d'autres.",
@@ -240,6 +242,7 @@ const LUZDOSOL_I18N = {
     footer_tag: "Réservez en direct : le meilleur tarif, sans commission",
     wa_intro_msg: "Bonjour ! Je suis intéressé(e) par l'appartement LUZDOSOL à Albufeira. Pouvez-vous m'indiquer les disponibilités et le meilleur tarif ?",
     wa_resa_greeting: "Bonjour ! Je souhaite réserver l'appartement LUZDOSOL à Albufeira.",
+    wa_resa_paypal_greeting: "Bonjour ! Je souhaite réserver l'appartement LUZDOSOL à Albufeira et régler mon acompte par PayPal.",
     label_name: "Nom", label_phone: "Téléphone", label_email: "Email", label_arrival: "Arrivée", label_travelers: "Voyageurs", label_message: "Message", label_tbd: "à définir", nights_word: "nuits", on_request: "Sur demande",
   },
   en: {
@@ -439,6 +442,8 @@ const LUZDOSOL_I18N = {
     pay_deposit_label: "30% deposit", pay_total_label: "Total",
     btn_stripe_pay: "Pay and confirm my booking",
     stripe_secure_note: "Secure payment via Stripe: card, Google Pay, Apple Pay or Klarna (pay in installments).",
+    btn_paypal: "Pay a deposit via PayPal",
+    paypal_note_html: "Deposit paid by PayPal transfer to <strong>emouenguebienvenu@yahoo.fr</strong>.",
     checking_availability: "Checking availability…",
     err_pick_date_first: "Choose an arrival date in the calendar above.",
     err_dates_unavailable: "These dates were just booked by someone else. Please choose different ones.",
@@ -483,6 +488,7 @@ const LUZDOSOL_I18N = {
     footer_tag: "Book direct: the best rate, no commission",
     wa_intro_msg: "Hello! I'm interested in the LUZDOSOL apartment in Albufeira. Could you tell me about availability and the best rate?",
     wa_resa_greeting: "Hello! I'd like to book the LUZDOSOL apartment in Albufeira.",
+    wa_resa_paypal_greeting: "Hello! I'd like to book the LUZDOSOL apartment in Albufeira and pay my deposit via PayPal.",
     label_name: "Name", label_phone: "Phone", label_email: "Email", label_arrival: "Arrival", label_travelers: "Guests", label_message: "Message", label_tbd: "to be confirmed", nights_word: "nights", on_request: "On request",
   },
   es: {
@@ -682,6 +688,8 @@ const LUZDOSOL_I18N = {
     pay_deposit_label: "Señal 30%", pay_total_label: "Total",
     btn_stripe_pay: "Pagar y confirmar mi reserva",
     stripe_secure_note: "Pago seguro con Stripe: tarjeta, Google Pay, Apple Pay o Klarna (pago en varios plazos).",
+    btn_paypal: "Pagar una señal por PayPal",
+    paypal_note_html: "Señal pagada por transferencia PayPal a <strong>emouenguebienvenu@yahoo.fr</strong>.",
     checking_availability: "Comprobando disponibilidad…",
     err_pick_date_first: "Elige una fecha de llegada en el calendario de arriba.",
     err_dates_unavailable: "Estas fechas acaban de ser reservadas por otra persona. Elige otras, por favor.",
@@ -726,6 +734,7 @@ const LUZDOSOL_I18N = {
     footer_tag: "Reserva en directo: la mejor tarifa, sin comisión",
     wa_intro_msg: "¡Hola! Estoy interesado/a en el apartamento LUZDOSOL en Albufeira. ¿Podría indicarme la disponibilidad y la mejor tarifa?",
     wa_resa_greeting: "¡Hola! Quiero reservar el apartamento LUZDOSOL en Albufeira.",
+    wa_resa_paypal_greeting: "¡Hola! Quiero reservar el apartamento LUZDOSOL en Albufeira y pagar mi señal por PayPal.",
     label_name: "Nombre", label_phone: "Teléfono", label_email: "Email", label_arrival: "Llegada", label_travelers: "Viajeros", label_message: "Mensaje", label_tbd: "por confirmar", nights_word: "noches", on_request: "Consultar",
   },
   pt: {
@@ -925,6 +934,8 @@ const LUZDOSOL_I18N = {
     pay_deposit_label: "Sinal 30%", pay_total_label: "Total",
     btn_stripe_pay: "Pagar e confirmar a minha reserva",
     stripe_secure_note: "Pagamento seguro via Stripe: cartão, Google Pay, Apple Pay ou Klarna (pagamento em prestações).",
+    btn_paypal: "Pagar um sinal via PayPal",
+    paypal_note_html: "Sinal pago por transferência PayPal para <strong>emouenguebienvenu@yahoo.fr</strong>.",
     checking_availability: "A verificar disponibilidade…",
     err_pick_date_first: "Escolha uma data de chegada no calendário acima.",
     err_dates_unavailable: "Estas datas acabaram de ser reservadas por outra pessoa. Escolha outras, por favor.",
@@ -969,6 +980,7 @@ const LUZDOSOL_I18N = {
     footer_tag: "Reserve em direto: a melhor tarifa, sem comissão",
     wa_intro_msg: "Olá! Tenho interesse no apartamento LUZDOSOL em Albufeira. Pode indicar-me a disponibilidade e a melhor tarifa?",
     wa_resa_greeting: "Olá! Gostaria de reservar o apartamento LUZDOSOL em Albufeira.",
+    wa_resa_paypal_greeting: "Olá! Gostaria de reservar o apartamento LUZDOSOL em Albufeira e pagar o meu sinal via PayPal.",
     label_name: "Nome", label_phone: "Telefone", label_email: "Email", label_arrival: "Chegada", label_travelers: "Hóspedes", label_message: "Mensagem", label_tbd: "a definir", nights_word: "noites", on_request: "Sob consulta",
   },
 };
@@ -1001,17 +1013,29 @@ function applyLuzdosolLang(lang) {
     if (metaDesc) metaDesc.setAttribute('content', luzdosolT('meta_description'));
   }
 
+  // Garde-fou : si une clé de traduction manque (erreur humaine dans ce fichier),
+  // on ne touche pas au texte existant plutôt que d'afficher "undefined" au
+  // visiteur — et on prévient en console pour que ce soit facile à repérer.
+  function safeT(key) {
+    const val = luzdosolT(key);
+    if (val === undefined) { console.warn('[i18n] clé de traduction manquante :', key); return null; }
+    return val;
+  }
   document.querySelectorAll('[data-i18n]').forEach(el => {
-    el.textContent = luzdosolT(el.dataset.i18n);
+    const val = safeT(el.dataset.i18n);
+    if (val !== null) el.textContent = val;
   });
   document.querySelectorAll('[data-i18n-html]').forEach(el => {
-    el.innerHTML = luzdosolT(el.dataset.i18nHtml);
+    const val = safeT(el.dataset.i18nHtml);
+    if (val !== null) el.innerHTML = val;
   });
   document.querySelectorAll('[data-i18n-ph]').forEach(el => {
-    el.setAttribute('placeholder', luzdosolT(el.dataset.i18nPh));
+    const val = safeT(el.dataset.i18nPh);
+    if (val !== null) el.setAttribute('placeholder', val);
   });
   document.querySelectorAll('[data-i18n-aria]').forEach(el => {
-    el.setAttribute('aria-label', luzdosolT(el.dataset.i18nAria));
+    const val = safeT(el.dataset.i18nAria);
+    if (val !== null) el.setAttribute('aria-label', val);
   });
 
   const stayLabel = document.getElementById('stay-label');

@@ -483,6 +483,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const calLocale = () => (window.LUZDOSOL_LOCALE_MAP && window.LUZDOSOL_LOCALE_MAP[window.LUZDOSOL_LANG]) || 'fr-FR';
   function fmtDate(d) { return d.toLocaleDateString(calLocale(),{day:'numeric',month:'long'}); }
   function monthName(y,m) { const s=new Date(y,m,1).toLocaleDateString(calLocale(),{month:'long',year:'numeric'}); return s[0].toUpperCase()+s.slice(1); }
+  // Initiales des jours (L M M J V S D) traduites selon la langue active, au lieu
+  // d'être toujours en français — lundi 1er janvier 2024 sert juste de référence
+  // pour obtenir les 7 jours de la semaine dans l'ordre.
+  function weekdayLabels() {
+    const base = new Date(2024, 0, 1);
+    return Array.from({length:7}, (_, i) => {
+      const d = new Date(base); d.setDate(base.getDate() + i);
+      return d.toLocaleDateString(calLocale(), {weekday:'narrow'});
+    });
+  }
 
   function renderCalendar() {
     const cont = document.getElementById('cal-container');
@@ -497,7 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const total=new Date(y,m+1,0).getDate();
       html+=`<div><div style="text-align:center;font-weight:700;font-size:19px;margin-bottom:16px">${monthName(y,m)}</div>
         <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:8px">
-          ${['L','M','M','J','V','S','D'].map(d=>`<div style="text-align:center;font-size:11px;font-weight:700;color:#9aa7ad">${d}</div>`).join('')}
+          ${weekdayLabels().map(d=>`<div style="text-align:center;font-size:11px;font-weight:700;color:#9aa7ad">${d}</div>`).join('')}
         </div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px">`;
       for(let i=0;i<startDay;i++) html+='<div class="cal-day blank"></div>';
       for(let day=1;day<=total;day++){
@@ -664,6 +674,20 @@ document.addEventListener('DOMContentLoaded', () => {
     window.open(waUrl(`${t('wa_resa_greeting')}\n\n${t('label_name')} : ${v('f-prenom')} ${v('f-nom')}\n${t('label_phone')} : ${v('f-tel')}\n${t('label_email')} : ${v('f-email')}\n${t('label_arrival')} : ${v('f-date')||(arrival?fmtDate(parseKey(arrival)):t('label_tbd'))}\n${t('nights_word')} : ${nights}\n${t('label_travelers')} : ${v('f-voyageurs')}\n${t('label_message')} : ${v('f-msg')}`),'_blank');
   });
   document.getElementById('f-date')?.addEventListener('focus',function(){if(arrival)this.value=fmtDate(parseKey(arrival));});
+
+  /* --- ACOMPTE PAR PAYPAL (virement manuel, pas d'intégration Stripe) ---
+     Prévient l'hôte via WhatsApp avec les coordonnées du client, qui envoie
+     ensuite lui-même son acompte par PayPal à l'adresse indiquée sur la page. */
+  document.getElementById('btn-paypal')?.addEventListener('click',()=>{
+    const v=id=>document.getElementById(id)?.value||'';
+    const requiredIds=['f-prenom','f-nom','f-tel','f-email','f-date','f-voyageurs'];
+    for(const id of requiredIds){
+      const el=document.getElementById(id);
+      if(el && !el.checkValidity()){ el.reportValidity(); el.focus(); return; }
+    }
+    trackReservation(v);
+    window.open(waUrl(`${t('wa_resa_paypal_greeting')}\n\n${t('label_name')} : ${v('f-prenom')} ${v('f-nom')}\n${t('label_phone')} : ${v('f-tel')}\n${t('label_email')} : ${v('f-email')}\n${t('label_arrival')} : ${v('f-date')||(arrival?fmtDate(parseKey(arrival)):t('label_tbd'))}\n${t('nights_word')} : ${nights}\n${t('label_travelers')} : ${v('f-voyageurs')}\n${t('label_message')} : ${v('f-msg')}`),'_blank');
+  });
 
   /* --- PAIEMENT EN LIGNE (Stripe : carte, Google Pay, Apple Pay, Klarna) --- */
   document.getElementById('btn-stripe-pay')?.addEventListener('click', async ()=>{
