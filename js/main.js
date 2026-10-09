@@ -178,6 +178,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (burger && mobileMenu) {
     burger.addEventListener('click', () => {
       const opening = !mobileMenu.classList.contains('open');
+      // Photos de fond du menu : chargées seulement à la première ouverture
+      // (≈1 Mo économisé sur chaque page pour ceux qui n'ouvrent jamais le menu).
+      if (opening) mobileMenu.querySelectorAll('img[data-src]').forEach(img => { img.src = img.dataset.src; img.removeAttribute('data-src'); });
       burger.classList.toggle('open');
       mobileMenu.classList.toggle('open');
       document.body.style.overflow = opening ? 'hidden' : '';
@@ -328,6 +331,23 @@ document.addEventListener('DOMContentLoaded', () => {
       scanReveals();
     }
     tabBtns.forEach(b => b.addEventListener('click', () => activateTab(b.dataset.tab, true)));
+    // Liens internes (#calendrier, #reservation : bouton Réserver de la nav, menu
+    // mobile, barre du bas) : sans ça, l'ancre visait un onglet masqué et rien ne
+    // se passait quand on était déjà sur la page Tarifs.
+    const goToPanel = id => {
+      activateTab(id, true);
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    document.addEventListener('click', e => {
+      const a = e.target.closest('a[href*="#"]');
+      if (!a) return;
+      const url = new URL(a.getAttribute('href'), location.href);
+      if (url.pathname !== location.pathname) return;
+      const id = url.hash.slice(1);
+      if (![...panels].some(p => p.id === id)) return;
+      e.preventDefault();
+      goToPanel(id);
+    });
     const wanted = location.hash.slice(1);
     const initial = [...panels].some(p => p.id === wanted) ? wanted : (panels[0] && panels[0].id);
     if (initial) activateTab(initial, false);
@@ -674,6 +694,27 @@ document.addEventListener('DOMContentLoaded', () => {
     window.open(waUrl(`${t('wa_resa_greeting')}\n\n${t('label_name')} : ${v('f-prenom')} ${v('f-nom')}\n${t('label_phone')} : ${v('f-tel')}\n${t('label_email')} : ${v('f-email')}\n${t('label_arrival')} : ${v('f-date')||(arrival?fmtDate(parseKey(arrival)):t('label_tbd'))}\n${t('nights_word')} : ${nights}\n${t('label_travelers')} : ${v('f-voyageurs')}\n${t('label_message')} : ${v('f-msg')}`),'_blank');
   });
   document.getElementById('f-date')?.addEventListener('focus',function(){if(arrival)this.value=fmtDate(parseKey(arrival));});
+
+  /* --- "RÉSERVER CES DATES" (onglet Disponibilités) ---
+     Passe au formulaire avec les dates choisies déjà reprises, au lieu
+     d'ouvrir un WhatsApp générique qui perdait la sélection du calendrier. */
+  document.getElementById('btn-book-dates')?.addEventListener('click', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!arrival) {
+      const errEl = document.getElementById('nights-error');
+      if (errEl) {
+        errEl.textContent = t('err_pick_date_first');
+        errEl.classList.add('show');
+        errEl.classList.remove('shake'); void errEl.offsetWidth; errEl.classList.add('shake');
+      }
+      return;
+    }
+    updateDateInput();
+    document.querySelector('.tab-btn[data-tab="reservation"]')?.click();
+    document.getElementById('reservation')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(() => document.getElementById('f-prenom')?.focus({ preventScroll: true }), 500);
+  });
 
   /* --- ACOMPTE PAR PAYPAL (virement manuel, pas d'intégration Stripe) ---
      Prévient l'hôte via WhatsApp avec les coordonnées du client, qui envoie

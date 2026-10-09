@@ -9,11 +9,16 @@ class AutoCarousel {
     this.duration = opts.duration || 5000;
     this.i = 0;
     this.timer = null;
+    this.visible = false;
     this.build();
     this.show(0);
-    this.start();
+    // Le diaporama ne tourne que lorsqu'il est à l'écran (économise batterie et données).
+    new IntersectionObserver(([e]) => {
+      this.visible = e.isIntersecting;
+      if (this.visible && !this.el.classList.contains('paused')) this.start(); else this.stop();
+    }, { threshold: 0.15 }).observe(this.el);
     this.el.addEventListener('mouseenter', () => this.stop());
-    this.el.addEventListener('mouseleave', () => this.start());
+    this.el.addEventListener('mouseleave', () => { if (this.visible) this.start(); });
     // Retraduit les légendes (tag/description/indices) si la langue change en cours de visite.
     window.addEventListener('luzdosol-lang-change', () => {
       const wasPaused = this.el.classList.contains('paused');
@@ -27,7 +32,7 @@ class AutoCarousel {
     const t = (key, fallback) => (window.luzdosolT ? window.luzdosolT(key) : fallback);
     const slides = this.items.map((it, i) => `
       <button class="ac-slide" data-i="${i}" type="button" aria-label="${it.name}, ${L(it.desc)}">
-        <img src="assets/guide/${it.img}.webp" alt="${it.name}" loading="${i === 0 ? 'eager' : 'lazy'}">
+        <img ${i === 0 ? 'src' : 'data-src'}="assets/guide/${it.img}.webp" alt="${it.name}">
         <div class="ac-scrim"></div>
         <div class="ac-caption">
           <div class="ac-tag">${L(it.tag)}</div>
@@ -70,12 +75,18 @@ class AutoCarousel {
         setTimeout(() => { this.swiped = false; }, 300); // filet de sécurité si le clic fantôme ne survient pas
         this.go(this.i + (dx > 0 ? 1 : -1));
       }
-      if (!this.el.classList.contains('paused')) this.restart();
+      if (!this.el.classList.contains('paused') && this.visible) this.restart();
     }, { passive: true });
   }
   show(i) {
     this.i = (i + this.items.length) % this.items.length;
     this.slideEls.forEach((s, idx) => s.classList.toggle('active', idx === this.i));
+    // Chargement progressif : seulement la photo affichée et la suivante,
+    // au lieu de toutes les photos de tous les diaporamas dès l'ouverture.
+    [this.i, (this.i + 1) % this.items.length].forEach(idx => {
+      const img = this.slideEls[idx] && this.slideEls[idx].querySelector('img[data-src]');
+      if (img) { img.src = img.dataset.src; img.removeAttribute('data-src'); }
+    });
     this.dotEls.forEach((d, idx) => {
       d.classList.toggle('active', idx === this.i);
       d.classList.toggle('done', idx < this.i);
