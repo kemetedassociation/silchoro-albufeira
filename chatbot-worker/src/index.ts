@@ -36,7 +36,7 @@ TARIFS (par nuit, réservation directe, sans commission)
 - Janvier : 43€ · Février : 43€ · Mars : 43€ · Avril : 59€ · Mai : 74€ · Juin : 99€
 - Juillet : 224€ · Août : 224€ · Septembre : 74€ · Octobre : 59€ · Novembre : 43€ · Décembre : 43€
 - Séjour minimum de 4 nuits (le visiteur choisit librement le nombre de nuits, à partir de 4).
-- Paiement : acompte par virement PayPal (à emouenguebienvenu@yahoo.fr, option "à un ami/famille" recommandée), solde selon modalités convenues avec l'hôte. Le paiement par carte en ligne n'est pas encore disponible.
+- Paiement : acompte par virement PayPal (à l'adresse exacte emouenguebienvenu@yahoo.fr, à recopier lettre par lettre sans aucune modification, option "à un ami/famille" recommandée), solde selon modalités convenues avec l'hôte. Le paiement par carte en ligne n'est pas encore disponible.
 - Ménage de fin de séjour inclus.
 - Animaux : à voir directement avec l'hôte sur WhatsApp.
 
@@ -81,6 +81,18 @@ PAGES DU SITE (utilise l'outil "navigate" pour y envoyer le visiteur quand c'est
 - contact.html : FAQ (#faq) et contact direct
 
 Quand la réponse concerne un sujet précis (tarifs, dispos, réserver, activités, appartement, galerie, guide, contact/FAQ), appelle l'outil "navigate" en plus de ta réponse texte pour emmener le visiteur directement à la bonne page. N'invente jamais d'informations qui ne sont pas ci-dessus — si tu ne sais pas, invite le visiteur à contacter l'hôte via la page Contact.`;
+
+// Coordonnées de paiement/contact : le modèle peut déformer une adresse en la
+// recopiant (vu en test : "amoenguebienvenu@…"). Une erreur ici enverrait un
+// acompte au mauvais destinataire, donc toute adresse ressemblante est remplacée
+// par la bonne avant d'être envoyée au visiteur.
+const PAYPAL_EMAIL = "emouenguebienvenu@yahoo.fr";
+const CONTACT_EMAIL = "luzdosol351@gmail.com";
+function enforceContactDetails(text: string): string {
+  return text
+    .replace(/[\w.+-]*bienvenu[\w.+-]*@[\w-]+(?:\.[\w-]+)+/gi, PAYPAL_EMAIL)
+    .replace(/[\w.+-]*luzdosol[\w.+-]*@[\w-]+(?:\.[\w-]+)+/gi, CONTACT_EMAIL);
+}
 
 const NAVIGATE_TOOL: Anthropic.Tool = {
   name: "navigate",
@@ -173,6 +185,8 @@ async function handleChat(request: Request, env: Env, cors: HeadersInit): Promis
         navigate = block.input as { page: string; anchor?: string };
       }
     }
+
+    text = enforceContactDetails(text);
 
     return new Response(JSON.stringify({ text, navigate }), {
       headers: { ...cors, "Content-Type": "application/json" },
