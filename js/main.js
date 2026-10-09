@@ -211,6 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.style.overflow = '';
     };
     mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && mobileMenu.classList.contains('open')) closeMenu(); });
     document.getElementById('mm-close')?.addEventListener('click', closeMenu);
   }
 
@@ -237,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     function goTo(idx) {
-      cur = Math.max(0, Math.min(idx, total - 1));
+      cur = Math.max(0, Math.min(idx, total - perView));
       track.style.transform = `translateX(${-(cur * getSlideW())}px)`;
       dotsEl?.querySelectorAll('.apt-dot').forEach((d, i) => {
         d.classList.toggle('active', i === Math.floor(cur / perView));
@@ -374,6 +375,11 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       goToPanel(id);
     });
+    // Changement d'ancre sans clic (chatbot, bouton "précédent" du navigateur).
+    window.addEventListener('hashchange', () => {
+      const id = location.hash.slice(1);
+      if ([...panels].some(p => p.id === id)) goToPanel(id);
+    });
     const wanted = location.hash.slice(1);
     const initial = [...panels].some(p => p.id === wanted) ? wanted : (panels[0] && panels[0].id);
     if (initial) activateTab(initial, false);
@@ -449,11 +455,13 @@ document.addEventListener('DOMContentLoaded', () => {
   /* --- LIGHTBOX --- */
   const lb = document.querySelector('.lb');
   const lbImg = document.getElementById('lb-img');
-  document.querySelectorAll('.gallery-item').forEach(el => {
-    el.addEventListener('click', () => {
-      const img = el.querySelector('img');
-      if (img && lb && lbImg) { lbImg.src = img.src; lb.classList.add('on'); }
-    });
+  // Délégation : fonctionne aussi pour les galeries créées après coup
+  // (pages Activité, régénérées à chaque changement de langue).
+  document.addEventListener('click', e => {
+    const item = e.target.closest('.gallery-item');
+    if (!item) return;
+    const img = item.querySelector('img');
+    if (img && lb && lbImg) { lbImg.src = img.src; lbImg.alt = img.alt || ''; lb.classList.add('on'); }
   });
   const closeLB = () => lb?.classList.remove('on');
   document.querySelector('.lb-x')?.addEventListener('click', closeLB);
@@ -481,7 +489,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let calY = today.getFullYear(), calM = today.getMonth(), arrival = null, departure = null, rangeChosen = false;
   const occ = [];
   // Dates réellement occupées, synchronisées depuis Booking.com (voir .github/workflows/sync-booking-calendar.yml)
-  fetch('data/booked-dates.json').then(r => r.ok ? r.json() : null).then(d => {
+  if (document.getElementById('cal-container')) fetch('data/booked-dates.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(d => {
     if (d && Array.isArray(d.bookedDates)) {
       occ.length = 0;
       d.bookedDates.forEach(k => occ.push(k));
@@ -576,7 +584,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }).join('');
       el.hidden = false;
       el.innerHTML = `
-        <div class="cart-head"><b>${t('cart_title')} · ${stayRangeText()}</b>${id === 'form-cart' ? `<button type="button" class="cart-edit">${t('cart_edit')}</button>` : ''}</div>
+        <div class="cart-head"><b>${t('cart_title')} : ${stayRangeText()}</b>${id === 'form-cart' ? `<button type="button" class="cart-edit">${t('cart_edit')}</button>` : ''}</div>
         ${rows}
         <div class="cart-row cart-muted"><span>${t('cart_cleaning')}</span><span>${t('cart_included')}</span></div>
         <div class="cart-row cart-muted"><span>${t('cart_fees')}</span><span>${fmtEuros(0)}</span></div>
@@ -589,7 +597,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function stayRangeText() {
     const dep = currentDeparture();
     if (!arrival || !dep) return '';
-    return fmtDate(parseKey(arrival)) + ' → ' + fmtDate(dep) + ' · ' + nights + ' ' + t('nights_word');
+    return fmtDate(parseKey(arrival)) + ' → ' + fmtDate(dep) + ', ' + nights + ' ' + t('nights_word');
   }
   // Tarifs par mois (index 0 = janvier)
   const MONTH_PRICE = [43, 43, 43, 59, 74, 99, 224, 224, 74, 59, 43, 43];
@@ -603,6 +611,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   const calLocale = () => (window.LUZDOSOL_LOCALE_MAP && window.LUZDOSOL_LOCALE_MAP[window.LUZDOSOL_LANG]) || 'fr-FR';
   function fmtDate(d) { return d.toLocaleDateString(calLocale(),{day:'numeric',month:'long'}); }
+  // Avec l'année : pour les messages envoyés à l'hôte (une réservation pour
+  // l'été prochain doit être sans ambiguïté).
+  function fmtDateY(d) { return d.toLocaleDateString(calLocale(),{day:'numeric',month:'long',year:'numeric'}); }
   function monthName(y,m) { const s=new Date(y,m,1).toLocaleDateString(calLocale(),{month:'long',year:'numeric'}); return s[0].toUpperCase()+s.slice(1); }
   // Initiales des jours (L M M J V S D) traduites selon la langue active, au lieu
   // d'être toujours en français — lundi 1er janvier 2024 sert juste de référence
@@ -654,6 +665,7 @@ document.addEventListener('DOMContentLoaded', () => {
       html+='</div></div>';
     });
     cont.innerHTML=html;
+    syncPrevBtn();
     cont.querySelectorAll('[data-pick]').forEach(el=>{
       el.addEventListener('click',()=>pickDate(el.dataset.pick));
     });
@@ -716,7 +728,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updatePaymentAmounts();
     renderCart();
     if(!l||!p)return;
-    if(!arrival){l.textContent=t('stay_default');l.dataset.set='0';p.textContent='—';return;}
+    if(!arrival){l.textContent=t('stay_default');l.dataset.set='0';p.textContent='–';return;}
     const a=parseKey(arrival),dep=currentDeparture();
     const pr=nightlyPrice(a.getMonth());
     const titleEl=document.getElementById('stay-price-title'), depEl=document.getElementById('stay-deposit');
@@ -747,8 +759,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function updatePaymentAmounts(){
     const amt=computeAmounts();
     const elA=document.getElementById('amt-acompte'),elT=document.getElementById('amt-total');
-    if(elA)elA.textContent=amt?fmtEuros(amt.acompteCents):'—';
-    if(elT)elT.textContent=amt?fmtEuros(amt.totalCents):'—';
+    if(elA)elA.textContent=amt?fmtEuros(amt.acompteCents):'–';
+    if(elT)elT.textContent=amt?fmtEuros(amt.totalCents):'–';
   }
   function updateDateInput(){const i=document.getElementById('f-date');if(i)i.value=stayRangeText();}
 
@@ -778,7 +790,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if(parseInt(e.target.value,10)>=MIN_NIGHTS) hideNightsError();
   });
 
-  document.getElementById('cal-prev')?.addEventListener('click',()=>{calM--;if(calM<0){calM=11;calY--;}renderCalendar();});
+  // Pas de retour avant le mois en cours (dates passées non réservables).
+  function atCurrentMonth() { return calY < today.getFullYear() || (calY === today.getFullYear() && calM <= today.getMonth()); }
+  function syncPrevBtn() { const b = document.getElementById('cal-prev'); if (b) { b.disabled = atCurrentMonth(); b.style.opacity = b.disabled ? '.35' : ''; b.style.cursor = b.disabled ? 'default' : ''; } }
+  document.getElementById('cal-prev')?.addEventListener('click',()=>{ if (atCurrentMonth()) return; calM--;if(calM<0){calM=11;calY--;}renderCalendar();});
   document.getElementById('cal-next')?.addEventListener('click',()=>{calM++;if(calM>11){calM=0;calY++;}renderCalendar();});
   renderCalendar();
 
@@ -803,7 +818,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dep=a?new Date(a):null; if(dep)dep.setDate(a.getDate()+nights);
     const body=new URLSearchParams({
       prenom:v('f-prenom'),nom:v('f-nom'),email:v('f-email'),tel:v('f-tel'),
-      arrivee:a?fmtDate(a):'',depart:dep?fmtDate(dep):'',
+      arrivee:a?fmtDateY(a):'',depart:dep?fmtDateY(dep):'',
       arrivee_iso:a?isoKey(a):'',depart_iso:dep?isoKey(dep):'',
       nuits:nights,voyageurs:v('f-voyageurs')
     });
@@ -814,7 +829,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function resaMessage(greetingKey){
     const v=id=>document.getElementById(id)?.value||'';
     const a=parseKey(arrival), dep=currentDeparture(), amt=computeAmounts();
-    return `${t(greetingKey)}\n\n${t('label_name')} : ${v('f-prenom')} ${v('f-nom')}\n${t('label_phone')} : ${v('f-tel')}\n${t('label_email')} : ${v('f-email')}\n${t('label_arrival')} : ${fmtDate(a)}\n${t('label_departure')} : ${fmtDate(dep)}\n${t('nights_word').charAt(0).toUpperCase()+t('nights_word').slice(1)} : ${nights}\n${t('label_travelers')} : ${v('f-voyageurs')}\n${t('label_total')} : ${fmtEuros(amt.totalCents)}\n${t('label_deposit')} : ${fmtEuros(amt.acompteCents)}\n${t('label_message')} : ${v('f-msg')}`;
+    return `${t(greetingKey)}\n\n${t('label_name')} : ${v('f-prenom')} ${v('f-nom')}\n${t('label_phone')} : ${v('f-tel')}\n${t('label_email')} : ${v('f-email')}\n${t('label_arrival')} : ${fmtDateY(a)}\n${t('label_departure')} : ${fmtDateY(dep)}\n${t('nights_word').charAt(0).toUpperCase()+t('nights_word').slice(1)} : ${nights}\n${t('label_travelers')} : ${v('f-voyageurs')}\n${t('label_total')} : ${fmtEuros(amt.totalCents)}\n${t('label_deposit')} : ${fmtEuros(amt.acompteCents)}\n${t('label_message')} : ${v('f-msg')}`;
   }
   // Valide le formulaire ; sans dates complètes, renvoie vers le calendrier.
   function validateResa(){
@@ -877,7 +892,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const el=document.getElementById(id);
       if(el && !el.checkValidity()){ el.reportValidity(); el.focus(); return; }
     }
-    if(!arrival){ showStatus(t('err_pick_date_first')); return; }
+    if(!arrival || !currentDeparture()){ showStatus(t('err_pick_range_first')); return; }
 
     if(statusEl){statusEl.classList.remove('show');statusEl.textContent='';}
     const amountType=document.querySelector('input[name="payment-type"]:checked')?.value||'acompte';

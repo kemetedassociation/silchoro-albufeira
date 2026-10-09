@@ -1,7 +1,7 @@
 /* ============ LUZDOSOL : i18n FR/EN/ES/PT ============ */
 const LUZDOSOL_I18N = {
   fr: {
-    meta_title: "LUZDOSOL · Appartement de vacances à Albufeira, Portugal",
+    meta_title: "LUZDOSOL | Appartement de vacances à Albufeira, Portugal",
     meta_description: "Réservez votre appartement de vacances à Albufeira, Portugal. Résidence hôtelière LUZDOSOL, tarif direct sans commission de plateforme.",
     loader_msg: "Préparation de votre séjour à Albufeira…",
     nav_explore: "Explorer",
@@ -133,7 +133,7 @@ const LUZDOSOL_I18N = {
     act_h2_html: "Que faire à <span style=\"font-family:'Newsreader',serif;font-style:italic;font-weight:500\">Albufeira</span>",
     act_sub: "Plages dorées au pied des falaises, excursions en mer, vieille ville blanchie à la chaux et soirées animées : tout commence à quelques minutes de l'appartement.",
     act1_cat: "Plages", act1_title: "Les plus belles plages", act1_desc: "Praia da Oura, Falésia, Olhos de Água… des criques dorées entre falaises ocre et eaux turquoise.", act1_tag: "5 min à pied",
-    act2_cat: "En mer", act2_title: "Excursions en bateau & dauphins", act2_desc: "Partez explorer les grottes de Benagil et observez les dauphins au large de la côte algarvienne.", act2_tag: "10 min · Marina",
+    act2_cat: "En mer", act2_title: "Excursions en bateau & dauphins", act2_desc: "Partez explorer les grottes de Benagil et observez les dauphins au large de la côte algarvienne.", act2_tag: "10 min, Marina",
     act3_cat: "Nature", act3_title: "Couchers de soleil & promenades", act3_desc: "Balades le long de la côte au crépuscule, quand le ciel s'embrase au-dessus de l'Atlantique.", act3_tag: "Sur place",
     act4_cat: "Aventure", act4_title: "Grottes de Benagil & falaises", act4_desc: "Les formations rocheuses les plus célèbres d'Europe. Kayak, bateau ou SUP, à vous de choisir.", act4_tag: "20 min",
     act5_cat: "Sports", act5_title: "Sports nautiques & sensations", act5_desc: "Jet-ski, parasailing, surf, paddle : l'adrénaline de l'Atlantique à portée de main.", act5_tag: "5 min",
@@ -230,7 +230,7 @@ const LUZDOSOL_I18N = {
     faq5_q: "Combien de personnes peut accueillir l'appartement ?", faq5_a: "L'appartement est idéal pour les couples, les familles et les petits groupes d'amis. Indiquez votre nombre de voyageurs dans le formulaire.",
     faq6_q: "Les animaux sont-ils autorisés ?", faq6_a: "Contactez directement le propriétaire via WhatsApp pour toute demande concernant les animaux.",
     faq7_q: "Le ménage est-il compris ?", faq7_a: "Oui, le ménage de fin de séjour est inclus afin que vous profitiez pleinement de vos vacances sans souci.", faq8_q: "Quelle est la politique d'annulation ?", faq8_a: "Annulation gratuite jusqu'à 30 jours avant l'arrivée (remboursement intégral de l'acompte). Entre 30 et 7 jours avant l'arrivée, 50 % de l'acompte est remboursé. À moins de 7 jours, l'acompte n'est pas remboursable. Contactez l'hôte pour toute situation particulière.",
-    contact_host_role_html: "Votre hôte · LUZDOSOL",
+    contact_host_role_html: "Votre hôte chez LUZDOSOL",
     contact_h2_html: "Une question&nbsp;? Parlons-en.",
     contact_sub: "Réponse rapide et personnalisée. Le moyen le plus simple de réserver au meilleur tarif.",
     footer_desc: "Votre appartement de vacances à Albufeira. Réservez en direct, profitez du meilleur tarif.",
@@ -247,7 +247,7 @@ const LUZDOSOL_I18N = {
     label_name: "Nom", label_phone: "Téléphone", label_email: "Email", label_arrival: "Arrivée", label_travelers: "Voyageurs", label_message: "Message", label_tbd: "à définir", nights_word: "nuits", on_request: "Sur demande",
   },
   en: {
-    meta_title: "LUZDOSOL · Vacation apartment in Albufeira, Portugal",
+    meta_title: "LUZDOSOL | Vacation apartment in Albufeira, Portugal",
     meta_description: "Book your vacation apartment in Albufeira, Portugal. LUZDOSOL residence, direct rate with no platform commission.",
     loader_msg: "Preparing your stay in Albufeira…",
     nav_explore: "Explore",
@@ -379,7 +379,7 @@ const LUZDOSOL_I18N = {
     act_h2_html: "What to do in <span style=\"font-family:'Newsreader',serif;font-style:italic;font-weight:500\">Albufeira</span>",
     act_sub: "Golden beaches at the foot of cliffs, boat trips, the whitewashed old town and lively evenings: it all starts minutes from the apartment.",
     act1_cat: "Beaches", act1_title: "The most beautiful beaches", act1_desc: "Praia da Oura, Falésia, Olhos de Água… golden coves between ochre cliffs and turquoise waters.", act1_tag: "5 min walk",
-    act2_cat: "At sea", act2_title: "Boat trips & dolphins", act2_desc: "Go explore the Benagil caves and watch dolphins off the Algarve coast.", act2_tag: "10 min · Marina",
+    act2_cat: "At sea", act2_title: "Boat trips & dolphins", act2_desc: "Go explore the Benagil caves and watch dolphins off the Algarve coast.", act2_tag: "10 min, Marina",
     act3_cat: "Nature", act3_title: "Sunsets & walks", act3_desc: "Strolls along the coast at dusk, when the sky glows over the Atlantic.", act3_tag: "On site",
     act4_cat: "Adventure", act4_title: "Benagil caves & cliffs", act4_desc: "Europe's most famous rock formations. Kayak, boat or SUP, your choice.", act4_tag: "20 min",
     act5_cat: "Sports", act5_title: "Water sports & thrills", act5_desc: "Jet-ski, parasailing, surfing, paddleboarding: Atlantic adrenaline within reach.", act5_tag: "5 min",
@@ -477,7 +477,7 @@ const LUZDOSOL_I18N = {
     faq6_q: "Are pets allowed?", faq6_a: "Contact the owner directly via WhatsApp for any pet-related requests.",
     faq7_q: "Is cleaning included?", faq7_a: "Yes, end-of-stay cleaning is included so you can fully enjoy your vacation with no worries.",
     faq8_q: "What is the cancellation policy?", faq8_a: "Free cancellation up to 30 days before arrival (full deposit refund). Between 30 and 7 days before arrival, 50% of the deposit is refunded. Less than 7 days before arrival, the deposit is non-refundable. Contact the host for any special circumstances.",
-    contact_host_role_html: "Your host · LUZDOSOL",
+    contact_host_role_html: "Your host at LUZDOSOL",
     contact_h2_html: "A question? Let's talk.",
     contact_sub: "Fast, personal replies. The simplest way to book at the best rate.",
     footer_desc: "Your vacation apartment in Albufeira. Book direct, enjoy the best rate.",
@@ -494,7 +494,7 @@ const LUZDOSOL_I18N = {
     label_name: "Name", label_phone: "Phone", label_email: "Email", label_arrival: "Arrival", label_travelers: "Guests", label_message: "Message", label_tbd: "to be confirmed", nights_word: "nights", on_request: "On request",
   },
   es: {
-    meta_title: "LUZDOSOL · Apartamento vacacional en Albufeira, Portugal",
+    meta_title: "LUZDOSOL | Apartamento vacacional en Albufeira, Portugal",
     meta_description: "Reserva tu apartamento vacacional en Albufeira, Portugal. Residencia hotelera LUZDOSOL, tarifa directa sin comisión de plataforma.",
     loader_msg: "Preparando tu estancia en Albufeira…",
     nav_explore: "Explorar",
@@ -626,7 +626,7 @@ const LUZDOSOL_I18N = {
     act_h2_html: "Qué hacer en <span style=\"font-family:'Newsreader',serif;font-style:italic;font-weight:500\">Albufeira</span>",
     act_sub: "Playas doradas al pie de los acantilados, excursiones en barco, el casco antiguo encalado y noches animadas: todo empieza a pocos minutos del apartamento.",
     act1_cat: "Playas", act1_title: "Las playas más bonitas", act1_desc: "Praia da Oura, Falésia, Olhos de Água… calas doradas entre acantilados ocres y aguas turquesas.", act1_tag: "5 min a pie",
-    act2_cat: "En el mar", act2_title: "Excursiones en barco y delfines", act2_desc: "Explora las cuevas de Benagil y observa delfines frente a la costa del Algarve.", act2_tag: "10 min · Marina",
+    act2_cat: "En el mar", act2_title: "Excursiones en barco y delfines", act2_desc: "Explora las cuevas de Benagil y observa delfines frente a la costa del Algarve.", act2_tag: "10 min, Marina",
     act3_cat: "Naturaleza", act3_title: "Atardeceres y paseos", act3_desc: "Paseos por la costa al atardecer, cuando el cielo se enciende sobre el Atlántico.", act3_tag: "En el lugar",
     act4_cat: "Aventura", act4_title: "Cuevas de Benagil y acantilados", act4_desc: "Las formaciones rocosas más famosas de Europa. Kayak, barco o SUP, tú eliges.", act4_tag: "20 min",
     act5_cat: "Deportes", act5_title: "Deportes acuáticos y adrenalina", act5_desc: "Moto de agua, parasailing, surf, paddle: la adrenalina del Atlántico al alcance de tu mano.", act5_tag: "5 min",
@@ -724,7 +724,7 @@ const LUZDOSOL_I18N = {
     faq6_q: "¿Se admiten mascotas?", faq6_a: "Contacta directamente con el propietario por WhatsApp para cualquier consulta sobre mascotas.",
     faq7_q: "¿La limpieza está incluida?", faq7_a: "Sí, la limpieza final está incluida para que disfrutes de tus vacaciones sin preocupaciones.",
     faq8_q: "¿Cuál es la política de cancelación?", faq8_a: "Cancelación gratuita hasta 30 días antes de la llegada (reembolso íntegro de la señal). Entre 30 y 7 días antes de la llegada, se reembolsa el 50% de la señal. A menos de 7 días, la señal no es reembolsable. Contacta con el anfitrión para cualquier situación particular.",
-    contact_host_role_html: "Tu anfitrión · LUZDOSOL",
+    contact_host_role_html: "Tu anfitrión en LUZDOSOL",
     contact_h2_html: "¿Alguna pregunta? Hablemos.",
     contact_sub: "Respuesta rápida y personalizada. La forma más sencilla de reservar al mejor precio.",
     footer_desc: "Tu apartamento vacacional en Albufeira. Reserva en directo y disfruta de la mejor tarifa.",
@@ -741,7 +741,7 @@ const LUZDOSOL_I18N = {
     label_name: "Nombre", label_phone: "Teléfono", label_email: "Email", label_arrival: "Llegada", label_travelers: "Viajeros", label_message: "Mensaje", label_tbd: "por confirmar", nights_word: "noches", on_request: "Consultar",
   },
   pt: {
-    meta_title: "LUZDOSOL · Apartamento de férias em Albufeira, Portugal",
+    meta_title: "LUZDOSOL | Apartamento de férias em Albufeira, Portugal",
     meta_description: "Reserve o seu apartamento de férias em Albufeira, Portugal. Residência hoteleira LUZDOSOL, tarifa direta sem comissão de plataforma.",
     loader_msg: "A preparar a sua estadia em Albufeira…",
     nav_explore: "Explorar",
@@ -873,7 +873,7 @@ const LUZDOSOL_I18N = {
     act_h2_html: "O que fazer em <span style=\"font-family:'Newsreader',serif;font-style:italic;font-weight:500\">Albufeira</span>",
     act_sub: "Praias douradas ao pé das falésias, passeios de barco, o centro histórico caiado de branco e noites animadas: tudo começa a poucos minutos do apartamento.",
     act1_cat: "Praias", act1_title: "As praias mais bonitas", act1_desc: "Praia da Oura, Falésia, Olhos de Água… enseadas douradas entre falésias ocre e águas turquesa.", act1_tag: "5 min a pé",
-    act2_cat: "No mar", act2_title: "Passeios de barco & golfinhos", act2_desc: "Explore as grutas de Benagil e observe golfinhos ao largo da costa algarvia.", act2_tag: "10 min · Marina",
+    act2_cat: "No mar", act2_title: "Passeios de barco & golfinhos", act2_desc: "Explore as grutas de Benagil e observe golfinhos ao largo da costa algarvia.", act2_tag: "10 min, Marina",
     act3_cat: "Natureza", act3_title: "Pôr do sol & passeios", act3_desc: "Passeios ao longo da costa ao entardecer, quando o céu se incendeia sobre o Atlântico.", act3_tag: "No local",
     act4_cat: "Aventura", act4_title: "Grutas de Benagil & falésias", act4_desc: "As formações rochosas mais famosas da Europa. Caiaque, barco ou SUP, a escolha é sua.", act4_tag: "20 min",
     act5_cat: "Desportos", act5_title: "Desportos aquáticos & adrenalina", act5_desc: "Mota de água, parasailing, surf, paddle: a adrenalina do Atlântico ao seu alcance.", act5_tag: "5 min",
@@ -971,7 +971,7 @@ const LUZDOSOL_I18N = {
     faq6_q: "Os animais são permitidos?", faq6_a: "Contacte diretamente o proprietário pelo WhatsApp para qualquer pedido relacionado com animais.",
     faq7_q: "A limpeza está incluída?", faq7_a: "Sim, a limpeza final está incluída para que aproveite as suas férias sem preocupações.",
     faq8_q: "Qual é a política de cancelamento?", faq8_a: "Cancelamento gratuito até 30 dias antes da chegada (reembolso integral do sinal). Entre 30 e 7 dias antes da chegada, é reembolsado 50% do sinal. A menos de 7 dias, o sinal não é reembolsável. Contacte o anfitrião para qualquer situação particular.",
-    contact_host_role_html: "O seu anfitrião · LUZDOSOL",
+    contact_host_role_html: "O seu anfitrião no LUZDOSOL",
     contact_h2_html: "Alguma pergunta? Vamos falar.",
     contact_sub: "Resposta rápida e personalizada. A forma mais simples de reservar ao melhor preço.",
     footer_desc: "O seu apartamento de férias em Albufeira. Reserve em direto e desfrute da melhor tarifa.",
@@ -1002,7 +1002,7 @@ window.luzdosolT = luzdosolT;
 function applyLuzdosolLang(lang) {
   if (!LUZDOSOL_I18N[lang]) return;
   window.LUZDOSOL_LANG = lang;
-  localStorage.setItem('luzdosol_lang', lang);
+  try { localStorage.setItem('luzdosol_lang', lang); } catch (e) { /* navigation privée : pas de mémorisation */ }
   document.documentElement.lang = lang;
 
   // Ne touche au <title>/meta description que sur l'accueil : ce sont les seules
@@ -1054,7 +1054,8 @@ function applyLuzdosolLang(lang) {
 window.applyLuzdosolLang = applyLuzdosolLang;
 
 document.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem('luzdosol_lang');
+  let saved = null;
+  try { saved = localStorage.getItem('luzdosol_lang'); } catch (e) { saved = null; }
   const browserLang = (navigator.language || 'fr').slice(0, 2);
   const initial = saved || (LUZDOSOL_I18N[browserLang] ? browserLang : 'fr');
   applyLuzdosolLang(initial);

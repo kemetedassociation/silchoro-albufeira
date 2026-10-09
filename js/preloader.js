@@ -9,7 +9,7 @@
 class FramePreloader {
   constructor() {
     this.cache        = new Map();  // url → HTMLImageElement
-    this.loading      = new Set();  // urls currently fetching
+    this.loading      = new Map();  // url → pending Promise
     this.totalFrames  = 0;
     this.loadedFrames = 0;
     this.onProgress   = null;
@@ -34,15 +34,8 @@ class FramePreloader {
 
   _loadOne(url) {
     if (this.cache.has(url))   return Promise.resolve(this.cache.get(url));
-    if (this.loading.has(url)) {
-      return new Promise(res => {
-        const poll = setInterval(() => {
-          if (this.cache.has(url)) { clearInterval(poll); res(this.cache.get(url)); }
-        }, 16);
-      });
-    }
-    this.loading.add(url);
-    return new Promise((resolve, reject) => {
+    if (this.loading.has(url)) return this.loading.get(url);
+    const p = new Promise((resolve, reject) => {
       const img    = new Image();
       img.decoding = 'async';
       img.onload = () => {
@@ -66,6 +59,8 @@ class FramePreloader {
       };
       img.src = url;
     });
+    this.loading.set(url, p);
+    return p;
   }
 
   async _loadBatch(urls, concurrency = 8) {

@@ -44,7 +44,17 @@
 
   // Exposé pour le chatbot (js/chatbot.js) : navigue vers une page du site
   // avec la même transition animée qu'un clic sur un lien interne.
-  window.luzdosolNavigate = function (href) { playOut(href); };
+  window.luzdosolNavigate = function (href) {
+    // Même page (ex. tarifs.html#reservation depuis tarifs.html) : pas de
+    // transition, sinon l'écran de chargement resterait affiché sans rechargement.
+    let url;
+    try { url = new URL(href, location.href); } catch (e) { return; }
+    if (url.pathname === location.pathname) {
+      if (url.hash) { location.hash = url.hash; window.dispatchEvent(new HashChangeEvent('hashchange')); }
+      return;
+    }
+    playOut(url.href);
+  };
 
   document.addEventListener('click', (e) => {
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;

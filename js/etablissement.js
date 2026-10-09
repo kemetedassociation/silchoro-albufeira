@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function render() {
     if (heroCarouselTimer) { clearInterval(heroCarouselTimer); heroCarouselTimer = null; }
     const name = L(item.name);
-    document.title = name + ' · ' + t('nav_guide', 'Guide du séjour') + ' · LUZDOSOL';
+    document.title = name + ' | ' + t('nav_guide', 'Guide du séjour') + ' | LUZDOSOL';
 
     const heroImg = document.getElementById('est-hero-img');
     if (heroImg) {
@@ -82,7 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Carte intégrée (pas besoin de clé API pour ce format d'URL "embed").
     const mapFrame = document.getElementById('est-map-frame');
-    if (mapFrame) mapFrame.src = 'https://www.google.com/maps?q=' + encodeURIComponent(mapsQuery) + '&output=embed';
+    const mapSrc = 'https://www.google.com/maps?q=' + encodeURIComponent(mapsQuery) + '&output=embed';
+    if (mapFrame && mapFrame.getAttribute('src') !== mapSrc) mapFrame.src = mapSrc;
 
     const highlightsEl = document.getElementById('est-highlights');
     if (highlightsEl && item.highlights) {
@@ -128,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const creditsEl = document.getElementById('est-dishes-credits');
         if (creditsEl && typeof GUIDE_DISH_CREDITS !== 'undefined') {
-          creditsEl.textContent = t('est_photo_credits', 'Crédits photos : ') + GUIDE_DISH_CREDITS.map(c => c.credit).join(' · ');
+          creditsEl.textContent = t('est_photo_credits', 'Crédits photos : ') + GUIDE_DISH_CREDITS.map(c => c.credit).join(', ');
         }
       }
     }

@@ -24,7 +24,7 @@ const DEFAULT_ALLOWED_ORIGINS = [
 
 const SYSTEM_PROMPT = `Tu es l'assistant de conciergerie du site LUZDOSOL, une résidence hôtelière à Albufeira (Algarve, Portugal) proposant un appartement de vacances en réservation directe (sans commission de plateforme).
 
-Réponds toujours dans la langue du visiteur (français par défaut). Sois chaleureux, concis (3-5 phrases maximum), précis, et rassurant. N'utilise jamais de tiret long (—) ni d'emoji dans tes réponses : écris avec une ponctuation simple et naturelle.
+Réponds toujours dans la langue du visiteur (français par défaut). Sois chaleureux, concis (3-5 phrases maximum), précis, et rassurant. N'utilise jamais de tiret long (—) ni d'emoji dans tes réponses : écris avec une ponctuation simple et naturelle. Les prix affichés sont des prix finaux TTC, ménage inclus, sans frais cachés : n'écris jamais "HT". N'annonce pas ce que tu vas faire ("je vais vérifier..."), réponds directement.
 
 INFORMATIONS SUR LE LOGEMENT
 - Appartement lumineux, entièrement meublé, dans la résidence LUZDOSOL à Albufeira.
@@ -156,7 +156,14 @@ async function handleChat(request: Request, env: Env, cors: HeadersInit): Promis
     });
   }
 
-  const messages = (body.messages || []).slice(-10); // borne l'historique envoyé
+  // Historique borné (10 derniers messages, 1500 caractères chacun), rôles
+  // vérifiés et premier message toujours "user" : évite qu'un appel détourné
+  // fasse exploser la consommation de l'API ou provoque une erreur.
+  const messages = (Array.isArray(body.messages) ? body.messages : [])
+    .filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string" && m.content.trim())
+    .slice(-10)
+    .map((m) => ({ role: m.role, content: m.content.slice(0, 1500) }));
+  while (messages.length && messages[0].role !== "user") messages.shift();
   if (!messages.length) {
     return new Response(JSON.stringify({ error: "messages requis" }), {
       status: 400,
@@ -183,6 +190,32 @@ async function handleChat(request: Request, env: Env, cors: HeadersInit): Promis
         text += block.text;
       } else if (block.type === "tool_use" && block.name === "navigate") {
         navigate = block.input as { page: string; anchor?: string };
+      }
+    }
+
+    // Le modèle s'arrête parfois sur l'appel "navigate" sans écrire de réponse :
+    // on lui renvoie le résultat de l'outil pour obtenir le texte au visiteur.
+    if (!text.trim() && response.stop_reason === "tool_use") {
+      const toolUse = response.content.find((b) => b.type === "tool_use");
+      if (toolUse && toolUse.type === "tool_use") {
+        const followUp = await client.messages.create({
+          model: "claude-haiku-4-5",
+          max_tokens: 1024,
+          system: SYSTEM_PROMPT,
+          tools: [NAVIGATE_TOOL],
+          tool_choice: { type: "none" },
+          messages: [
+            ...messages.map((m) => ({ role: m.role, content: m.content })),
+            { role: "assistant" as const, content: response.content },
+            {
+              role: "user" as const,
+              content: [{ type: "tool_result" as const, tool_use_id: toolUse.id, content: "Page ouverte pour le visiteur. Réponds maintenant à sa question en texte." }],
+            },
+          ],
+        });
+        for (const block of followUp.content) {
+          if (block.type === "text") text += block.text;
+        }
       }
     }
 
@@ -301,8 +334,10 @@ async function handleCheckout(request: Request, env: Env, cors: HeadersInit): Pr
   }
   const arrivee_iso = body.arrivee_iso;
   const depart_iso = isoAddDays(arrivee_iso, n);
-  const nightly = MONTH_PRICE[isoMonthIndex(arrivee_iso)] ?? 0;
-  const totalCents = Math.round(n * nightly * 100);
+  // Même calcul que le panier du site : chaque nuit au tarif de son propre mois.
+  let total = 0;
+  for (let i = 0; i < n; i++) total += MONTH_PRICE[isoMonthIndex(isoAddDays(arrivee_iso, i))] ?? 0;
+  const totalCents = Math.round(total * 100);
   const type: "acompte" | "total" = amountType === "total" ? "total" : "acompte";
   const amountCents = type === "total" ? totalCents : Math.round(totalCents * DEPOSIT_RATE);
 
@@ -423,6 +458,16 @@ export default {
 
     if (request.method === "OPTIONS") {
       return new Response(null, { headers: cors });
+    }
+
+    // Seul le site LUZDOSOL peut utiliser le chatbot et le paiement (l'API
+    // Anthropic est payante : on refuse les appels venant d'ailleurs).
+    const allowed = env.ALLOWED_ORIGIN ? [env.ALLOWED_ORIGIN, ...DEFAULT_ALLOWED_ORIGINS] : DEFAULT_ALLOWED_ORIGINS;
+    if (request.method === "POST" && (!origin || !allowed.includes(origin))) {
+      return new Response(JSON.stringify({ error: "origine_non_autorisee" }), {
+        status: 403,
+        headers: { ...cors, "Content-Type": "application/json" },
+      });
     }
 
     if (url.pathname === "/availability") return handleAvailability(request, env, cors);

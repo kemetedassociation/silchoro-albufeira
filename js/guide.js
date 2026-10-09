@@ -17,6 +17,19 @@ class AutoCarousel {
       this.visible = e.isIntersecting;
       if (this.visible && !this.el.classList.contains('paused')) this.start(); else this.stop();
     }, { threshold: 0.15 }).observe(this.el);
+    /* Défilement latéral au doigt (mobile) : attaché une seule fois (pas dans
+       build(), sinon chaque changement de langue doublait le geste). */
+    let tx = 0;
+    this.el.addEventListener('touchstart', e => { tx = e.touches[0].clientX; this.stop(); }, { passive: true });
+    this.el.addEventListener('touchend', e => {
+      const dx = tx - e.changedTouches[0].clientX;
+      if (Math.abs(dx) > 40) {
+        this.swiped = true;
+        setTimeout(() => { this.swiped = false; }, 300); // filet de sécurité si le clic fantôme ne survient pas
+        this.go(this.i + (dx > 0 ? 1 : -1));
+      }
+      if (!this.el.classList.contains('paused') && this.visible) this.restart();
+    }, { passive: true });
     this.el.addEventListener('mouseenter', () => this.stop());
     this.el.addEventListener('mouseleave', () => { if (this.visible) this.start(); });
     // Retraduit les légendes (tag/description/indices) si la langue change en cours de visite.
@@ -65,18 +78,6 @@ class AutoCarousel {
       if (this.el.classList.contains('paused')) this.stop(); else this.restart();
     }));
 
-    /* Défilement latéral au doigt (mobile) pour changer d'image */
-    let tx = 0;
-    this.el.addEventListener('touchstart', e => { tx = e.touches[0].clientX; this.stop(); }, { passive: true });
-    this.el.addEventListener('touchend', e => {
-      const dx = tx - e.changedTouches[0].clientX;
-      if (Math.abs(dx) > 40) {
-        this.swiped = true;
-        setTimeout(() => { this.swiped = false; }, 300); // filet de sécurité si le clic fantôme ne survient pas
-        this.go(this.i + (dx > 0 ? 1 : -1));
-      }
-      if (!this.el.classList.contains('paused') && this.visible) this.restart();
-    }, { passive: true });
   }
   show(i) {
     this.i = (i + this.items.length) % this.items.length;
@@ -141,65 +142,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 150);
   });
 
-  /* --- Progress bar --- */
-  const progressBar = document.querySelector('.st-progress');
-  window.addEventListener('scroll', () => {
-    if (!progressBar) return;
-    const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight);
-    progressBar.style.transform = `scaleX(${pct})`;
-  }, { passive: true });
-
-  /* --- Reveal on scroll --- */
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  // Barre de progression, apparitions au défilement, boutons magnétiques et
+  // curseur sont déjà gérés par js/main.js (chargé sur cette page) : on ne
+  // relie ici le curseur qu'aux éléments des diaporamas, créés après main.js.
+  const ring = document.querySelector('.cursor-ring');
+  const dot = document.querySelector('.cursor-dot');
+  if (!isMobile && ring && dot) {
+    document.querySelectorAll('.ac-dot,.ac-arrow,.ac-slide').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        ring.style.width = '62px'; ring.style.height = '62px';
+        ring.style.borderColor = 'rgba(25,182,201,.6)';
+        dot.style.width = '5px'; dot.style.height = '5px';
+      });
+      el.addEventListener('mouseleave', () => {
+        ring.style.width = '40px'; ring.style.height = '40px';
+        ring.style.borderColor = 'rgba(10,92,134,.35)';
+        dot.style.width = '9px'; dot.style.height = '9px';
+      });
     });
-  }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
-  function scanReveals() {
-    document.querySelectorAll('.reveal,.reveal-sc,.reveal-l,.reveal-r')
-      .forEach(el => { if (!el.dataset.io) { el.dataset.io = '1'; io.observe(el); } });
-  }
-  scanReveals(); setTimeout(scanReveals, 300);
-
-  /* --- Magnetic buttons (desktop) --- */
-  if (!isMobile) {
-    document.querySelectorAll('[data-magnetic]').forEach(el => {
-      el.addEventListener('mousemove', ev => {
-        const r = el.getBoundingClientRect();
-        el.style.transform = `translate(${(ev.clientX - r.left - r.width / 2) * 0.28}px,${(ev.clientY - r.top - r.height / 2) * 0.36}px) scale(1.04)`;
-      });
-      el.addEventListener('mouseleave', () => { el.style.transform = ''; });
-    });
-  }
-
-  /* --- Custom cursor (desktop) --- */
-  if (!isMobile) {
-    const dot = document.querySelector('.cursor-dot');
-    const ring = document.querySelector('.cursor-ring');
-    if (dot && ring) {
-      let rx = 0, ry = 0, dx = 0, dy = 0;
-      window.addEventListener('mousemove', e => {
-        dx = e.clientX; dy = e.clientY;
-        dot.style.left = dx + 'px'; dot.style.top = dy + 'px';
-      });
-      (function loop() {
-        rx += (dx - rx) * 0.16; ry += (dy - ry) * 0.16;
-        ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
-        requestAnimationFrame(loop);
-      })();
-      document.querySelectorAll('a,button,.lift,[data-magnetic],.ac-dot,.ac-arrow,.svc-card').forEach(el => {
-        el.addEventListener('mouseenter', () => {
-          ring.style.width = '62px'; ring.style.height = '62px';
-          ring.style.borderColor = 'rgba(25,182,201,.6)';
-          dot.style.width = '5px'; dot.style.height = '5px';
-        });
-        el.addEventListener('mouseleave', () => {
-          ring.style.width = '40px'; ring.style.height = '40px';
-          ring.style.borderColor = 'rgba(10,92,134,.35)';
-          dot.style.width = '9px'; dot.style.height = '9px';
-        });
-      });
-    }
   }
 
   /* --- Active section highlight in the guide sub-nav --- */

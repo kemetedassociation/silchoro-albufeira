@@ -30,7 +30,9 @@ def parse_events(ics_text):
     events = []
     current = {}
     in_event = False
-    for raw_line in ics_text.splitlines():
+    # RFC 5545: a line starting with a space or tab continues the previous one
+    unfolded = ics_text.replace("\r\n ", "").replace("\r\n\t", "").replace("\n ", "").replace("\n\t", "")
+    for raw_line in unfolded.splitlines():
         line = raw_line.strip()
         if line == "BEGIN:VEVENT":
             in_event = True

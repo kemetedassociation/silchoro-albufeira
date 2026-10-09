@@ -63,7 +63,9 @@
   document.body.appendChild(panel);
 
   const TEASER_KEY = 'luzdosol_cb_teaser_seen';
-  if (!sessionStorage.getItem(TEASER_KEY)) {
+  let teaserSeen = false;
+  try { teaserSeen = !!sessionStorage.getItem(TEASER_KEY); } catch (e) { teaserSeen = false; }
+  if (!teaserSeen) {
     setTimeout(() => {
       if (open) return;
       teaser.classList.add('show');
@@ -130,6 +132,7 @@
       const data = await res.json();
       hideTyping();
       if (data.error) {
+        history.pop(); // la question sans réponse ne doit pas fausser la suite de la conversation
         addBubbleMsg('assistant', t('cb_error_technical', "Désolé, je rencontre un souci technique. Contactez-nous directement via la page Contact."));
       } else {
         addBubbleMsg('assistant', data.text || '…', data.navigate);
@@ -137,6 +140,7 @@
       }
     } catch (err) {
       hideTyping();
+      history.pop();
       addBubbleMsg('assistant', t('cb_error_connection', "Connexion impossible pour le moment. Contactez-nous via WhatsApp ou la page Contact."));
     }
     sending = false;
@@ -172,6 +176,7 @@
   }
 
   bubble.addEventListener('click', () => togglePanel());
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && open) togglePanel(false); });
   panel.querySelector('.cb-close').addEventListener('click', () => togglePanel(false));
 
   // Rafraîchit le texte statique (bulle, en-tête, placeholder, suggestions) si la

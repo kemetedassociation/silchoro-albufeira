@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const data = ACTIVITE_DATA[cat] || ACTIVITE_DATA.plages;
 
   function render() {
-    document.title = L(data.title) + ' · Albufeira · LUZDOSOL';
+    document.title = L(data.title) + ' | Albufeira | LUZDOSOL';
 
     const heroImg = document.getElementById('act-hero-img');
     if (heroImg) heroImg.src = 'assets/images/' + data.hero;
@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (galleryEl) {
       galleryEl.innerHTML = data.gallery.map(img => `
         <div class="reveal reveal-sc lift gallery-item" style="border-radius:18px;overflow:hidden;height:260px;box-shadow:0 14px 34px rgba(13,36,56,.08);cursor:pointer">
-          <img src="assets/images/${img}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">
+          <img src="assets/images/${img}" alt="${L(data.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">
         </div>`).join('');
       galleryEl.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
     }
@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const linksEl = document.getElementById('act-links');
     if (linksEl && data.links) {
       linksEl.innerHTML = data.links.map(l =>
-        `<a href="${l.href}" class="magnetic" data-magnetic style="background:#fff;color:var(--accent);border:1px solid #cfe4e8;padding:13px 24px;border-radius:40px;font-weight:700;font-size:14px">${L(l.label)}</a>`
+        `<a href="${l.href}" class="magnetic" data-magnetic style="background:#fff;color:var(--accent);border:1px solid #cfe4e8;padding:13px 24px;border-radius:999px;font-weight:700;font-size:14px">${L(l.label)}</a>`
       ).join('');
     }
   }
