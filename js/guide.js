@@ -107,7 +107,7 @@ class MiniCarousel {
     this.images = images;
     this.duration = opts.duration || 2600;
     this.i = 0;
-    el.innerHTML = images.map((img, i) => `<div class="mini-ac-slide${i === 0 ? ' active' : ''}"><img src="assets/guide/${img}.webp" alt="" loading="lazy"></div>`).join('');
+    el.innerHTML = images.map((img, i) => `<div class="mini-ac-slide${i === 0 ? ' active' : ''}"><img src="assets/guide/sm/${img}.webp" alt="" loading="lazy"></div>`).join('');
     this.slideEls = Array.from(el.querySelectorAll('.mini-ac-slide'));
     setInterval(() => {
       this.i = (this.i + 1) % this.images.length;

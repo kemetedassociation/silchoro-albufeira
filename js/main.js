@@ -84,9 +84,13 @@ document.addEventListener('DOMContentLoaded', () => {
   /* --- PRELOADER + SCENE CONFIG --- */
   const preloader = new FramePreloader();
 
+  // Mobile : une image sur deux (42 au lieu de 84 par séquence) — le défilement y
+  // est deux fois plus court, l'animation reste fluide et on divise les données par 2.
+  const SEQ_STRIDE = isMobile ? 2 : FRAME_STRIDE;
+  const SEQ_COUNT  = isMobile ? Math.ceil(FRAME_COUNT / 2) : FRAME_COUNT;
   const allSeqs = [
     ...STANDARD_SCENES,
-  ].map(s => ({ ...s, count: FRAME_COUNT, stride: FRAME_STRIDE }));
+  ].map(s => ({ ...s, count: SEQ_COUNT, stride: SEQ_STRIDE }));
 
   const controllerScenes = SCENE_CONFIG.map(s => {
     if (s.type === 'multi-seq') {
@@ -95,15 +99,15 @@ document.addEventListener('DOMContentLoaded', () => {
         totalScrollHeight: Math.round(s.totalScrollHeight * (isMobile ? MOB_SCROLL : 1)),
         sequences: s.sequences.map(seq => ({
           ...seq,
-          count : FRAME_COUNT,
-          stride: FRAME_STRIDE,
+          count : SEQ_COUNT,
+          stride: SEQ_STRIDE,
         })),
       };
     }
     return {
       ...s,
-      count       : FRAME_COUNT,
-      stride      : FRAME_STRIDE,
+      count       : SEQ_COUNT,
+      stride      : SEQ_STRIDE,
       scrollHeight: Math.round((s.scrollHeight || 3000) * (isMobile ? MOB_SCROLL : 1)),
     };
   });
@@ -145,10 +149,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const num = document.getElementById('loader-pct');
     if (bar) bar.style.width = pct + '%';
     if (num) num.textContent = Math.round(pct) + ' %';
-    if (pct >= 5) dismissLoader(); // dismiss early once loading starts flowing
   };
 
-  preloader.load(allSeqs);
+  // L'écran d'intro se ferme dès que la page elle-même est prête.
+  if (document.readyState === 'complete') setTimeout(dismissLoader, 300);
+  else window.addEventListener('load', () => setTimeout(dismissLoader, 300));
+
+  // Les ~5 Mo d'images de l'animation ne sont téléchargés que lorsque le
+  // visiteur approche de la section (un peu avant d'y arriver), et plus
+  // au chargement de la page : l'accueil s'affiche beaucoup plus vite.
+  let framesStarted = false;
+  const startFrames = () => { if (framesStarted) return; framesStarted = true; preloader.load(allSeqs); };
+  const firstScene = document.getElementById('st-wrap-' + (STANDARD_SCENES[0] && STANDARD_SCENES[0].id));
+  if (firstScene && 'IntersectionObserver' in window) {
+    const fio = new IntersectionObserver(entries => {
+      if (entries.some(e => e.isIntersecting)) { fio.disconnect(); startFrames(); }
+    }, { rootMargin: isMobile ? '700px 0px' : '1200px 0px' });
+    fio.observe(firstScene);
+  } else {
+    startFrames();
+  }
 
   } // fin du bloc loader + scènes canvas (accueil uniquement)
 
@@ -297,6 +317,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const show = y > window.innerHeight * 1.5
         && (y + window.innerHeight) < document.body.scrollHeight - 360;
       stickyBar.style.transform = show ? 'translateY(0)' : 'translateY(140%)';
+      // Sur mobile, la bulle du chatbot remonte au-dessus de la barre de réservation
+      // au lieu de la chevaucher (et de cacher le bouton téléphone).
+      if (show !== document.body.classList.contains('bar-up')) {
+        document.documentElement.style.setProperty('--bar-h', stickyBar.offsetHeight + 'px');
+        document.body.classList.toggle('bar-up', show);
+      }
     }
   }, { passive: true });
 
@@ -445,7 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.wa-link').forEach(el => { el.href = waUrl(t('wa_intro_msg')); });
   }
   refreshWaLinks();
-  window.addEventListener('luzdosol-lang-change', () => { refreshWaLinks(); renderCalendar(); });
+  window.addEventListener('luzdosol-lang-change', () => { refreshWaLinks(); renderCalendar(); if (typeof updateDateInput === 'function') updateDateInput(); });
   const ml = document.querySelector('.mail-link');
   if (ml) ml.href = `mailto:${EMAIL}`;
   document.querySelectorAll('.price-from').forEach(el => { el.textContent = PRICE_FROM; });
@@ -490,6 +516,81 @@ document.addEventListener('DOMContentLoaded', () => {
   function hideNightsError() {
     document.getElementById('nights-error')?.classList.remove('show');
   }
+  function showCalError(key) {
+    const errEl = document.getElementById('nights-error');
+    if (!errEl) return;
+    errEl.textContent = t(key);
+    errEl.classList.add('show');
+    errEl.classList.remove('shake'); void errEl.offsetWidth; errEl.classList.add('shake');
+  }
+  // Les dates "occupées" sont des NUITS déjà vendues : on peut partir le matin
+  // d'une nuit occupée (quelqu'un arrive ce jour-là), mais jamais dormir dessus.
+  function isBookedNight(d) { return occ.includes(key(d)); }
+  function rangeIsFree(a, dep) {
+    const d = new Date(a);
+    while (d < dep) { if (isBookedNight(d)) return false; d.setDate(d.getDate() + 1); }
+    return true;
+  }
+  function firstBookedNightAfter(a) {
+    const d = new Date(a);
+    for (let i = 0; i < 500; i++) { d.setDate(d.getDate() + 1); if (isBookedNight(d)) return new Date(d); }
+    return null;
+  }
+  // Total réel nuit par nuit (un séjour à cheval sur deux mois paie chaque nuit au bon tarif).
+  function stayTotal(a, n) {
+    let sum = 0; const d = new Date(a);
+    for (let i = 0; i < n; i++) { sum += nightlyPrice(d.getMonth()); d.setDate(d.getDate() + 1); }
+    return sum;
+  }
+  // Regroupe les nuits consécutives au même tarif (ex. 4 nuits à 59 € + 2 à 43 €).
+  function priceLines(a, n) {
+    const lines = []; const d = new Date(a);
+    for (let i = 0; i < n; i++) {
+      const p = nightlyPrice(d.getMonth()); const last = lines[lines.length - 1];
+      if (last && last.price === p) last.n++; else lines.push({ price: p, n: 1 });
+      d.setDate(d.getDate() + 1);
+    }
+    return lines;
+  }
+  // Panier : récapitulatif détaillé et chiffré du séjour, affiché sous le
+  // calendrier et en tête du formulaire de réservation.
+  function renderCart() {
+    const dep = currentDeparture();
+    const goCal = () => {
+      document.querySelector('.tab-btn[data-tab="calendrier"]')?.click();
+      document.getElementById('calendrier')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    ['stay-cart', 'form-cart'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (!arrival || !dep) {
+        if (id === 'stay-cart') { el.hidden = true; el.innerHTML = ''; return; }
+        el.innerHTML = `<div class="cart-empty"><span>${t('cart_empty')}</span><button type="button">${t('cart_choose')}</button></div>`;
+        el.querySelector('button').addEventListener('click', goCal);
+        return;
+      }
+      const amt = computeAmounts();
+      const rows = priceLines(parseKey(arrival), nights).map(l => {
+        const label = (l.n === 1 ? t('cart_line1') : t('cart_line')).replace('{p}', fmtEuros(l.price * 100)).replace('{n}', l.n);
+        return `<div class="cart-row"><span>${label}</span><span>${fmtEuros(l.price * l.n * 100)}</span></div>`;
+      }).join('');
+      el.hidden = false;
+      el.innerHTML = `
+        <div class="cart-head"><b>${t('cart_title')} · ${stayRangeText()}</b>${id === 'form-cart' ? `<button type="button" class="cart-edit">${t('cart_edit')}</button>` : ''}</div>
+        ${rows}
+        <div class="cart-row cart-muted"><span>${t('cart_cleaning')}</span><span>${t('cart_included')}</span></div>
+        <div class="cart-row cart-muted"><span>${t('cart_fees')}</span><span>${fmtEuros(0)}</span></div>
+        <div class="cart-total"><span>${t('cart_total')}</span><span>${fmtEuros(amt.totalCents)}</span></div>
+        <div class="cart-dep"><span>${t('cart_deposit')}</span><span>${fmtEuros(amt.acompteCents)}</span></div>
+        <div class="cart-row cart-muted" style="margin-top:4px"><span>${t('cart_balance')}</span><span style="color:var(--ink)">${fmtEuros(amt.totalCents - amt.acompteCents)}</span></div>`;
+      el.querySelector('.cart-edit')?.addEventListener('click', goCal);
+    });
+  }
+  function stayRangeText() {
+    const dep = currentDeparture();
+    if (!arrival || !dep) return '';
+    return fmtDate(parseKey(arrival)) + ' → ' + fmtDate(dep) + ' · ' + nights + ' ' + t('nights_word');
+  }
   // Tarifs par mois (index 0 = janvier)
   const MONTH_PRICE = [43, 43, 43, 59, 74, 99, 224, 224, 74, 59, 43, 43];
   function nightlyPrice(m) { return MONTH_PRICE[m]; }
@@ -521,6 +622,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let nm=calM+1,ny=calY; if(nm>11){nm=0;ny++;} months.push({y:ny,m:nm});
     const depDate=currentDeparture();
     const depKey=depDate?key(depDate):null;
+    // En attente du départ : on ne peut pas dépasser la prochaine nuit déjà réservée.
+    const choosingDep = arrival && !depDate;
+    const limit = choosingDep ? firstBookedNightAfter(parseKey(arrival)) : null;
     let html='';
     months.forEach(({y,m})=>{
       const startDay=(new Date(y,m,1).getDay()+6)%7;
@@ -535,10 +639,17 @@ document.addEventListener('DOMContentLoaded', () => {
         let st=seasonStatus(date);
         if(date<today) st='occ';
         let cls='cal-day '+st;
+        let pickable = st!=='occ' && st!=='closed';
+        let title = '';
+        if (choosingDep && limit) {
+          if (key(date) === key(limit)) { pickable = true; cls += ' checkout-only'; title = t('cal_checkout_hint'); }
+          // Au-delà : pas un départ possible, mais un clic y redémarre la sélection.
+          else if (date > limit) { cls += ' unavail'; }
+        }
         if(arrival){const a=parseKey(arrival);if(depDate&&date>a&&date<depDate)cls+=' range';}
         if(arrival===k)cls+=' sel';
         if(depKey===k)cls+=' dep';
-        html+=`<div class="${cls}" ${(st!=='occ'&&st!=='closed')?`data-pick="${k}"`:''}>${day}</div>`;
+        html+=`<div class="${cls}"${title?` title="${title}"`:''} ${pickable?`data-pick="${k}"`:''}>${day}</div>`;
       }
       html+='</div></div>';
     });
@@ -575,7 +686,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // sinon message d'erreur animé et l'arrivée reste sélectionnée pour un nouvel essai.
   function pickDate(k) {
     const clicked = parseKey(k);
-    if (!arrival || departure) {
+    const lim = (arrival && !departure) ? firstBookedNightAfter(parseKey(arrival)) : null;
+    const startOver = !arrival || departure || clicked <= parseKey(arrival) || (lim && clicked > lim);
+    if (startOver && isBookedNight(clicked)) { renderCalendar(); return; } // jour de départ uniquement
+    if (startOver) {
       arrival = k; departure = null; rangeChosen = false; hideNightsError();
     } else {
       const a = parseKey(arrival);
@@ -585,6 +699,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const diffNights = Math.round((clicked - a) / 86400000);
         if (diffNights < MIN_NIGHTS) {
           showNightsError();
+        } else if (!rangeIsFree(a, clicked)) {
+          showCalError('err_range_booked');
         } else {
           departure = k; nights = diffNights; rangeChosen = true;
           const input = document.getElementById('nights-input');
@@ -598,27 +714,33 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateStay(){
     const l=document.getElementById('stay-label'),p=document.getElementById('stay-price');
     updatePaymentAmounts();
+    renderCart();
     if(!l||!p)return;
     if(!arrival){l.textContent=t('stay_default');l.dataset.set='0';p.textContent='—';return;}
     const a=parseKey(arrival),dep=currentDeparture();
     const pr=nightlyPrice(a.getMonth());
+    const titleEl=document.getElementById('stay-price-title'), depEl=document.getElementById('stay-deposit');
     if(!dep){
       l.dataset.set='0';
       l.textContent=fmtDate(a)+' → '+t('cal_choose_departure');
       p.textContent=pr?pr+t('per_night'):t('on_request');
+      if(titleEl) titleEl.textContent=t('price_title');
+      if(depEl) depEl.textContent='';
       return;
     }
     l.dataset.set='1';
-    l.textContent=fmtDate(a)+' → '+fmtDate(dep)+' · '+nights+' '+t('nights_word');
-    p.textContent=pr?pr+t('per_night'):t('on_request');
+    l.textContent=stayRangeText();
+    const amt=computeAmounts();
+    p.textContent=fmtEuros(amt.totalCents);
+    if(titleEl) titleEl.textContent=t('stay_total_label');
+    if(depEl) depEl.textContent=t('stay_deposit_line')+fmtEuros(amt.acompteCents);
   }
 
   /* --- MONTANTS DE PAIEMENT (acompte 30% / total) --- */
   function computeAmounts(){
     if(!arrival)return null;
     const a=parseKey(arrival);
-    const nightly=nightlyPrice(a.getMonth());
-    const totalCents=Math.round(nights*nightly*100);
+    const totalCents=Math.round(stayTotal(a, nights)*100);
     return { totalCents, acompteCents: Math.round(totalCents*DEPOSIT_RATE) };
   }
   function fmtEuros(cents){ return (cents/100).toLocaleString(calLocale(),{minimumFractionDigits:2,maximumFractionDigits:2})+' €'; }
@@ -628,7 +750,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(elA)elA.textContent=amt?fmtEuros(amt.acompteCents):'—';
     if(elT)elT.textContent=amt?fmtEuros(amt.totalCents):'—';
   }
-  function updateDateInput(){const i=document.getElementById('f-date');if(i&&arrival)i.value=fmtDate(parseKey(arrival));}
+  function updateDateInput(){const i=document.getElementById('f-date');if(i)i.value=stayRangeText();}
 
   /* --- SÉLECTEUR DE NUITS (minimum 4, avec message d'erreur) --- */
   function setNights(v){
@@ -638,6 +760,10 @@ document.addEventListener('DOMContentLoaded', () => {
       showNightsError();
       nights=MIN_NIGHTS;
       if(input)input.value=MIN_NIGHTS;
+    }else if(arrival && !rangeIsFree(parseKey(arrival), (()=>{const d=parseKey(arrival);d.setDate(d.getDate()+n);return d;})())){
+      showCalError('err_range_booked');
+      if(input)input.value=nights;
+      return;
     }else{
       hideNightsError();
       nights=n;
@@ -677,23 +803,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const dep=a?new Date(a):null; if(dep)dep.setDate(a.getDate()+nights);
     const body=new URLSearchParams({
       prenom:v('f-prenom'),nom:v('f-nom'),email:v('f-email'),tel:v('f-tel'),
-      arrivee:v('f-date')||(a?fmtDate(a):''),depart:dep?fmtDate(dep):'',
+      arrivee:a?fmtDate(a):'',depart:dep?fmtDate(dep):'',
       arrivee_iso:a?isoKey(a):'',depart_iso:dep?isoKey(dep):'',
       nuits:nights,voyageurs:v('f-voyageurs')
     });
     fetch(RESA_TRACKER_URL,{method:'POST',mode:'no-cors',body}).catch(()=>{});
   }
-  document.getElementById('btn-wa-submit')?.addEventListener('click',()=>{
+  // Message de réservation commun (WhatsApp et acompte PayPal) : reprend tout
+  // le séjour choisi, comme le récapitulatif d'une plateforme de réservation.
+  function resaMessage(greetingKey){
     const v=id=>document.getElementById(id)?.value||'';
-    const requiredIds=['f-prenom','f-nom','f-tel','f-email','f-date','f-voyageurs'];
-    for(const id of requiredIds){
+    const a=parseKey(arrival), dep=currentDeparture(), amt=computeAmounts();
+    return `${t(greetingKey)}\n\n${t('label_name')} : ${v('f-prenom')} ${v('f-nom')}\n${t('label_phone')} : ${v('f-tel')}\n${t('label_email')} : ${v('f-email')}\n${t('label_arrival')} : ${fmtDate(a)}\n${t('label_departure')} : ${fmtDate(dep)}\n${t('nights_word').charAt(0).toUpperCase()+t('nights_word').slice(1)} : ${nights}\n${t('label_travelers')} : ${v('f-voyageurs')}\n${t('label_total')} : ${fmtEuros(amt.totalCents)}\n${t('label_deposit')} : ${fmtEuros(amt.acompteCents)}\n${t('label_message')} : ${v('f-msg')}`;
+  }
+  // Valide le formulaire ; sans dates complètes, renvoie vers le calendrier.
+  function validateResa(){
+    const v=id=>document.getElementById(id)?.value||'';
+    for(const id of ['f-prenom','f-nom','f-tel','f-email','f-voyageurs']){
       const el=document.getElementById(id);
-      if(el && !el.checkValidity()){ el.reportValidity(); el.focus(); return; }
+      if(el && !el.checkValidity()){ el.reportValidity(); el.focus(); return null; }
     }
+    if(!arrival || !currentDeparture()){
+      document.querySelector('.tab-btn[data-tab="calendrier"]')?.click();
+      document.getElementById('calendrier')?.scrollIntoView({behavior:'smooth',block:'start'});
+      showCalError('err_pick_range_first');
+      return null;
+    }
+    return v;
+  }
+  document.getElementById('btn-wa-submit')?.addEventListener('click',()=>{
+    const v=validateResa(); if(!v) return;
     trackReservation(v);
-    window.open(waUrl(`${t('wa_resa_greeting')}\n\n${t('label_name')} : ${v('f-prenom')} ${v('f-nom')}\n${t('label_phone')} : ${v('f-tel')}\n${t('label_email')} : ${v('f-email')}\n${t('label_arrival')} : ${v('f-date')||(arrival?fmtDate(parseKey(arrival)):t('label_tbd'))}\n${t('nights_word')} : ${nights}\n${t('label_travelers')} : ${v('f-voyageurs')}\n${t('label_message')} : ${v('f-msg')}`),'_blank');
+    window.open(waUrl(resaMessage('wa_resa_greeting')),'_blank');
   });
-  document.getElementById('f-date')?.addEventListener('focus',function(){if(arrival)this.value=fmtDate(parseKey(arrival));});
+  // Le champ "Dates du séjour" n'est pas une saisie libre : il renvoie au calendrier.
+  document.getElementById('f-date')?.addEventListener('click',()=>{
+    document.querySelector('.tab-btn[data-tab="calendrier"]')?.click();
+    document.getElementById('calendrier')?.scrollIntoView({behavior:'smooth',block:'start'});
+  });
 
   /* --- "RÉSERVER CES DATES" (onglet Disponibilités) ---
      Passe au formulaire avec les dates choisies déjà reprises, au lieu
@@ -701,15 +848,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-book-dates')?.addEventListener('click', e => {
     e.preventDefault();
     e.stopPropagation();
-    if (!arrival) {
-      const errEl = document.getElementById('nights-error');
-      if (errEl) {
-        errEl.textContent = t('err_pick_date_first');
-        errEl.classList.add('show');
-        errEl.classList.remove('shake'); void errEl.offsetWidth; errEl.classList.add('shake');
-      }
-      return;
-    }
+    if (!arrival || !currentDeparture()) { showCalError(arrival ? 'err_pick_range_first' : 'err_pick_date_first'); return; }
     updateDateInput();
     document.querySelector('.tab-btn[data-tab="reservation"]')?.click();
     document.getElementById('reservation')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -720,14 +859,9 @@ document.addEventListener('DOMContentLoaded', () => {
      Prévient l'hôte via WhatsApp avec les coordonnées du client, qui envoie
      ensuite lui-même son acompte par PayPal à l'adresse indiquée sur la page. */
   document.getElementById('btn-paypal')?.addEventListener('click',()=>{
-    const v=id=>document.getElementById(id)?.value||'';
-    const requiredIds=['f-prenom','f-nom','f-tel','f-email','f-date','f-voyageurs'];
-    for(const id of requiredIds){
-      const el=document.getElementById(id);
-      if(el && !el.checkValidity()){ el.reportValidity(); el.focus(); return; }
-    }
+    const v=validateResa(); if(!v) return;
     trackReservation(v);
-    window.open(waUrl(`${t('wa_resa_paypal_greeting')}\n\n${t('label_name')} : ${v('f-prenom')} ${v('f-nom')}\n${t('label_phone')} : ${v('f-tel')}\n${t('label_email')} : ${v('f-email')}\n${t('label_arrival')} : ${v('f-date')||(arrival?fmtDate(parseKey(arrival)):t('label_tbd'))}\n${t('nights_word')} : ${nights}\n${t('label_travelers')} : ${v('f-voyageurs')}\n${t('label_message')} : ${v('f-msg')}`),'_blank');
+    window.open(waUrl(resaMessage('wa_resa_paypal_greeting')),'_blank');
   });
 
   /* --- PAIEMENT EN LIGNE (Stripe : carte, Google Pay, Apple Pay, Klarna) --- */
