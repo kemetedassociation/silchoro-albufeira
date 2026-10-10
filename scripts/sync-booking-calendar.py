@@ -77,6 +77,15 @@ def main():
     booked = set()
     for name, url in sources.items():
         ics_text = fetch_ical(url)
+        # Un lien expiré ou erroné renvoie souvent une page HTML ou vide : on
+        # échoue alors franchement (le fichier existant est conservé) au lieu
+        # d'afficher tout le calendrier comme libre.
+        if "BEGIN:VCALENDAR" not in ics_text:
+            print(f"{name}: la réponse n'est pas un calendrier iCal "
+                  f"({len(ics_text)} caractères, début: {ics_text[:60]!r})", file=sys.stderr)
+            sys.exit(1)
+        prodid = next((l.split(":", 1)[1] for l in ics_text.splitlines() if l.startswith("PRODID:")), "?")
+        print(f"{name}: calendrier valide ({prodid.strip()}, {len(ics_text)} caractères)")
         events = parse_events(ics_text)
         for ev in events:
             try:
