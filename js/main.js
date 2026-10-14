@@ -19,7 +19,7 @@ const SCENE_CONFIG = [
 
 const PHONE = '33610418154'; // Numéro WhatsApp de LUZDOSOL
 const EMAIL = 'luzdosol351@gmail.com';
-const PRICE_FROM = 43;
+const PRICE_FROM = 39;
 const RESA_TRACKER_URL = 'https://script.google.com/macros/s/AKfycby4e6klDol6ik6-DXkhlrHS3P-FNEp5PAWyB_3DlbQ6nO4QsxAyUHvTSQswgQerR5louw/exec';
 const BOOKING_WORKER_URL = 'https://luzdosol-chatbot.kemeted-association.workers.dev';
 const DEPOSIT_RATE = 0.3; // doit rester identique à DEPOSIT_RATE dans chatbot-worker/src/index.ts
@@ -315,8 +315,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const y = window.scrollY;
     if (nav && !navForceSolid) nav.classList.toggle('scrolled', y > 40);
     if (stickyBar) {
-      const show = y > window.innerHeight * 1.5
-        && (y + window.innerHeight) < document.body.scrollHeight - 360;
+      // Dès que le client a choisi des dates, la barre reste affichée avec le
+      // prix de son séjour (il n'a pas à descendre jusqu'au panier).
+      const show = document.body.classList.contains('stay-picked') || (y > window.innerHeight * 1.5
+        && (y + window.innerHeight) < document.body.scrollHeight - 360);
       stickyBar.style.transform = show ? 'translateY(0)' : 'translateY(140%)';
       // Sur mobile, la bulle du chatbot remonte au-dessus de la barre de réservation
       // au lieu de la chevaucher (et de cacher le bouton téléphone).
@@ -550,7 +552,7 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 0; i < n; i++) { sum += nightlyPrice(d.getMonth()); d.setDate(d.getDate() + 1); }
     return sum;
   }
-  // Regroupe les nuits consécutives au même tarif (ex. 4 nuits à 59 € + 2 à 43 €).
+  // Regroupe les nuits consécutives au même tarif (ex. 4 nuits à 59 € + 2 à 39 €).
   function priceLines(a, n) {
     const lines = []; const d = new Date(a);
     for (let i = 0; i < n; i++) {
@@ -600,7 +602,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return fmtDate(parseKey(arrival)) + ' → ' + fmtDate(dep) + ', ' + nights + ' ' + t('nights_word');
   }
   // Tarifs par mois (index 0 = janvier)
-  const MONTH_PRICE = [43, 43, 43, 59, 74, 99, 224, 224, 74, 59, 43, 43];
+  const MONTH_PRICE = [39, 39, 43, 59, 74, 99, 224, 224, 69, 59, 39, 39];
   function nightlyPrice(m) { return MONTH_PRICE[m]; }
   function seasonStatus(d) {
     if (occ.includes(key(d))) return 'occ';
@@ -723,10 +725,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     renderCalendar(); updateStay(); updateDateInput();
   }
+  // Barre fixe en bas d'écran : affiche les dates choisies et le total du séjour.
+  function syncStickyStay(){
+    const box=document.querySelector('.sticky-bar .sb-stay');
+    if(!box)return;
+    const def=document.querySelector('.sticky-bar .sb-default');
+    const lab=box.querySelector('.sb-stay-label'), val=box.querySelector('.sb-stay-value');
+    const dep=arrival?currentDeparture():null;
+    const picked=!!arrival;
+    box.hidden=!picked; if(def) def.hidden=picked;
+    document.body.classList.toggle('stay-picked',picked);
+    if(picked){
+      const a=parseKey(arrival);
+      if(dep){
+        const sd=d=>d.toLocaleDateString(calLocale(),{day:'numeric',month:'short'});
+        lab.textContent=sd(a)+' → '+sd(dep)+', '+nights+' '+t('nights_word');
+        try{localStorage.setItem('luzdosol_stay',JSON.stringify({a:isoKey(a),d:isoKey(dep)}));}catch(e){}
+        val.innerHTML=fmtEuros(computeAmounts().totalCents).replace(/ €$/,'&nbsp;€')+'<small>'+t('sb_total')+'</small>';
+        box.classList.remove('waiting');
+      } else {
+        lab.textContent=fmtDate(a)+' →';
+        const c=t('cal_choose_departure');
+        val.textContent=c.charAt(0).toUpperCase()+c.slice(1);
+        box.classList.add('waiting');
+      }
+    }
+    window.dispatchEvent(new Event('scroll'));
+  }
+  document.querySelector('.sticky-bar .sb-stay')?.addEventListener('click',()=>{
+    (document.getElementById('stay-cart')||document.getElementById('cal-container'))?.scrollIntoView({behavior:'smooth',block:'center'});
+  });
+  document.getElementById('sb-reserve')?.addEventListener('click',e=>{
+    if(!arrival||!currentDeparture())return; // sinon : lien normal vers le calendrier
+    e.preventDefault();
+    e.stopPropagation(); // évite que la navigation par onglets ne ramène au calendrier
+    document.getElementById('btn-book-dates')?.click();
+  });
+
   function updateStay(){
     const l=document.getElementById('stay-label'),p=document.getElementById('stay-price');
     updatePaymentAmounts();
     renderCart();
+    syncStickyStay();
     if(!l||!p)return;
     if(!arrival){l.textContent=t('stay_default');l.dataset.set='0';p.textContent='–';return;}
     const a=parseKey(arrival),dep=currentDeparture();

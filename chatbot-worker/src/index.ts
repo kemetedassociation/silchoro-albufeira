@@ -12,7 +12,7 @@ export interface Env {
 }
 
 // Tarifs par mois (index 0 = janvier) — doit rester identique à MONTH_PRICE dans js/main.js.
-const MONTH_PRICE = [43, 43, 43, 59, 74, 99, 224, 224, 74, 59, 43, 43];
+const MONTH_PRICE = [39, 39, 43, 59, 74, 99, 224, 224, 69, 59, 39, 39];
 const MIN_NIGHTS = 4;
 const DEPOSIT_RATE = 0.3; // acompte = 30% du prix total du séjour
 
@@ -33,8 +33,8 @@ INFORMATIONS SUR LE LOGEMENT
 - Idéal pour couples, familles et petits groupes d'amis.
 
 TARIFS (par nuit, réservation directe, sans commission)
-- Janvier : 43€ · Février : 43€ · Mars : 43€ · Avril : 59€ · Mai : 74€ · Juin : 99€
-- Juillet : 224€ · Août : 224€ · Septembre : 74€ · Octobre : 59€ · Novembre : 43€ · Décembre : 43€
+- Janvier : 39€, Février : 39€, Mars : 43€, Avril : 59€, Mai : 74€, Juin : 99€
+- Juillet : 224€, Août : 224€, Septembre : 69€, Octobre : 59€, Novembre : 39€, Décembre : 39€
 - Séjour minimum de 4 nuits (le visiteur choisit librement le nombre de nuits, à partir de 4).
 - Paiement : acompte par virement PayPal (à l'adresse exacte emouenguebienvenu@yahoo.fr, à recopier lettre par lettre sans aucune modification, option "à un ami/famille" recommandée), solde selon modalités convenues avec l'hôte. Le paiement par carte en ligne n'est pas encore disponible.
 - Ménage de fin de séjour inclus.
@@ -79,8 +79,9 @@ PAGES DU SITE (utilise l'outil "navigate" pour y envoyer le visiteur quand c'est
 - galerie.html : galerie photos/vidéos
 - guide.html : guide du séjour (restaurants, sorties, villes à visiter)
 - contact.html : FAQ (#faq) et contact direct
+- venir.html : comment venir (le visiteur indique sa ville ou sa position, la page prépare le trajet : transports jusqu'à son aéroport, comparateurs de vols vers Faro (Google Flights, Skyscanner, Kayak) avec ses dates, compagnies qui desservent Faro, puis trajet Faro → appartement). Aéroport le plus proche : Faro (FAO), à 38 km, 35-40 min de route. Taxi environ 45-60 €, Uber/Bolt environ 25-40 €, bus moins cher mais plus long, voiture de location conseillée. Autre option : vol vers Lisbonne puis train CP jusqu'à Albufeira-Ferreiras (environ 3 h).
 
-Quand la réponse concerne un sujet précis (tarifs, dispos, réserver, activités, appartement, galerie, guide, contact/FAQ), appelle l'outil "navigate" en plus de ta réponse texte pour emmener le visiteur directement à la bonne page. N'invente jamais d'informations qui ne sont pas ci-dessus — si tu ne sais pas, invite le visiteur à contacter l'hôte via la page Contact.`;
+Quand la réponse concerne un sujet précis (tarifs, dispos, réserver, activités, appartement, galerie, guide, contact/FAQ, comment venir/vols/aéroport), appelle l'outil "navigate" en plus de ta réponse texte pour emmener le visiteur directement à la bonne page. N'invente jamais d'informations qui ne sont pas ci-dessus — si tu ne sais pas, invite le visiteur à contacter l'hôte via la page Contact.`;
 
 // Coordonnées de paiement/contact : le modèle peut déformer une adresse en la
 // recopiant (vu en test : "amoenguebienvenu@…"). Une erreur ici enverrait un
@@ -111,6 +112,7 @@ const NAVIGATE_TOOL: Anthropic.Tool = {
           "galerie.html",
           "guide.html",
           "contact.html",
+          "venir.html",
         ],
         description: "Le fichier de la page à ouvrir.",
       },
