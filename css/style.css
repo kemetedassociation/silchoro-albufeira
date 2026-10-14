@@ -845,3 +845,9 @@ body.stay-picked .cb-teaser{display:none!important}
 .go-route-btns .go-btn-ghost{flex:1 1 0;justify-content:center}
 .go-route-note{grid-column:1/-1;font-size:12.5px;color:#7a8a95;line-height:1.5}
 @media (max-width:640px){.go-routes{grid-template-columns:1fr}}
+
+/* Prix de la nuit sous chaque date du calendrier */
+.cal-day{flex-direction:column;gap:1px;line-height:1.05}
+.cal-day .cd-p{font-size:10.5px;font-weight:600;opacity:.72;letter-spacing:-.01em;white-space:nowrap}
+.cal-day.high .cd-p,.cal-day.sel .cd-p,.cal-day.dep .cd-p{opacity:.85}
+@media (max-width:480px){.cal-day .cd-p{font-size:8.5px;letter-spacing:-.02em}}

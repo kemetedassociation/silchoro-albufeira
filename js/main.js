@@ -662,7 +662,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if(arrival){const a=parseKey(arrival);if(depDate&&date>a&&date<depDate)cls+=' range';}
         if(arrival===k)cls+=' sel';
         if(depKey===k)cls+=' dep';
-        html+=`<div class="${cls}"${title?` title="${title}"`:''} ${pickable?`data-pick="${k}"`:''}>${day}</div>`;
+        // Prix de la nuit sous la date (seulement si la nuit est réservable).
+        const nightOk = st!=='occ' && st!=='closed' && !cls.includes('checkout-only');
+        const priceTag = nightOk ? `<span class="cd-p">${MONTH_PRICE[m]}&nbsp;€</span>` : '';
+        html+=`<div class="${cls}"${title?` title="${title}"`:''} ${pickable?`data-pick="${k}"`:''}><span class="cd-n">${day}</span>${priceTag}</div>`;
       }
       html+='</div></div>';
     });
