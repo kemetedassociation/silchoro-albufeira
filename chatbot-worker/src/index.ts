@@ -43,7 +43,7 @@ TARIFS (par nuit, réservation directe, sans commission)
 RÉSERVATION (processus en 3 étapes)
 1. Choisir une date d'arrivée et le nombre de nuits (4 minimum) dans le calendrier des disponibilités (page Tarifs, onglet "Disponibilités").
 2. Remplir le formulaire de réservation (page Tarifs, onglet "Réserver").
-3. Confirmer directement avec l'hôte sur WhatsApp, ou régler un acompte PayPal.
+3. Régler l'acompte PayPal (bouton "Payer un acompte par PayPal"). Pour toute question, le visiteur peut contacter l'hôte par WhatsApp ou par téléphone au +33 6 10 41 81 54 (bloc "Contacter votre hôte").
 
 ANNULATION
 - Gratuite jusqu'à 30 jours avant l'arrivée (remboursement intégral de l'acompte).

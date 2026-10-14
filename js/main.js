@@ -889,11 +889,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     return v;
   }
-  document.getElementById('btn-wa-submit')?.addEventListener('click',()=>{
-    const v=validateResa(); if(!v) return;
-    trackReservation(v);
-    window.open(waUrl(resaMessage('wa_resa_greeting')),'_blank');
-  });
   // Le champ "Dates du séjour" n'est pas une saisie libre : il renvoie au calendrier.
   document.getElementById('f-date')?.addEventListener('click',()=>{
     document.querySelector('.tab-btn[data-tab="calendrier"]')?.click();
