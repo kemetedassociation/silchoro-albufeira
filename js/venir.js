@@ -118,6 +118,39 @@
     setHref('go-s3-bus', 'https://www.google.com/maps/dir/?api=1&origin=' + enc(FARO) + '&destination=' + enc(DEST) + '&travelmode=transit');
   }
 
+  // Liaisons principales vers Faro et compagnies qui les assurent (vols directs
+  // souvent saisonniers : les comparateurs montrent ce qui vole réellement aux dates).
+  const ROUTES = [
+    { city: 'Paris', label: 'Paris', sky: 'pari', kayak: 'PAR', gf: 'Paris', time: '2 h 35', airports: 'Orly, Charles de Gaulle, Beauvais',
+      airlines: [['Transavia', 'https://www.transavia.com/', 'Orly', 1], ['easyJet', 'https://www.easyjet.com/', 'Roissy CDG', 1],
+        ['Ryanair', 'https://www.ryanair.com/', 'Beauvais', 1], ['TAP Air Portugal', 'https://www.flytap.com/', '', 0]] },
+    { city: 'Lyon', label: 'Lyon', sky: 'lys', kayak: 'LYS', gf: 'LYS', time: '2 h 20', airports: 'Saint-Exupéry',
+      airlines: [['easyJet', 'https://www.easyjet.com/', '', 1], ['Transavia', 'https://www.transavia.com/', '', 1], ['TAP Air Portugal', 'https://www.flytap.com/', '', 0]] },
+    { city: 'Genève', label: 'Genève', sky: 'gva', kayak: 'GVA', gf: 'GVA', time: '2 h 35', airports: 'Genève Cointrin',
+      airlines: [['easyJet', 'https://www.easyjet.com/', '', 1], ['TAP Air Portugal', 'https://www.flytap.com/', '', 0]] },
+    { city: 'Bâle-Mulhouse', label: 'Bâle-Mulhouse', sky: 'bsl', kayak: 'BSL', gf: 'BSL', time: '2 h 45', airports: 'EuroAirport Bâle-Mulhouse-Fribourg',
+      airlines: [['easyJet', 'https://www.easyjet.com/', '', 1], ['TAP Air Portugal', 'https://www.flytap.com/', '', 0]] },
+  ];
+  const routesEl = $('go-routes');
+  function renderRoutes() {
+    if (!routesEl) return;
+    const L = lang(), a = arrEl.value, d = depEl.value && depEl.value > a ? depEl.value : '';
+    const esc = (x) => String(x).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    routesEl.innerHTML = ROUTES.map(r => {
+      const gf = 'https://www.google.com/travel/flights?hl=' + L + '&q=' + enc('Flights to FAO from ' + r.gf + (a ? ' on ' + a : '') + (a && d ? ' through ' + d : ''));
+      const sky = `https://${SKY[L]}/${r.sky}/fao/` + (a ? yymmdd(a) + '/' + (d ? yymmdd(d) + '/' : '') : '');
+      const kayak = `https://${KAYAK[L]}/flights/${r.kayak}-FAO` + (a ? '/' + a + (d ? '/' + d : '') : '');
+      const chips = r.airlines.map(([n, u, ap, direct]) =>
+        `<a class="go-air" href="${u}" target="_blank" rel="noopener"><b>${esc(n)}</b><span class="${direct ? 'is-direct' : 'is-via'}">${direct ? t('go_direct', 'Vol direct') : t('go_via_lis', 'Escale à Lisbonne')}${ap ? ' (' + ap + ')' : ''}</span></a>`).join('');
+      return `<article class="go-route">
+        <div class="go-route-head"><div class="go-route-title">${esc(r.label)} <span>→</span> Faro</div><div class="go-route-time">≈ ${r.time} ${t('go_flight_time', 'de vol')}</div></div>
+        <div class="go-route-ap">${t('go_airports', 'Aéroports')} : ${esc(r.airports)}</div>
+        <div class="go-airs">${chips}</div>
+        <div class="go-route-btns"><a class="go-btn" href="${gf}" target="_blank" rel="noopener">${t('go_compare', 'Comparer les prix')}</a><a class="go-btn go-btn-ghost" href="${sky}" target="_blank" rel="noopener">Skyscanner</a><a class="go-btn go-btn-ghost" href="${kayak}" target="_blank" rel="noopener">Kayak</a></div>
+      </article>`;
+    }).join('') + `<p class="go-route-note">${t('go_seasonal', 'Certains vols directs sont saisonniers : les comparateurs affichent les vols réellement disponibles à vos dates.')}</p>`;
+  }
+
   input.addEventListener('input', () => { coords = null; update(); });
   [arrEl, depEl].forEach(el => el.addEventListener('change', () => {
     if (arrEl.value && depEl.value && depEl.value <= arrEl.value) depEl.value = '';
@@ -137,6 +170,8 @@
     }, () => { locMsg.textContent = t('go_loc_err'); }, { timeout: 10000, maximumAge: 600000 });
   });
 
-  document.addEventListener('luzdosol-lang-change', update);
+  window.addEventListener('luzdosol-lang-change', () => { update(); renderRoutes(); });
+  [arrEl, depEl].forEach(el => el.addEventListener('change', renderRoutes));
   update();
+  renderRoutes();
 })();

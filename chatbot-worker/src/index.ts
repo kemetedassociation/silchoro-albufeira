@@ -12,7 +12,7 @@ export interface Env {
 }
 
 // Tarifs par mois (index 0 = janvier) — doit rester identique à MONTH_PRICE dans js/main.js.
-const MONTH_PRICE = [39, 39, 43, 59, 74, 99, 224, 224, 69, 59, 39, 39];
+const MONTH_PRICE = [39, 39, 43, 49, 69, 99, 224, 224, 69, 49, 39, 39];
 const MIN_NIGHTS = 4;
 const DEPOSIT_RATE = 0.3; // acompte = 30% du prix total du séjour
 
@@ -24,7 +24,7 @@ const DEFAULT_ALLOWED_ORIGINS = [
 
 const SYSTEM_PROMPT = `Tu es l'assistant de conciergerie du site LUZDOSOL, une résidence hôtelière à Albufeira (Algarve, Portugal) proposant un appartement de vacances en réservation directe (sans commission de plateforme).
 
-Réponds toujours dans la langue du visiteur (français par défaut). Sois chaleureux, concis (3-5 phrases maximum), précis, et rassurant. N'utilise jamais de tiret long (—) ni d'emoji dans tes réponses : écris avec une ponctuation simple et naturelle. Les prix affichés sont des prix finaux TTC, ménage inclus, sans frais cachés : n'écris jamais "HT". N'annonce pas ce que tu vas faire ("je vais vérifier..."), réponds directement.
+Réponds toujours dans la langue du visiteur (français par défaut). Sois chaleureux, concis (3-5 phrases maximum), précis, et rassurant. N'utilise jamais de tiret long (—) ni d'emoji dans tes réponses : écris avec une ponctuation simple et naturelle. Les prix affichés sont des prix finaux TTC, ménage inclus, sans frais cachés : n'écris jamais "HT". N'annonce pas ce que tu vas faire ("je vais vérifier..."), réponds directement. Ta réponse texte doit toujours contenir l'information concrète demandée (prix calculé nuit par nuit avec le total, durée et options de trajet, etc.) : la page ouverte n'est qu'un complément. Si la question porte sur plusieurs sujets, réponds à chacun et choisis la page la plus utile.
 
 INFORMATIONS SUR LE LOGEMENT
 - Appartement lumineux, entièrement meublé, dans la résidence LUZDOSOL à Albufeira.
@@ -33,8 +33,8 @@ INFORMATIONS SUR LE LOGEMENT
 - Idéal pour couples, familles et petits groupes d'amis.
 
 TARIFS (par nuit, réservation directe, sans commission)
-- Janvier : 39€, Février : 39€, Mars : 43€, Avril : 59€, Mai : 74€, Juin : 99€
-- Juillet : 224€, Août : 224€, Septembre : 69€, Octobre : 59€, Novembre : 39€, Décembre : 39€
+- Janvier : 39€, Février : 39€, Mars : 43€, Avril : 49€, Mai : 69€, Juin : 99€
+- Juillet : 224€, Août : 224€, Septembre : 69€, Octobre : 49€, Novembre : 39€, Décembre : 39€
 - Séjour minimum de 4 nuits (le visiteur choisit librement le nombre de nuits, à partir de 4).
 - Paiement : acompte par virement PayPal (à l'adresse exacte emouenguebienvenu@yahoo.fr, à recopier lettre par lettre sans aucune modification, option "à un ami/famille" recommandée), solde selon modalités convenues avec l'hôte. Le paiement par carte en ligne n'est pas encore disponible.
 - Ménage de fin de séjour inclus.
@@ -173,7 +173,8 @@ async function handleChat(request: Request, env: Env, cors: HeadersInit): Promis
     });
   }
 
-  const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
+  // maxRetries : nouvel essai automatique si l'API est momentanément surchargée.
+  const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, maxRetries: 3 });
 
   try {
     const response = await client.messages.create({
@@ -200,28 +201,33 @@ async function handleChat(request: Request, env: Env, cors: HeadersInit): Promis
     if (!text.trim() && response.stop_reason === "tool_use") {
       const toolUse = response.content.find((b) => b.type === "tool_use");
       if (toolUse && toolUse.type === "tool_use") {
-        const followUp = await client.messages.create({
-          model: "claude-haiku-4-5",
-          max_tokens: 1024,
-          system: SYSTEM_PROMPT,
-          tools: [NAVIGATE_TOOL],
-          tool_choice: { type: "none" },
-          messages: [
-            ...messages.map((m) => ({ role: m.role, content: m.content })),
-            { role: "assistant" as const, content: response.content },
-            {
-              role: "user" as const,
-              content: [{ type: "tool_result" as const, tool_use_id: toolUse.id, content: "Page ouverte pour le visiteur. Réponds maintenant à sa question en texte." }],
-            },
-          ],
-        });
-        for (const block of followUp.content) {
-          if (block.type === "text") text += block.text;
+        try {
+          const followUp = await client.messages.create({
+            model: "claude-haiku-4-5",
+            max_tokens: 1024,
+            system: SYSTEM_PROMPT,
+            tools: [NAVIGATE_TOOL],
+            tool_choice: { type: "none" },
+            messages: [
+              ...messages.map((m) => ({ role: m.role, content: m.content })),
+              { role: "assistant" as const, content: response.content },
+              {
+                role: "user" as const,
+                content: [{ type: "tool_result" as const, tool_use_id: toolUse.id, content: "Page ouverte pour le visiteur. Réponds maintenant à sa question en texte." }],
+              },
+            ],
+          });
+          for (const block of followUp.content) {
+            if (block.type === "text") text += block.text;
+          }
+        } catch (e) {
+          console.error(e); // la page s'ouvre quand même : la réponse reste utile
         }
       }
     }
 
-    text = enforceContactDetails(text);
+    // Pas d'emoji dans les réponses (règle de style du site), même si le modèle en met.
+    text = enforceContactDetails(text).replace(/\p{Extended_Pictographic}\uFE0F?\s?/gu, "");
 
     return new Response(JSON.stringify({ text, navigate }), {
       headers: { ...cors, "Content-Type": "application/json" },

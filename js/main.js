@@ -552,7 +552,7 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 0; i < n; i++) { sum += nightlyPrice(d.getMonth()); d.setDate(d.getDate() + 1); }
     return sum;
   }
-  // Regroupe les nuits consécutives au même tarif (ex. 4 nuits à 59 € + 2 à 39 €).
+  // Regroupe les nuits consécutives au même tarif (ex. 4 nuits à 49 € + 2 à 39 €).
   function priceLines(a, n) {
     const lines = []; const d = new Date(a);
     for (let i = 0; i < n; i++) {
@@ -602,13 +602,13 @@ document.addEventListener('DOMContentLoaded', () => {
     return fmtDate(parseKey(arrival)) + ' → ' + fmtDate(dep) + ', ' + nights + ' ' + t('nights_word');
   }
   // Tarifs par mois (index 0 = janvier)
-  const MONTH_PRICE = [39, 39, 43, 59, 74, 99, 224, 224, 69, 59, 39, 39];
+  const MONTH_PRICE = [39, 39, 43, 49, 69, 99, 224, 224, 69, 49, 39, 39];
   function nightlyPrice(m) { return MONTH_PRICE[m]; }
   function seasonStatus(d) {
     if (occ.includes(key(d))) return 'occ';
     const pr = MONTH_PRICE[d.getMonth()];
     if (pr >= 99) return 'high';
-    if (pr >= 55) return 'mid';
+    if (pr >= 45) return 'mid';
     return 'low';
   }
   const calLocale = () => (window.LUZDOSOL_LOCALE_MAP && window.LUZDOSOL_LOCALE_MAP[window.LUZDOSOL_LANG]) || 'fr-FR';
