@@ -24,7 +24,7 @@ const DEFAULT_ALLOWED_ORIGINS = [
 
 const SYSTEM_PROMPT = `Tu es l'assistant de conciergerie du site LUZDOSOL, une résidence hôtelière à Albufeira (Algarve, Portugal) proposant un appartement de vacances en réservation directe (sans commission de plateforme).
 
-Réponds toujours dans la langue du visiteur (français par défaut). Sois chaleureux, concis (3-5 phrases maximum), précis, et rassurant. N'utilise jamais de tiret long (—) ni d'emoji dans tes réponses : écris avec une ponctuation simple et naturelle. Les prix affichés sont des prix finaux TTC, ménage inclus, sans frais cachés : n'écris jamais "HT". N'annonce pas ce que tu vas faire ("je vais vérifier..."), réponds directement. Ta réponse texte doit toujours contenir l'information concrète demandée (prix calculé nuit par nuit avec le total, durée et options de trajet, etc.) : la page ouverte n'est qu'un complément. Si la question porte sur plusieurs sujets, réponds à chacun et choisis la page la plus utile.
+Réponds toujours dans la langue du visiteur (français par défaut). Sois chaleureux, concis (3-5 phrases maximum), précis, et rassurant. N'utilise jamais de tiret long (—) ni d'emoji dans tes réponses : écris avec une ponctuation simple et naturelle. Les prix affichés sont des prix finaux TTC, ménage inclus, sans frais cachés : n'écris jamais "HT". N'annonce pas ce que tu vas faire ("je vais vérifier..."), réponds directement. Pour tout prix de séjour, utilise l'outil calculer_prix et reprends exactement son résultat. Ta réponse texte doit toujours contenir l'information concrète demandée (prix calculé nuit par nuit avec le total, durée et options de trajet, etc.) : la page ouverte n'est qu'un complément. Si la question porte sur plusieurs sujets, réponds à chacun et choisis la page la plus utile.
 
 INFORMATIONS SUR LE LOGEMENT
 - Appartement lumineux, entièrement meublé, dans la résidence LUZDOSOL à Albufeira.
@@ -126,6 +126,41 @@ const NAVIGATE_TOOL: Anthropic.Tool = {
   },
 };
 
+const PRICE_TOOL: Anthropic.Tool = {
+  name: "calculer_prix",
+  description:
+    "Calcule le prix exact d'un séjour (nuit par nuit selon le tarif du mois, ménage inclus, acompte 30 %). Utilise TOUJOURS cet outil dès qu'un prix de séjour est demandé, ne fais jamais le calcul toi-même. La date de départ n'est pas une nuit facturée.",
+  input_schema: {
+    type: "object",
+    properties: {
+      arrivee: { type: "string", description: "Date d'arrivée au format AAAA-MM-JJ." },
+      nuits: { type: "integer", description: "Nombre de nuits (minimum 4)." },
+    },
+    required: ["arrivee", "nuits"],
+  },
+};
+
+/** Détail du prix calculé côté serveur, renvoyé au modèle comme résultat d'outil. */
+function priceQuote(input: { arrivee?: unknown; nuits?: unknown }): string {
+  const n = Number(input.nuits);
+  if (!isValidIsoDate(input.arrivee) || !Number.isInteger(n) || n < 1 || n > 60) return "Dates invalides : demande au visiteur sa date d'arrivée et le nombre de nuits.";
+  const groups: { mois: number; prix: number; nuits: number }[] = [];
+  let total = 0;
+  for (let i = 0; i < n; i++) {
+    const m = isoMonthIndex(isoAddDays(input.arrivee, i));
+    const pr = MONTH_PRICE[m];
+    total += pr;
+    const last = groups[groups.length - 1];
+    if (last && last.mois === m) last.nuits++; else groups.push({ mois: m, prix: pr, nuits: 1 });
+  }
+  const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+  const lignes = groups.map((g) => `${g.nuits} nuit(s) en ${MOIS[g.mois]} à ${g.prix} € = ${g.nuits * g.prix} €`).join(" ; ");
+  const depart = isoAddDays(input.arrivee, n);
+  const acompte = Math.round(total * DEPOSIT_RATE * 100) / 100;
+  return `Arrivée ${input.arrivee}, départ ${depart}, ${n} nuits. ${lignes}. TOTAL ${total} € (ménage inclus, aucun frais). Acompte 30 % : ${acompte.toFixed(2).replace(".", ",")} €.` +
+    (n < MIN_NIGHTS ? ` Attention : le séjour minimum est de ${MIN_NIGHTS} nuits.` : "");
+}
+
 function corsHeaders(origin: string | null, env: Env): HeadersInit {
   const allowed = env.ALLOWED_ORIGIN
     ? [env.ALLOWED_ORIGIN, ...DEFAULT_ALLOWED_ORIGINS]
@@ -177,57 +212,41 @@ async function handleChat(request: Request, env: Env, cors: HeadersInit): Promis
   const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, maxRetries: 3 });
 
   try {
-    const response = await client.messages.create({
-      model: "claude-haiku-4-5",
-      max_tokens: 1024,
-      system: SYSTEM_PROMPT,
-      tools: [NAVIGATE_TOOL],
-      messages: messages.map((m) => ({ role: m.role, content: m.content })),
-    });
-
+    // Boucle d'outils : le modèle peut demander un calcul de prix (exécuté ici,
+    // résultat exact) et/ou l'ouverture d'une page. Chaque appel d'outil reçoit
+    // une réponse, puis le modèle rédige sa réponse finale au visiteur.
+    const convo: Anthropic.MessageParam[] = messages.map((m) => ({ role: m.role, content: m.content }));
     let text = "";
     let navigate: { page: string; anchor?: string } | null = null;
 
-    for (const block of response.content) {
-      if (block.type === "text") {
-        text += block.text;
-      } else if (block.type === "tool_use" && block.name === "navigate") {
-        navigate = block.input as { page: string; anchor?: string };
-      }
-    }
+    for (let round = 0; round < 4; round++) {
+      const response = await client.messages.create({
+        model: "claude-haiku-4-5",
+        max_tokens: 1024,
+        system: SYSTEM_PROMPT,
+        tools: [NAVIGATE_TOOL, PRICE_TOOL],
+        ...(round === 3 ? { tool_choice: { type: "none" as const } } : {}),
+        messages: convo,
+      });
 
-    // Le modèle s'arrête parfois sur l'appel "navigate" sans écrire de réponse :
-    // on lui renvoie le résultat de l'outil pour obtenir le texte au visiteur.
-    if (!text.trim() && response.stop_reason === "tool_use") {
-      const toolUse = response.content.find((b) => b.type === "tool_use");
-      if (toolUse && toolUse.type === "tool_use") {
-        try {
-          const followUp = await client.messages.create({
-            model: "claude-haiku-4-5",
-            max_tokens: 1024,
-            system: SYSTEM_PROMPT,
-            tools: [NAVIGATE_TOOL],
-            tool_choice: { type: "none" },
-            messages: [
-              ...messages.map((m) => ({ role: m.role, content: m.content })),
-              { role: "assistant" as const, content: response.content },
-              {
-                role: "user" as const,
-                content: [{ type: "tool_result" as const, tool_use_id: toolUse.id, content: "Page ouverte pour le visiteur. Réponds maintenant à sa question en texte." }],
-              },
-            ],
-          });
-          for (const block of followUp.content) {
-            if (block.type === "text") text += block.text;
-          }
-        } catch (e) {
-          console.error(e); // la page s'ouvre quand même : la réponse reste utile
+      const results: Anthropic.ToolResultBlockParam[] = [];
+      let roundText = "";
+      for (const block of response.content) {
+        if (block.type === "text") roundText += block.text;
+        else if (block.type === "tool_use") {
+          let out = "Page ouverte pour le visiteur.";
+          if (block.name === "navigate") navigate = block.input as { page: string; anchor?: string };
+          else if (block.name === "calculer_prix") out = priceQuote(block.input as { arrivee?: unknown; nuits?: unknown });
+          results.push({ type: "tool_result", tool_use_id: block.id, content: out });
         }
       }
+      if (response.stop_reason !== "tool_use" || !results.length) { text += roundText; break; }
+      // Le texte écrit avant un calcul de prix est provisoire : seule la réponse finale compte.
+      convo.push({ role: "assistant", content: response.content });
+      convo.push({ role: "user", content: [...results, { type: "text", text: "Réponds maintenant au visiteur en texte, avec les informations concrètes." }] });
     }
 
-    // Pas d'emoji dans les réponses (règle de style du site), même si le modèle en met.
-    text = enforceContactDetails(text).replace(/\p{Extended_Pictographic}\uFE0F?\s?/gu, "");
+    text = enforceContactDetails(text).replace(/\p{Extended_Pictographic}\uFE0F?\s?/gu, "").replace(/\s+[—–]\s+/g, ", ").replace(/[—–]/g, "-");
 
     return new Response(JSON.stringify({ text, navigate }), {
       headers: { ...cors, "Content-Type": "application/json" },
