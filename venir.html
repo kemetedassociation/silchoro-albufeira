@@ -118,7 +118,7 @@
     <h1 class="reveal" data-i18n="go_h1">De chez vous à LUZDOSOL</h1>
     <p class="reveal" data-i18n="go_sub">Indiquez votre ville de départ : nous préparons le trajet complet, du train jusqu'à l'aéroport au vol vers Faro, puis la route jusqu'à l'appartement.</p>
 
-    <form class="go-planner reveal" id="venir-planner" onsubmit="return false">
+    <form class="go-planner reveal" id="venir-planner" role="search">
       <label class="go-field go-field-from">
         <span data-i18n="go_from_label">Votre ville ou aéroport de départ</span>
         <span class="go-from-row">
@@ -132,7 +132,9 @@
       <label class="go-field"><span data-i18n="go_depart_label">Date de retour</span><input type="date" id="go-dep"></label>
       <p class="go-hint" id="go-dates-hint" hidden data-i18n="go_dates_hint">Dates reprises de votre sélection dans le calendrier.</p>
       <p class="go-hint" id="go-nearest" hidden><span data-i18n="go_nearest">Aéroport de départ :</span> <b></b></p>
+      <button type="submit" class="go-search" id="go-search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span data-i18n="go_search">Rechercher</span></button>
     </form>
+    <div id="go-results" class="go-results" hidden aria-live="polite"></div>
   </div>
 </section>
 

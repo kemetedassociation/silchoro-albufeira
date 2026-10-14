@@ -174,6 +174,65 @@
     }).join('') + `<p class="go-route-note">${t('go_seasonal', 'Certains vols directs sont saisonniers : les comparateurs affichent les vols réellement disponibles à vos dates.')}</p>`;
   }
 
+  // ---- Recherche : affiche directement le comparatif complet sous la barre ----
+  const resEl = $('go-results');
+  const ARROW = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>';
+  const escH = (x) => String(x).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  // Compagnies connues par aéroport de départ (sinon : liste générale à comparer).
+  function airlinesFor(code) {
+    const byCode = { ORY: ['Transavia'], CDG: ['easyJet'], BVA: ['Ryanair'] };
+    const r = ROUTES.find(x => x.kayak === code || (x.kayak === 'PAR' && byCode[code]));
+    if (!r) return null;
+    return r.airlines.filter(([n, , ap, direct]) => !direct || !byCode[code] || byCode[code].includes(n));
+  }
+  function fmtD(iso) {
+    const loc = (window.LUZDOSOL_LOCALE_MAP && window.LUZDOSOL_LOCALE_MAP[lang()]) || 'fr-FR';
+    return new Date(iso + 'T12:00:00').toLocaleDateString(loc, { weekday: 'short', day: 'numeric', month: 'long' });
+  }
+  function renderResults(noScroll) {
+    const { ap } = airportFromInput();
+    const from = input.value.trim();
+    if (!ap && !from && !coords) {
+      locMsg.textContent = t('go_need_city'); input.focus(); return false;
+    }
+    locMsg.textContent = '';
+    update();
+    const a = arrEl.value, d = depEl.value && depEl.value > a ? depEl.value : '';
+    const href = (id) => escH($(id).href);
+    const fromLabel = ap ? ap[1] + ' (' + ap[0] + ')' : (from || t('go_locate'));
+    const dates = a ? fmtD(a) + (d ? ' → ' + fmtD(d) : ' (' + t('go_one_way') + ')') : '';
+    const air = ap ? airlinesFor(ap[0]) : null;
+    const airHtml = (air || [['Ryanair', 'https://www.ryanair.com/'], ['easyJet', 'https://www.easyjet.com/'], ['Transavia', 'https://www.transavia.com/'], ['TAP Air Portugal', 'https://www.flytap.com/']])
+      .map(([n, u, apn, direct]) => `<a class="go-air" href="${u}" target="_blank" rel="noopener"><b>${escH(n)}</b>${air ? `<span class="${direct ? 'is-direct' : 'is-via'}">${direct ? t('go_direct') : t('go_via_lis')}${apn ? ' (' + escH(apn) + ')' : ''}</span>` : `<span>${ARROW}</span>`}</a>`).join('');
+    const cmp = [['go-gflights', 'Google Flights', 'go_cmp_gf'], ['go-sky', 'Skyscanner', 'go_cmp_sky'], ['go-kayak', 'Kayak', 'go_cmp_kayak']]
+      .map(([id, name, k]) => `<a class="go-cmp" href="${href(id)}" target="_blank" rel="noopener"><span class="go-cmp-name">${name}</span><span class="go-cmp-d">${t(k)}</span><span class="go-cmp-cta">${t('go_see_prices')} ${ARROW}</span></a>`).join('');
+    resEl.innerHTML = `
+      <div class="go-res-head"><div class="go-res-title">${escH(fromLabel)} <span>→</span> Faro <span>→</span> LUZDOSOL</div>${dates ? `<div class="go-res-dates">${escH(dates)}</div>` : ''}</div>
+      ${a ? '' : `<p class="go-res-warn">${t('go_no_dates')}</p>`}
+      <div class="go-res-block">
+        <h3><b>1</b>${t('go_res_flights')}</h3>
+        <p>${t('go_res_flights_d')}</p>
+        <div class="go-cmps">${cmp}</div>
+        <div class="go-res-sub">${air ? t('go_res_airlines') : t('go_res_airlines_any')}</div>
+        <div class="go-airs">${airHtml}</div>
+      </div>
+      <div class="go-res-block go-res-row">
+        <div><h3><b>2</b>${t('go_s1_t')}</h3><p>${ap ? escH(t('go_nearest')) + ' ' + escH(ap[1]) : t('go_s1_d')}</p></div>
+        <a class="go-btn go-btn-ghost" href="${href('go-s1-maps')}" target="_blank" rel="noopener">${t('go_s1_maps')} ${ARROW}</a>
+      </div>
+      <div class="go-res-block go-res-row">
+        <div><h3><b>3</b>${t('go_s3_t')}</h3><p>${t('go_s3_d')}</p></div>
+        <div class="go-btns"><a class="go-btn go-btn-ghost" href="${href('go-s3-route')}" target="_blank" rel="noopener">${t('go_s3_route')} ${ARROW}</a><a class="go-btn go-btn-ghost" href="location-voiture.html">${t('go_res_car')}</a></div>
+      </div>`;
+    resEl.hidden = false;
+    resEl.dataset.shown = '1';
+    if (!noScroll) resEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return true;
+  }
+  $('venir-planner').addEventListener('submit', (e) => { e.preventDefault(); renderResults(); });
+  // Une fois le comparatif affiché, il suit les changements de langue.
+  window.addEventListener('luzdosol-lang-change', () => { if (resEl.dataset.shown && !resEl.hidden) renderResults(true); });
+
   input.addEventListener('input', () => { coords = null; update(); });
   [arrEl, depEl].forEach(el => el.addEventListener('change', () => {
     syncDateLimits();
