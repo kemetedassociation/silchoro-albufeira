@@ -54,12 +54,26 @@
 
   list.innerHTML = AIRPORTS.map(a => `<option value="${a[1]} (${a[0]})"></option>`).join('');
 
-  // Dates choisies sur le calendrier
+  // Date du jour en heure locale (toISOString donnerait la date UTC, fausse autour de minuit).
+  const pad = (n) => String(n).padStart(2, '0');
+  const isoLocal = (dt) => dt.getFullYear() + '-' + pad(dt.getMonth() + 1) + '-' + pad(dt.getDate());
+  const today = isoLocal(new Date());
+  arrEl.min = today; depEl.min = today;
+
+  // Dates du séjour choisies sur le calendrier = vol aller / vol retour
+  const hint = $('go-dates-hint');
   try {
     const s = JSON.parse(localStorage.getItem('luzdosol_stay') || 'null');
-    const today = new Date().toISOString().slice(0, 10);
-    if (s && s.a >= today) { arrEl.value = s.a; depEl.value = s.d; $('go-dates-hint').hidden = false; }
+    if (s && s.a >= today) { arrEl.value = s.a; depEl.value = s.d; hint.hidden = false; }
   } catch (e) {}
+  function syncDateLimits() {
+    if (arrEl.value) {
+      const next = new Date(arrEl.value + 'T12:00:00'); next.setDate(next.getDate() + 1);
+      depEl.min = isoLocal(next);
+      if (depEl.value && depEl.value <= arrEl.value) depEl.value = '';
+    } else depEl.min = today;
+  }
+  syncDateLimits();
 
   // Renvoie { ap, city } : ap = aéroport retenu, city = vrai lieu de départ saisi
   // (pour calculer le trajet en transports jusqu'à l'aéroport).
@@ -97,9 +111,18 @@
 
     // 1. De chez vous à l'aéroport (transports en commun)
     const origin = coords ? coords.lat + ',' + coords.lon : (from && (!ap || city) ? from : '');
-    const apName = ap ? 'Aéroport ' + ap[1] : (from ? 'aéroport ' + from : 'aéroport');
-    setHref('go-s1-maps', 'https://www.google.com/maps/dir/?api=1' + (origin ? '&origin=' + enc(origin) : '') +
-      '&destination=' + enc(apName) + '&travelmode=transit');
+    const s1 = $('go-s1-maps');
+    if (ap) {
+      setHref('go-s1-maps', 'https://www.google.com/maps/dir/?api=1' + (origin ? '&origin=' + enc(origin) : '') +
+        '&destination=' + enc('Aéroport ' + ap[1]) + '&travelmode=transit');
+    } else if (from) {
+      // Ville inconnue de notre liste : on cherche les aéroports autour d'elle.
+      setHref('go-s1-maps', 'https://www.google.com/maps/search/?api=1&query=' + enc('aéroport près de ' + from));
+    } else if (coords) {
+      setHref('go-s1-maps', 'https://www.google.com/maps/search/' + enc('aéroport') + '/@' + coords.lat + ',' + coords.lon + ',9z');
+    }
+    // Sans ville ni position, le bouton demande d'abord le point de départ.
+    if (s1) s1.classList.toggle('needs-city', !ap && !from && !coords);
     setHref('go-s1-train', TRAIN[L] || TRAIN.en);
 
     // 2. Vols vers Faro
@@ -153,9 +176,17 @@
 
   input.addEventListener('input', () => { coords = null; update(); });
   [arrEl, depEl].forEach(el => el.addEventListener('change', () => {
-    if (arrEl.value && depEl.value && depEl.value <= arrEl.value) depEl.value = '';
+    syncDateLimits();
+    hint.hidden = true; // ce ne sont plus forcément les dates du calendrier
     update();
   }));
+  $('go-s1-maps')?.addEventListener('click', (e) => {
+    if (!e.currentTarget.classList.contains('needs-city')) return;
+    e.preventDefault();
+    locMsg.textContent = t('go_need_city', 'Indiquez d\'abord votre ville de départ ou utilisez « Ma position ».');
+    input.focus();
+    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
 
   locBtn.addEventListener('click', () => {
     if (!navigator.geolocation) { locMsg.textContent = t('go_loc_err'); return; }

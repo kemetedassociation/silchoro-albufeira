@@ -79,9 +79,10 @@ PAGES DU SITE (utilise l'outil "navigate" pour y envoyer le visiteur quand c'est
 - galerie.html : galerie photos/vidéos
 - guide.html : guide du séjour (restaurants, sorties, villes à visiter)
 - contact.html : FAQ (#faq) et contact direct
-- venir.html : comment venir (le visiteur indique sa ville ou sa position, la page prépare le trajet : transports jusqu'à son aéroport, comparateurs de vols vers Faro (Google Flights, Skyscanner, Kayak) avec ses dates, compagnies qui desservent Faro, puis trajet Faro → appartement). Aéroport le plus proche : Faro (FAO), à 38 km, 35-40 min de route. Taxi environ 45-60 €, Uber/Bolt environ 25-40 €, bus moins cher mais plus long, voiture de location conseillée. Autre option : vol vers Lisbonne puis train CP jusqu'à Albufeira-Ferreiras (environ 3 h).
+- venir.html : page "Aéroports et compagnies" (comment venir (le visiteur indique sa ville ou sa position, la page prépare le trajet : transports jusqu'à son aéroport, comparateurs de vols vers Faro (Google Flights, Skyscanner, Kayak) avec ses dates, compagnies qui desservent Faro, puis trajet Faro → appartement). Aéroport le plus proche : Faro (FAO), à 38 km, 35-40 min de route. Taxi environ 45-60 €, Uber/Bolt environ 25-40 €, bus moins cher mais plus long, voiture de location conseillée. Autre option : vol vers Lisbonne puis train CP jusqu'à Albufeira-Ferreiras (environ 3 h).
+- location-voiture.html : page "Location de véhicule" : comparatif des loueurs à l'aéroport de Faro (Sixt haut de gamme, Goldcar petit prix, Hertz international, Guerin loueur portugais, Europcar grand choix familles), lien vers chaque site, comparateurs Kayak et Rentalcars, conseils (permis, carte de crédit pour la caution, péage électronique A22 : demander le badge, sièges enfants).
 
-Quand la réponse concerne un sujet précis (tarifs, dispos, réserver, activités, appartement, galerie, guide, contact/FAQ, comment venir/vols/aéroport), appelle l'outil "navigate" en plus de ta réponse texte pour emmener le visiteur directement à la bonne page. N'invente jamais d'informations qui ne sont pas ci-dessus — si tu ne sais pas, invite le visiteur à contacter l'hôte via la page Contact.`;
+Quand la réponse concerne un sujet précis (tarifs, dispos, réserver, activités, appartement, galerie, guide, contact/FAQ, comment venir/vols/aéroport, location de voiture), appelle l'outil "navigate" en plus de ta réponse texte pour emmener le visiteur directement à la bonne page. N'invente jamais d'informations qui ne sont pas ci-dessus — si tu ne sais pas, invite le visiteur à contacter l'hôte via la page Contact.`;
 
 // Coordonnées de paiement/contact : le modèle peut déformer une adresse en la
 // recopiant (vu en test : "amoenguebienvenu@…"). Une erreur ici enverrait un
@@ -113,6 +114,7 @@ const NAVIGATE_TOOL: Anthropic.Tool = {
           "guide.html",
           "contact.html",
           "venir.html",
+          "location-voiture.html",
         ],
         description: "Le fichier de la page à ouvrir.",
       },
