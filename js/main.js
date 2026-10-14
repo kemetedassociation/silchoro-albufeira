@@ -602,12 +602,12 @@ document.addEventListener('DOMContentLoaded', () => {
     return fmtDate(parseKey(arrival)) + ' → ' + fmtDate(dep) + ', ' + nights + ' ' + t('nights_word');
   }
   // Tarifs par mois (index 0 = janvier)
-  const MONTH_PRICE = [39, 39, 43, 49, 69, 99, 224, 224, 69, 49, 39, 39];
+  const MONTH_PRICE = [39, 39, 43, 49, 69, 89, 224, 224, 69, 49, 39, 39];
   function nightlyPrice(m) { return MONTH_PRICE[m]; }
   function seasonStatus(d) {
     if (occ.includes(key(d))) return 'occ';
     const pr = MONTH_PRICE[d.getMonth()];
-    if (pr >= 99) return 'high';
+    if (pr >= 85) return 'high';
     if (pr >= 45) return 'mid';
     return 'low';
   }

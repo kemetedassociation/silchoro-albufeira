@@ -12,7 +12,7 @@ export interface Env {
 }
 
 // Tarifs par mois (index 0 = janvier) — doit rester identique à MONTH_PRICE dans js/main.js.
-const MONTH_PRICE = [39, 39, 43, 49, 69, 99, 224, 224, 69, 49, 39, 39];
+const MONTH_PRICE = [39, 39, 43, 49, 69, 89, 224, 224, 69, 49, 39, 39];
 const MIN_NIGHTS = 4;
 const DEPOSIT_RATE = 0.3; // acompte = 30% du prix total du séjour
 
@@ -33,7 +33,7 @@ INFORMATIONS SUR LE LOGEMENT
 - Idéal pour couples, familles et petits groupes d'amis.
 
 TARIFS (par nuit, réservation directe, sans commission)
-- Janvier : 39€, Février : 39€, Mars : 43€, Avril : 49€, Mai : 69€, Juin : 99€
+- Janvier : 39€, Février : 39€, Mars : 43€, Avril : 49€, Mai : 69€, Juin : 89€
 - Juillet : 224€, Août : 224€, Septembre : 69€, Octobre : 49€, Novembre : 39€, Décembre : 39€
 - Séjour minimum de 4 nuits (le visiteur choisit librement le nombre de nuits, à partir de 4).
 - Paiement : acompte par virement PayPal (à l'adresse exacte emouenguebienvenu@yahoo.fr, à recopier lettre par lettre sans aucune modification, option "à un ami/famille" recommandée), solde selon modalités convenues avec l'hôte. Le paiement par carte en ligne n'est pas encore disponible.
